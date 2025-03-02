@@ -1,0 +1,7 @@
+{
+  "apiUrl": "http://localhost:3001",
+  "usersRoute": "/api/users",
+  "fileRoute": "/api/files",
+  "storageRoute": "/api/storage",
+  "linkRoute": "/api/links"
+}

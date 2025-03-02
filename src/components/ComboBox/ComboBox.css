@@ -1,0 +1,11 @@
+.input_container {
+  display: flex;
+  align-items: center;
+  margin: 0px;
+}
+.input_field {
+  font-family: "IBM Plex Mono";
+  font-size: 18px;
+  font-weight: 400;
+  margin: 0px;
+}
