@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import "../styles/workplacePage.css";
 import DialogFriendly from "../components/DialogFriendly";
 import useDialog from "../hooks/useDialog";
@@ -6,12 +6,13 @@ import CreateStorageDialog from "../components/dialogs/CreateStorageDialog";
 import SelectStorageDialog from "../components/dialogs/SelectStorageDialog";
 import PrimaryButton from "../components/PrimaryButton";
 import ProtectedRoute from "../components/ProtectedRoute";
-import getUserApi from "../api/getUserApi";
 import UploadFileDialog from "../components/dialogs/UploadFileDialog";
 import { useAuth } from "../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { useStorage } from "../contexts/StorageContext";
-import getFilesByStorageApi from "../api/getFilesByStorageApi";
+import { get } from "../api/users";
+import { getAllByStorageId } from "../api/files";
+import useAxios from "../hooks/useAxios";
 
 interface FileData {
   id: string;
@@ -30,63 +31,40 @@ const formatDate = (dateString: string): string => {
   return `${month} ${day} ${year}`;
 };
 
+const parseFilesResponse = (filesResponse: any): FileData[] => {
+  return filesResponse.data.files.map((f: any) => ({
+    id: f.id,
+    name: f._name,
+    size: f.size,
+    uploadAt: formatDate(f.uploadAt),
+  }));
+};
+
 const WorkplacePage = () => {
   const { dialog, open, close, isOpen } = useDialog();
-  const [user, setUser] = useState<any | null>(null);
   const { logout } = useAuth();
   const navigate = useNavigate();
   const { storage } = useStorage();
   const [files, setFiles] = useState<FileData[]>([]);
 
-  useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        close();
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [close]);
+  const { response: user, sendRequest } = useAxios();
 
   useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        const response = await getUserApi();
-        if (response.data) setUser(response.data.user);
-      } catch (error) {
-        console.error("Failed to fetch user data:", error);
-      }
-    };
-
-    fetchUserData();
+    sendRequest(get());
   }, []);
 
+  const { response: filesResponse, sendRequest: fetchFiles } = useAxios();
+
   useEffect(() => {
-    const fetchFiles = async () => {
-      if (!storage) return;
-
-      try {
-        const response = await getFilesByStorageApi(storage.id);
-
-        const files: FileData[] = response.files.map((f: any) => ({
-          id: f.id,
-          name: f._name,
-          size: f.size,
-          uploadAt: formatDate(f.uploadAt),
-        }));
-
-        setFiles([...files]);
-      } catch (error) {
-        console.error("Failed to fetch files by id:", error);
-      }
-    };
-
-    fetchFiles();
+    if (storage) fetchFiles(getAllByStorageId(storage.id));
   }, [storage]);
+
+  useEffect(() => {
+    if (filesResponse) {
+      const filesData = parseFilesResponse(filesResponse);
+      setFiles(filesData);
+    }
+  }, [filesResponse]);
 
   return (
     <ProtectedRoute>
@@ -118,13 +96,13 @@ const WorkplacePage = () => {
               <PrimaryButton
                 text="Select storage"
                 onClick={() =>
-                  open(<SelectStorageDialog onSecondaryClick={close} />)
+                  open(<SelectStorageDialog closeDialog={close} />)
                 }
               />
               <PrimaryButton
                 text="Create storage"
                 onClick={() =>
-                  open(<CreateStorageDialog onSecondaryClick={close} />)
+                  open(<CreateStorageDialog closeDialog={close} />)
                 }
               />
               <PrimaryButton
@@ -135,7 +113,7 @@ const WorkplacePage = () => {
               />
             </div>
             <div className="info">
-              <div>Hello {user?.login}</div>
+              <div>Hello {user?.data.login}</div>
               <div>Current storage: {storage?.name}</div>
               <PrimaryButton
                 text="Log out"

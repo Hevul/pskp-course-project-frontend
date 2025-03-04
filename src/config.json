@@ -1,7 +1,8 @@
 {
-  "apiUrl": "http://localhost:3001",
-  "usersRoute": "/api/users",
-  "fileRoute": "/api/files",
-  "storageRoute": "/api/storage",
-  "linkRoute": "/api/links"
+  "base": "http://localhost:3001",
+  "user": "api/user",
+  "file": "api/file",
+  "storage": "api/storage",
+  "link": "api/link",
+  "auth": "api/auth"
 }

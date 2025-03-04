@@ -1,52 +1,52 @@
-import React, { FC, useEffect, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import Dialog from "../Dialog";
 import ComboBox from "../ComboBox";
 import SecondaryButton from "../SecondaryButton";
 import PrimaryButton from "../PrimaryButton";
-import getAllUserStoragesApi from "../../api/getAllUserStoragesApi";
 import { useStorage } from "../../contexts/StorageContext";
+import { getAll } from "../../api/storages";
+import useAxios from "../../hooks/useAxios";
 
 interface OptionType {
   value: string;
   label: string;
 }
 
-interface SelectStorageDialogProps {
-  onSecondaryClick?: () => void;
-  onPrimaryClick?: () => void;
+interface Props {
+  closeDialog?: () => void;
 }
 
-const SelectStorageDialog: FC<SelectStorageDialogProps> = ({
-  onSecondaryClick,
-  onPrimaryClick,
-}) => {
+const parseStoragesResponse = (response: any) => {
+  return response.data.map((storage: any) => ({
+    value: storage.id,
+    label: storage._name,
+  }));
+};
+
+const SelectStorageDialog: FC<Props> = ({ closeDialog }) => {
+  const { storage, setStorage } = useStorage();
   const [option, setOption] = useState<OptionType | null>(null);
   const [options, setOptions] = useState<OptionType[]>([]);
-  const { setStorage } = useStorage();
+
+  const { response: storagesResponse, sendRequest } = useAxios();
 
   useEffect(() => {
-    const fetchStoragesData = async () => {
-      try {
-        const response = await getAllUserStoragesApi();
-        console.log(response);
-
-        const transformedStorages = response.map((storage: any) => ({
-          value: storage.id,
-          label: storage._name,
-        }));
-
-        setOptions(transformedStorages);
-      } catch (error) {
-        console.error("Failed to fetch user data:", error);
-      }
-    };
-
-    fetchStoragesData();
+    sendRequest(getAll());
   }, []);
 
-  onPrimaryClick = () => {
-    if (!option) return;
+  useEffect(() => {
+    if (!storagesResponse) return;
 
+    const transformedStorages = parseStoragesResponse(storagesResponse);
+    setOptions(transformedStorages);
+  }, [storagesResponse]);
+
+  useEffect(() => {
+    if (storage) setOption({ value: storage.id, label: storage.name });
+  }, [storage]);
+
+  const selectStorage = () => {
+    if (!option) return;
     setStorage({ id: option.value, name: option.label });
   };
 
@@ -60,8 +60,8 @@ const SelectStorageDialog: FC<SelectStorageDialogProps> = ({
       />
 
       <div className="buttons">
-        <SecondaryButton text="Cancel" onClick={onSecondaryClick} />
-        <PrimaryButton text="Select" onClick={onPrimaryClick} />
+        <SecondaryButton text="Cancel" onClick={closeDialog} />
+        <PrimaryButton text="Select" onClick={selectStorage} />
       </div>
     </Dialog>
   );

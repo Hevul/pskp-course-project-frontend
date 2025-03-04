@@ -1,4 +1,4 @@
-import React, {
+import {
   createContext,
   FC,
   ReactNode,
@@ -6,9 +6,8 @@ import React, {
   useEffect,
   useState,
 } from "react";
-import loginApi from "../api/loginApi";
-import logoutApi from "../api/logoutApi";
-import checkAuthApi from "../api/checkAuthApi";
+import { login as apiLogin, logout as apiLogout, checkAuth } from "../api/auth";
+import axios from "axios";
 
 type AuthenticateStatus = "Loading" | "Authenticated" | "Unauthenticated";
 
@@ -29,9 +28,9 @@ export const AuthProvider: FC<Props> = ({ children }) => {
     useState<AuthenticateStatus>("Loading");
 
   useEffect(() => {
-    const checkAuth = async () => {
+    const fetchMe = async () => {
       try {
-        const response = await checkAuthApi();
+        const response = (await axios(checkAuth())).data;
         setAuthenticateStatus(
           response.isAuthenticated ? "Authenticated" : "Unauthenticated"
         );
@@ -41,16 +40,16 @@ export const AuthProvider: FC<Props> = ({ children }) => {
       }
     };
 
-    checkAuth();
+    fetchMe();
   }, []);
 
   const login = async (username: string, password: string) => {
-    await loginApi(username, password);
+    await axios(apiLogin(username, password));
     setAuthenticateStatus("Authenticated");
   };
 
   const logout = async () => {
-    await logoutApi();
+    await axios(apiLogout());
     setAuthenticateStatus("Unauthenticated");
   };
 

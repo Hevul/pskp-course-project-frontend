@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 
 interface Storage {
   id: string;
@@ -7,7 +7,7 @@ interface Storage {
 
 interface StorageContextType {
   storage: Storage | null;
-  setStorage: (storage: Storage) => void;
+  setStorage: (storage: Storage | null) => void;
 }
 
 const StorageContext = createContext<StorageContextType | null>(null);
@@ -15,7 +15,22 @@ const StorageContext = createContext<StorageContextType | null>(null);
 export const StorageProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const [storage, setStorage] = useState<Storage | null>(null);
+  const loadStorageFromLocalStorage = (): Storage | null => {
+    const storedStorage = localStorage.getItem("storage");
+
+    if (storedStorage) return JSON.parse(storedStorage) as Storage;
+
+    return null;
+  };
+
+  const [storage, setStorage] = useState<Storage | null>(
+    loadStorageFromLocalStorage()
+  );
+
+  useEffect(() => {
+    if (storage) localStorage.setItem("storage", JSON.stringify(storage));
+    else localStorage.removeItem("storage");
+  }, [storage]);
 
   return (
     <StorageContext.Provider value={{ storage, setStorage }}>
