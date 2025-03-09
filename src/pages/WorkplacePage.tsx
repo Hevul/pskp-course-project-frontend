@@ -13,6 +13,7 @@ import { useStorage } from "../contexts/StorageContext";
 import { get } from "../api/users";
 import { getAllByStorageId } from "../api/files";
 import useAxios from "../hooks/useAxios";
+import CreateDirectoryDialog from "../components/dialogs/CreateDirectoryDialog";
 
 interface FileData {
   id: string;
@@ -109,6 +110,12 @@ const WorkplacePage = () => {
                 text="Upload"
                 onClick={() =>
                   open(<UploadFileDialog onSecondaryClick={close} />)
+                }
+              />
+              <PrimaryButton
+                text="Create directory"
+                onClick={() =>
+                  open(<CreateDirectoryDialog closeDialog={close} />)
                 }
               />
             </div>
