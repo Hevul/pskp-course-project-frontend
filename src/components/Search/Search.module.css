@@ -1,0 +1,29 @@
+.searchContainer {
+  position: relative;
+  display: inline-block;
+}
+
+.search {
+  all: unset;
+  width: 460px;
+  height: 50px;
+  background-color: white;
+  box-shadow: var(--primary-shadow);
+  border-radius: 10px;
+  color: var(--primary-black);
+  font-size: 15px;
+  text-indent: 20px;
+  font-weight: var(--regular);
+  padding-right: 30px;
+}
+
+.img {
+  position: absolute;
+  right: 10px;
+  width: 20px;
+  height: 20px;
+  top: 50%;
+  margin-right: 20px;
+  transform: translateY(-50%);
+  pointer-events: none;
+}

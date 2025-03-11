@@ -7,7 +7,7 @@ interface Storage {
 
 interface StorageContextType {
   storage: Storage | null;
-  setStorage: (storage: Storage | null) => void;
+  selectStorage: (storage: Storage | null) => void;
 }
 
 const StorageContext = createContext<StorageContextType | null>(null);
@@ -32,8 +32,12 @@ export const StorageProvider: React.FC<{ children: React.ReactNode }> = ({
     else localStorage.removeItem("storage");
   }, [storage]);
 
+  const selectStorage = (s: Storage | null) => {
+    if (s?.id !== storage?.id) setStorage(s);
+  };
+
   return (
-    <StorageContext.Provider value={{ storage, setStorage }}>
+    <StorageContext.Provider value={{ storage, selectStorage }}>
       {children}
     </StorageContext.Provider>
   );

@@ -1,0 +1,16 @@
+.container {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  cursor: pointer;
+}
+
+.indicator {
+  position: absolute;
+  margin-left: -4px;
+}
+
+.iconContainer {
+  flex-grow: 1;
+  text-align: center;
+}

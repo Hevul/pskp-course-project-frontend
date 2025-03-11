@@ -1,0 +1,16 @@
+.page {
+  background-color: var(--secondary-blue);
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+}
+
+.main {
+  margin-top: 25px;
+  margin-left: 40px;
+  margin-right: 110px;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 30px;
+}

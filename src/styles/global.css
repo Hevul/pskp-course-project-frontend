@@ -15,4 +15,12 @@ body {
   --primary-blue: #4676fb;
   --secondary-blue: #f2f5ff;
   --primary-black: #3a3a49;
+
+  --primary-shadow: 1px 2px 3px rgba(70, 118, 251, 0.41);
+
+  --light: 300;
+  --regular: 400;
+  --medium: 500;
+  --semi-bold: 600;
+  --bold: 700;
 }
