@@ -4,6 +4,7 @@ import StorageButton from "../../components/StorageButton/StorageButton";
 import Search from "../../components/Search/Search";
 import Navbar from "../../components/Navbar/Navbar";
 import ComboBox from "../../components/ComboBox/ComboBox";
+import StorageTable from "../../components/StorageTable/StorageTable";
 
 const Dashboard = () => {
   const storages = [
@@ -31,32 +32,9 @@ const Dashboard = () => {
         <div className={styles.center}>
           <h1 className={styles.path}>Storage 1</h1>
 
-          <table>
-            <thead>
-              <tr>
-                <th>Номер</th>
-                <th>Тип</th>
-                <th>Название</th>
-                <th>Размер</th>
-                <th>Дата создания</th>
-                <th>Скачать</th>
-                <th>Переименовать</th>
-                <th>Удалить</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>Данные 1</td>
-                <td>Данные 2</td>
-                <td>Данные 3</td>
-                <td>Данные 4</td>
-                <td>Данные 5</td>
-                <td>Данные 6</td>
-                <td>Данные 6</td>
-                <td>Данные 6</td>
-              </tr>
-            </tbody>
-          </table>
+          <div style={{ marginLeft: 40 }}>
+            <StorageTable />
+          </div>
         </div>
 
         <div className={styles.bottom}>

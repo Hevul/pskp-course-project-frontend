@@ -1,8 +1,8 @@
 import styles from "./Navbar.module.css";
-import FilesIcon from "../FilesIcon/FilesIcon";
-import RepositoryIcon from "../RepositoryIcon/RepositoryIcon";
+import FilesIcon from "../icons/FilesIcon";
+import RepositoryIcon from "../icons/RepositoryIcon";
 import NavButton from "../NavButton/NavButton";
-import LogoutIcon from "../LogoutIcon/LogoutIcon";
+import LogoutIcon from "../icons/LogoutIcon";
 
 const Navbar = () => {
   return (

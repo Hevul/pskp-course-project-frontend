@@ -37,9 +37,12 @@
   border-radius: 22px;
 }
 
+.center {
+  padding: 20px 35px;
+}
+
 .path {
-  margin-top: 35px;
-  margin-left: 35px;
+  margin-bottom: 43px;
   font-size: 23px;
   font-weight: var(--bold);
   color: var(--primary-black);
