@@ -6,15 +6,13 @@ import {
   useEffect,
   useState,
 } from "react";
-import { login as apiLogin, logout as apiLogout, checkAuth } from "../api/auth";
+import { checkAuth } from "../api/auth";
 import axios from "axios";
 
 type AuthenticateStatus = "Loading" | "Authenticated" | "Unauthenticated";
 
 interface AuthContextType {
   authenticateStatus: AuthenticateStatus;
-  login: (username: string, password: string) => Promise<void>;
-  logout: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -43,22 +41,10 @@ export const AuthProvider: FC<Props> = ({ children }) => {
     fetchMe();
   }, []);
 
-  const login = async (username: string, password: string) => {
-    await axios(apiLogin(username, password));
-    setAuthenticateStatus("Authenticated");
-  };
-
-  const logout = async () => {
-    await axios(apiLogout());
-    setAuthenticateStatus("Unauthenticated");
-  };
-
   return (
     <AuthContext.Provider
       value={{
         authenticateStatus,
-        login,
-        logout,
       }}
     >
       {children}

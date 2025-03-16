@@ -61,7 +61,7 @@ const StorageTableRow: FC<Props> = ({ id, type, name, size, date }) => {
       </td>
       <td className={styles.centerTd}>
         <button>
-          <OptionsIcon color={isHovered ? "white" : "#D0D7DD"} />
+          <OptionsIcon color={isHovered ? "white" : "#D0D7DD"} width="6" />
         </button>
       </td>
     </tr>

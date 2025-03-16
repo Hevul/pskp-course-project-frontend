@@ -3,7 +3,7 @@ import axios, { AxiosRequestConfig, AxiosResponse, AxiosError } from "axios";
 
 const useAxios = (config?: AxiosRequestConfig, autoExecute = false) => {
   const [response, setResponse] = useState<AxiosResponse | null>(null);
-  const [error, setError] = useState<AxiosError | null>(null);
+  const [error, setError] = useState<any | null>(null);
   const [loading, setLoading] = useState(false);
   const [abortController, setAbortController] =
     useState<AbortController | null>(null);
@@ -24,9 +24,12 @@ const useAxios = (config?: AxiosRequestConfig, autoExecute = false) => {
         signal: controller.signal,
       });
       setResponse(result);
+
+      return response;
     } catch (err) {
       if (!axios.isCancel(err)) {
         setError(err as AxiosError);
+        throw err;
       }
     } finally {
       setLoading(false);

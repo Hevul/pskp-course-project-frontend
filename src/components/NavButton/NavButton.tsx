@@ -1,22 +1,16 @@
 import { FC, ReactNode } from "react";
 import styles from "./NavButton.module.css";
-import { useLocation, useNavigate } from "react-router-dom";
 import React from "react";
 
 interface Props {
   icon: ReactNode;
-  url: string;
+  onClick: () => void;
+  isActive: boolean;
 }
 
-const NavButton: FC<Props> = ({ icon, url }) => {
-  const location = useLocation();
-  const navigate = useNavigate();
-
-  const currentUrl = location.pathname;
-  const isActive = url === currentUrl;
-
+const NavButton: FC<Props> = ({ icon, onClick, isActive }) => {
   return (
-    <div className={styles.container} onClick={() => navigate(url)}>
+    <div className={styles.container} onClick={onClick}>
       <img
         style={{ visibility: isActive ? "visible" : "collapse" }}
         className={styles.indicator}

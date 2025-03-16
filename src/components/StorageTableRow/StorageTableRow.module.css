@@ -43,6 +43,7 @@ td:last-child {
 
 .centerTd {
   text-align: center;
+  vertical-align: middle;
 }
 
 .download {

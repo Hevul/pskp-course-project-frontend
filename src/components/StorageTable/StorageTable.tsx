@@ -4,16 +4,16 @@ import StorageTableRow from "../StorageTableRow/StorageTableRow";
 const StorageTable = () => {
   return (
     <table className={styles.table}>
-      <colgroup>
-        <col style={{ width: "5%" }} /> {/* Первый столбец */}
-        <col style={{ width: "" }} /> {/* Второй столбец */}
-        <col style={{ width: "15%" }} /> {/* Третий столбец */}
-        <col style={{ width: "20%" }} /> {/* Четвертый столбец */}
-        <col style={{ width: "10%" }} /> {/* Пятый столбец */}
-        <col style={{ width: "10%" }} /> {/* Шестой столбец */}
-        <col style={{ width: "10%" }} /> {/* Седьмой столбец */}
-        <col style={{ width: "5%" }} /> {/* Восьмой столбец */}
-      </colgroup>
+      {/* <colgroup>
+        <col style={{ width: "5%" }} />
+        <col style={{ width: "" }} />
+        <col style={{ width: "15%" }} />
+        <col style={{ width: "20%" }} />
+        <col style={{ width: "10%" }} />
+        <col style={{ width: "10%" }} />
+        <col style={{ width: "10%" }} />
+        <col style={{ width: "5%" }} />
+      </colgroup> */}
       <thead>
         <tr>
           <th></th>

@@ -1,0 +1,25 @@
+.p {
+  font-size: 16px;
+  font-weight: var(--regular);
+  color: var(--primary-black);
+}
+
+.input {
+  all: unset;
+}
+
+.input {
+  width: 100%;
+  margin-top: 14px;
+  border: 1px solid var(--primary-blue);
+  height: 60px;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: var(--regular);
+  color: var(--primary-black);
+  text-indent: 30px;
+}
+
+.input:focus {
+  border: 2px solid var(--primary-blue);
+}

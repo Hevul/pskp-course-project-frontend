@@ -1,24 +1,36 @@
 import styles from "./Login.module.css";
-import { useState } from "react";
-import { useAuth } from "../../contexts/AuthContext";
+import { useEffect, useState } from "react";
+import BigInput from "../../components/BigInput/BigInput";
+import InputValidationError from "../../components/InputValidationError/InputValidationError";
+import useAxios from "../../hooks/useAxios";
+import { login } from "../../api/auth";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
+  const navigate = useNavigate();
+
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState<string | null>(null);
 
-  const { login } = useAuth();
+  const { response, sendRequest, error } = useAxios();
 
-  const handleLogin = async () => {
-    setError("");
+  let loginError: string | null = null;
+  let passwordError: string | null = null;
 
-    try {
-      await login(username, password);
-    } catch (err: any) {
-      if (err.response) console.log(err.response);
-      setError("Invalid username or password");
-    }
-  };
+  if (error) {
+    const errors = error?.response?.data?.errors;
+
+    const loginErrorObj = errors.find((err: any) => err.path === "login");
+    if (loginErrorObj) loginError = loginErrorObj.msg;
+
+    const passwordErrorObj = errors.find((err: any) => err.path === "password");
+    if (passwordErrorObj) passwordError = passwordErrorObj.msg;
+  }
+
+  useEffect(() => {
+    console.log(response);
+    if (response?.status === 200) navigate("/dashboard");
+  }, [response, navigate]);
 
   return (
     <div className={styles.page}>
@@ -27,26 +39,29 @@ const Login = () => {
           <h2 className={styles.h2}>Добро пожаловать</h2>
           <h1 className={styles.h1}>Войдите в аккаунт</h1>
           <div>
-            <p className={styles.p}>Логин</p>
-            <input
-              className={styles.input}
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              type="text"
+            <BigInput
+              label="Логин"
               placeholder="Введите Ваш логин"
+              value={username}
+              setValue={setUsername}
+              error={loginError}
             />
+            <InputValidationError error={loginError} />
           </div>
           <div style={{ marginTop: 38, marginBottom: 79 }}>
-            <p className={styles.p}>Пароль</p>
-            <input
-              className={styles.input}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              type="text"
+            <BigInput
+              label="Пароль"
               placeholder="Введите Ваш пароль"
+              value={password}
+              setValue={setPassword}
+              error={passwordError}
             />
+            <InputValidationError error={passwordError} />
           </div>
-          <button className={styles.button} onClick={handleLogin}>
+          <button
+            className={styles.button}
+            onClick={() => sendRequest(login(username, password))}
+          >
             Войти
           </button>
           <div className={styles.register}>

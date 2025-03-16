@@ -1,8 +1,12 @@
-const OptionsIcon = ({ color = "currentColor" }) => {
+const OptionsIcon = ({
+  color = "currentColor",
+  width = "5",
+  height = "auto",
+}) => {
   return (
     <svg
-      width="5"
-      height="20"
+      width={width}
+      height={height}
       viewBox="0 0 5 20"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"

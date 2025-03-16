@@ -9,6 +9,7 @@ th {
   color: #767580;
   font-size: 16px;
   font-weight: var(--regular);
+  cursor: default;
 }
 
 .leftTh {
