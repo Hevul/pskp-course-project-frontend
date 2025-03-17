@@ -10,7 +10,22 @@
   margin-left: 40px;
   margin-right: 110px;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   width: 100%;
-  gap: 30px;
+  justify-content: space-evenly;
+}
+
+.inputDiv {
+  width: 100%;
+  align-self: flex-start;
+}
+
+.right {
+  align-self: flex-end;
+}
+
+.p {
+  font-size: 16px;
+  color: var(--primary-black);
+  font-weight: var(--semi-bold);
 }

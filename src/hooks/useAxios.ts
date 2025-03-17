@@ -25,21 +25,14 @@ const useAxios = (config?: AxiosRequestConfig, autoExecute = false) => {
       });
       setResponse(result);
 
-      return response;
+      return result;
     } catch (err) {
       if (!axios.isCancel(err)) {
         setError(err as AxiosError);
-        throw err;
       }
     } finally {
       setLoading(false);
       setAbortController(null);
-    }
-  };
-
-  const abortRequest = () => {
-    if (abortController) {
-      abortController.abort();
     }
   };
 
@@ -57,7 +50,7 @@ const useAxios = (config?: AxiosRequestConfig, autoExecute = false) => {
     };
   }, [abortController]);
 
-  return { response, error, loading, sendRequest, abortRequest };
+  return { response, error, loading, sendRequest };
 };
 
 export default useAxios;
