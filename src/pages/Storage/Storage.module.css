@@ -1,31 +1,5 @@
-.page {
-  background-color: var(--secondary-blue);
-  width: 100vw;
-  height: 100vh;
-  display: flex;
-}
-
-.main {
-  margin-top: 25px;
-  margin-left: 40px;
-  margin-right: 110px;
+.center {
   display: flex;
   flex-direction: row;
-  width: 100%;
   justify-content: space-evenly;
-}
-
-.inputDiv {
-  width: 100%;
-  align-self: flex-start;
-}
-
-.right {
-  align-self: flex-end;
-}
-
-.p {
-  font-size: 16px;
-  color: var(--primary-black);
-  font-weight: var(--semi-bold);
 }

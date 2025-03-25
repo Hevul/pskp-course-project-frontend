@@ -6,9 +6,16 @@ interface Props {
   placeholder: string;
   value: string;
   setValue: React.Dispatch<React.SetStateAction<string>>;
+  hasError?: boolean;
 }
 
-const InputWithLabel: FC<Props> = ({ label, placeholder, value, setValue }) => {
+const InputWithLabel: FC<Props> = ({
+  label,
+  placeholder,
+  value,
+  setValue,
+  hasError = false,
+}) => {
   return (
     <div className={styles.div}>
       <p className={styles.p}>{label}</p>
@@ -18,6 +25,7 @@ const InputWithLabel: FC<Props> = ({ label, placeholder, value, setValue }) => {
         placeholder={placeholder}
         value={value}
         onChange={(e) => setValue(e.target.value)}
+        style={{ borderColor: hasError ? "#FF3030" : "#4676FB" }}
       />
     </div>
   );

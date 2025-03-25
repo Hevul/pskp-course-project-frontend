@@ -1,9 +1,11 @@
-import { createBrowserRouter } from "react-router-dom";
+import { createBrowserRouter, Navigate } from "react-router-dom";
 import Login from "./pages/Login/Login";
 import Register from "./pages/Register/Register";
 import Dashboard from "./pages/Dashboard/Dashboard";
 import Storage from "./pages/Storage/Storage";
 import Trouble from "./pages/Trouble/Trouble";
+import PublicLayout from "./components/PublicLayout/PublicLayout";
+import PrivateLayout from "./components/PrivateLayout/PrivateLayout";
 
 const notFoundTrouble = (
   <Trouble
@@ -11,19 +13,37 @@ const notFoundTrouble = (
     header="Страница не найдена"
     description="К сожалению, мы не смогли найти эту страницу. Но зато Вы всегда можете перейти на главную!"
     buttonText="Перейти на главную"
-    backUrl="/dashboard"
+    backUrl="/"
   />
 );
 
 const serverSideTrouble = <Trouble code={500} />;
 
 const router = createBrowserRouter([
-  { path: "/login", element: <Login /> },
-  { path: "/register", element: <Register /> },
-  { path: "/dashboard", element: <Dashboard /> },
-  { path: "/storage", element: <Storage /> },
-  { path: "/not-found", element: notFoundTrouble },
-  { path: "/server-side-trouble", element: serverSideTrouble },
+  {
+    path: "/",
+    element: <PublicLayout />,
+    children: [
+      { index: true, element: <Navigate to="/login" replace /> },
+      { path: "/login", element: <Login /> },
+      { path: "/register", element: <Register /> },
+      { path: "/not-found", element: notFoundTrouble },
+      { path: "/server-side-trouble", element: serverSideTrouble },
+    ],
+  },
+  {
+    path: "/",
+    element: <PrivateLayout />,
+    children: [
+      { path: "/dashboard", element: <Dashboard /> },
+      { path: "/storage", element: <Storage /> },
+    ],
+  },
+  {
+    path: "*",
+    element: <PublicLayout />,
+    children: [{ path: "*", element: notFoundTrouble }],
+  },
 ]);
 
 export default router;

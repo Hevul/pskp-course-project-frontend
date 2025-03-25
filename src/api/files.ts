@@ -3,8 +3,10 @@ import config from "../config.json";
 
 const url = `${config.base}/${config.file}`;
 
-export const getAllByStorageId = (id: string) => ({
-  url: `${url}/get-all-by-storage/${id}`,
+export const getFilesByStorageId = (storageId: string, parentId?: string) => ({
+  url: `${url}/get-all-by-storage/${storageId}${
+    parentId ? `/${parentId}` : ""
+  }`,
   method: "get",
   withCredentials: true,
 });
@@ -30,3 +32,29 @@ export const upload = (
     withCredentials: true,
   };
 };
+
+export const remove = (id: string): AxiosRequestConfig => ({
+  url: `${url}/delete`,
+  method: "delete",
+  data: {
+    id,
+  },
+  withCredentials: true,
+});
+
+export const download = (id: string): AxiosRequestConfig => ({
+  url: `${url}/download/${id}`,
+  method: "get",
+  withCredentials: true,
+  responseType: "blob",
+});
+
+export const rename = (id: string, name: string): AxiosRequestConfig => ({
+  url: `${url}/rename`,
+  method: "patch",
+  data: {
+    id,
+    name,
+  },
+  withCredentials: true,
+});

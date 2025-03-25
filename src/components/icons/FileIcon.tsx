@@ -2,7 +2,7 @@ const FileIcon = ({ color = "currentColor", width = "31", height = " 31" }) => {
   return (
     <svg
       width={width}
-      height={height}
+      height={width}
       viewBox="0 0 31 31"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"

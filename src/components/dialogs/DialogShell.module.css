@@ -1,0 +1,15 @@
+.dialog {
+  width: 600px;
+  display: flex;
+  flex-direction: column;
+  gap: 36px;
+  margin: 40px 60px 54px 60px;
+}
+
+.h1 {
+  width: 100%;
+  text-align: center;
+  font-size: 28px;
+  color: var(--primary-black);
+  font-weight: var(--regular);
+}

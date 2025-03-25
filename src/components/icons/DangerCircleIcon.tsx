@@ -2,7 +2,7 @@ const DangerCircleIcon = ({ color = "currentColor", width = "25" }) => {
   return (
     <svg
       width={width}
-      height="auto"
+      height={width}
       viewBox="0 0 25 25"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"

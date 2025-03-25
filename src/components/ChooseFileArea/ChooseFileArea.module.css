@@ -1,0 +1,38 @@
+.dragArea {
+  border: 2px dashed rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  display: flex;
+  flex-direction: row;
+  padding: 16px 32px 16px 24px;
+  gap: 24px;
+  justify-content: space-around;
+  height: fit-content;
+  transition: background-color 0.3s, border-color 0.3s;
+}
+
+.highlight {
+  border: 2px dashed var(--primary-blue);
+}
+
+.dragging {
+  border: 2px dashed var(--primary-blue);
+  background-color: #f0f8ff;
+}
+
+.cloudImg {
+  width: 48px;
+  height: 48px;
+}
+
+.uplP {
+  font-size: 16px;
+  color: var(--primary-black);
+  font-weight: var(--regular);
+}
+
+.uplAddP {
+  margin-top: 6px;
+  font-size: 16px;
+  color: #adc0f8;
+  font-weight: var(--regular);
+}

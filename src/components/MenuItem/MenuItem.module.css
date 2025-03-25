@@ -1,0 +1,29 @@
+.menuItem {
+  padding: 12px 22px;
+  padding-left: 0px;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: var(--regular);
+  color: var(--primary-black);
+  border-radius: 8px;
+}
+
+.menuItem:hover {
+  background-color: var(--primary-blue);
+  color: white;
+}
+
+.itemContent {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  justify-content: left;
+  align-items: center;
+}
+
+.icon {
+  display: flex;
+  justify-content: end;
+  align-items: center;
+  width: 34px;
+}

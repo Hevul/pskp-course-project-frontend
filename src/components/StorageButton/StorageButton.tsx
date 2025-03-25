@@ -5,15 +5,16 @@ import { useStorage } from "../../contexts/StorageContext";
 interface Props {
   name: string;
   id: string;
+  className?: string;
 }
 
-const StorageButton: FC<Props> = ({ name, id }) => {
+const StorageButton: FC<Props> = ({ name, id, className }) => {
   const { storage, selectStorage } = useStorage();
 
-  const isActive = storage?.name === name;
+  const isActive = storage?.id === id;
 
   return (
-    <div>
+    <div className={className}>
       <button
         style={{ color: isActive ? "#4676FB" : "#ADC0F8" }}
         className={styles.button}

@@ -16,3 +16,22 @@ export const getAll = () => ({
   method: "get",
   withCredentials: true,
 });
+
+export const rename = (id: string, name: string) => ({
+  url: `${url}/rename`,
+  method: "patch",
+  data: {
+    id,
+    name,
+  },
+  withCredentials: true,
+});
+
+export const remove = (id: string) => ({
+  url: `${url}/delete`,
+  method: "delete",
+  data: {
+    id,
+  },
+  withCredentials: true,
+});

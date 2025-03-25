@@ -1,0 +1,35 @@
+.container {
+  display: flex;
+  flex-direction: row;
+  gap: 18px;
+  margin-bottom: 36px;
+}
+
+.path {
+  font-size: 23px;
+  font-weight: var(--bold);
+  color: var(--primary-black);
+}
+
+.item {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 18px;
+}
+
+.defButton,
+.hoveredButton {
+  padding: 4px 6px;
+  border-radius: 8px;
+}
+
+.hoveredButton:hover {
+  cursor: pointer;
+  background-color: var(--primary-blue);
+}
+
+.hoveredButton:hover .path {
+  color: white;
+}

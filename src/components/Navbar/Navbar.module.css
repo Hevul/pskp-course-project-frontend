@@ -1,23 +1,25 @@
 .nav {
   width: 80px;
+  height: 100%;
   border-radius: 10px;
   background-color: white;
-  margin-top: 25px;
-  margin-bottom: 25px;
-  margin-left: 25px;
   box-shadow: var(--primary-shadow);
 }
 
 .buttons {
-  margin-top: 50px;
+  padding-top: 50px;
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  justify-content: space-between;
   height: 100%;
 }
 
+.navButtons {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
 .logoutDiv {
-  position: absolute;
-  bottom: 40px;
-  left: 50px;
+  margin-bottom: 40px;
 }

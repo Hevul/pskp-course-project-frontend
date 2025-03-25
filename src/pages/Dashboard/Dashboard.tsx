@@ -1,100 +1,94 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import styles from "./Dashboard.module.css";
-import StorageButton from "../../components/StorageButton/StorageButton";
 import Search from "../../components/Search/Search";
-import Navbar from "../../components/Navbar/Navbar";
-import ComboBox from "../../components/ComboBox/ComboBox";
-import StorageTable from "../../components/StorageTable/StorageTable";
 import ProtectedRoute from "../../components/ProtectedRoute/ProtectedRoute";
+import StorageList from "../../components/StorageList/StorageList";
+import Layout from "../../components/Layout/Layout";
+import ContextMenuArea from "../../components/ContextMenuArea/ContextMenuArea";
+import PlusIcon from "../../components/icons/PlusIcon";
+import { useDialog } from "../../contexts/DialogContext";
+import CreateDirDialog from "../../components/dialogs/CreateDirDialog/CreateDirDialog";
+import UploadIcon from "../../components/icons/UploadIcon";
+import Path from "../../components/Path/Path";
+import useAxios from "../../hooks/useAxios";
+import { useStorage } from "../../contexts/StorageContext";
+import { useEntities } from "../../contexts/EntitiesContext";
+import { upload } from "../../api/files";
+import StorageTableTiled from "../../components/StorageTableTiled/StorageTableTiled";
+import { ContextMenuProvider } from "../../contexts/ContextMenuContext";
 
 const Dashboard = () => {
-  const storages = [
-    { id: "1", name: "Storage 1" },
-    { id: "2", name: "Storage 2" },
-    { id: "3", name: "Storage 3" },
+  const [search, setSearch] = useState("");
+
+  const { open } = useDialog();
+  const { sendRequest } = useAxios();
+  const { storage } = useStorage();
+  const { refresh, currentDir } = useEntities();
+
+  const menuItems = [
+    {
+      title: "Создать папку",
+      icon: <PlusIcon />,
+      action: () => open(<CreateDirDialog />),
+    },
+    {
+      title: "Загрузить файл",
+      icon: <UploadIcon width="20" />,
+      action: () => handleButtonClick(),
+    },
   ];
 
-  const [search, setSearch] = useState("");
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleButtonClick = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+
+    if (files && files.length > 0) {
+      const file = files[0];
+      uploadFile(file);
+    }
+  };
+
+  const uploadFile = async (file: File) => {
+    if (!storage) return;
+    await sendRequest(upload(file, storage?.id, currentDir?.id));
+    refresh();
+  };
 
   return (
     <ProtectedRoute>
-      <div className={styles.page}>
-        <Navbar />
-        <div className={styles.main}>
+      <ContextMenuProvider>
+        <Layout>
           <div className={styles.top}>
-            <div className={styles.storages}>
-              {storages.map((s) => (
-                <StorageButton key={s.id} id={s.id} name={s.name} />
-              ))}
-            </div>
-
+            <StorageList />
             <Search search={search} setSearch={setSearch} />
           </div>
 
-          <div className={styles.center}>
-            <h1 className={styles.path}>Storage 1</h1>
+          <input
+            type="file"
+            ref={fileInputRef}
+            style={{ display: "none", visibility: "collapse" }}
+            onChange={handleFileChange}
+            onClick={handleButtonClick}
+          />
 
-            <div style={{ marginLeft: 0 }}>
-              <StorageTable />
-            </div>
-          </div>
+          <ContextMenuArea items={menuItems}>
+            <div className={styles.center}>
+              <Path />
 
-          <div className={styles.bottom}>
-            <div className={styles.chooseDir}>
-              <h1 className={styles.uplH1}>Загрузить файл в хранилище</h1>
-              <div>
-                <p className={styles.dirChooseP}>Выберите директорий:</p>
-
-                <ComboBox />
+              <div className={styles.storageTable}>
+                <StorageTableTiled />
               </div>
             </div>
-
-            <div className={styles.bottomCenter}>
-              <div className={styles.uploadFile}>
-                <img
-                  className={styles.cloudImg}
-                  src="upload-cloud.svg"
-                  alt=""
-                />
-
-                <div>
-                  <p className={styles.uplP}>
-                    Выберите файл или перетащите его сюда
-                  </p>
-                  <p className={styles.uplAddP}>
-                    Вы также можете выбрать несколько файлов
-                  </p>
-                </div>
-
-                <button className={styles.uplChooseFileButton}>
-                  ВЫБРАТЬ ФАЙЛ
-                </button>
-              </div>
-
-              <div className={styles.fileUplInfoDiv}>
-                <img className={styles.fileImg} src="file.svg" alt="" />
-
-                <div className={styles.fileNameSizeStatusDiv}>
-                  <div className={styles.fileNameAndSizeDiv}>
-                    <p className={styles.fileInfoP}>demo_image.jpg</p>
-                    <p className={styles.fileInfoP}>5.7MB</p>
-                  </div>
-
-                  <div className={styles.fileUplStatus}></div>
-                </div>
-              </div>
-            </div>
-
-            <div className={styles.uploadButtons}>
-              <button className={styles.cancelButton}>Отменить</button>
-              <button className={styles.uplButton}>
-                <img src="Plus.svg" alt="" />
-                Загрузить
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
+          </ContextMenuArea>
+        </Layout>
+      </ContextMenuProvider>
     </ProtectedRoute>
   );
 };

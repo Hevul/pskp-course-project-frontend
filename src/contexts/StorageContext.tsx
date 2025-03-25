@@ -1,12 +1,12 @@
+import axios from "axios";
 import React, { createContext, useContext, useEffect, useState } from "react";
-
-interface Storage {
-  id: string;
-  name: string;
-}
+import { getAll } from "../api/storages";
+import Storage from "../models/Storage";
 
 interface StorageContextType {
   storage: Storage | null;
+  storages: Storage[];
+  refresh: () => void;
   selectStorage: (storage: Storage | null) => void;
 }
 
@@ -33,11 +33,44 @@ export const StorageProvider: React.FC<{ children: React.ReactNode }> = ({
   }, [storage]);
 
   const selectStorage = (s: Storage | null) => {
-    if (s?.id !== storage?.id) setStorage(s);
+    setStorage(s);
+  };
+
+  const [storages, setStorages] = useState<Storage[]>([]);
+
+  const fetchStorages = async () => {
+    const fetch = async () => {
+      try {
+        const response = await axios(getAll());
+
+        if (!response) return;
+
+        const storages: Storage[] = response.data.map((s: any) => ({
+          id: s.id,
+          name: s._name,
+        }));
+
+        setStorages(storages);
+      } catch {
+        setStorages([]);
+      }
+    };
+
+    fetch();
+  };
+
+  useEffect(() => {
+    fetchStorages();
+  }, []);
+
+  const refresh = () => {
+    fetchStorages();
   };
 
   return (
-    <StorageContext.Provider value={{ storage, selectStorage }}>
+    <StorageContext.Provider
+      value={{ storage, storages, refresh, selectStorage }}
+    >
       {children}
     </StorageContext.Provider>
   );

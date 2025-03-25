@@ -1,6 +1,6 @@
 .button {
   color: white;
-  padding: 10px 26px;
+  padding: 12px 24px;
   font-size: 16px;
   font-weight: var(--medium);
   background-color: var(--primary-blue);
@@ -9,4 +9,5 @@
   display: flex;
   align-items: center;
   gap: 10px;
+  box-shadow: var(--primary-shadow);
 }

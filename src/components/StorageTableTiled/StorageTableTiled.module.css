@@ -1,0 +1,7 @@
+.table {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  gap: 30px;
+  flex-wrap: wrap;
+}

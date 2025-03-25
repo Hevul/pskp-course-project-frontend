@@ -18,16 +18,18 @@ const Navbar = () => {
   return (
     <div className={styles.nav}>
       <div className={styles.buttons}>
-        <NavButton
-          icon={<FilesIcon />}
-          isActive={"/dashboard" === currentUrl}
-          onClick={() => navigate("/dashboard")}
-        />
-        <NavButton
-          icon={<RepositoryIcon />}
-          isActive={"/storage" === currentUrl}
-          onClick={() => navigate("/storage")}
-        />
+        <div className={styles.navButtons}>
+          <NavButton
+            icon={<FilesIcon />}
+            isActive={"/dashboard" === currentUrl}
+            onClick={() => navigate("/dashboard")}
+          />
+          <NavButton
+            icon={<RepositoryIcon />}
+            isActive={"/storage" === currentUrl}
+            onClick={() => navigate("/storage")}
+          />
+        </div>
 
         <div className={styles.logoutDiv}>
           <NavButton

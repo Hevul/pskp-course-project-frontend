@@ -7,9 +7,9 @@ interface OptionType {
 }
 
 interface Props {
-  //   options: OptionType[];
-  //   value: OptionType | null;
-  //   setValue: React.Dispatch<React.SetStateAction<OptionType | null>>;
+  options: OptionType[];
+  value: OptionType | null;
+  setValue: React.Dispatch<React.SetStateAction<OptionType | null>>;
 }
 
 const customStyles: StylesConfig<OptionType> = {
@@ -63,24 +63,7 @@ const customStyles: StylesConfig<OptionType> = {
   }),
 };
 
-const ComboBox: FC<Props> = ({}) => {
-  const [option, setOption] = useState<OptionType | null>(null);
-
-  const options: OptionType[] = [
-    {
-      value: "1",
-      label: "Выберите директорий",
-    },
-    {
-      value: "2",
-      label: "dir2",
-    },
-    {
-      value: "3",
-      label: "dir3",
-    },
-  ];
-
+const ComboBox: FC<Props> = ({ options, setValue, value }) => {
   return (
     <div style={{ width: 280 }}>
       <Select<OptionType>
@@ -89,8 +72,8 @@ const ComboBox: FC<Props> = ({}) => {
         isSearchable={false}
         placeholder=""
         noOptionsMessage={() => "Директориев нет"}
-        value={option}
-        onChange={(newValue) => setOption(newValue)}
+        value={value}
+        onChange={(newValue) => setValue(newValue)}
       />
     </div>
   );

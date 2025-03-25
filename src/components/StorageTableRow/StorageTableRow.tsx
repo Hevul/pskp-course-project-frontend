@@ -1,68 +1,118 @@
 import { FC, useState } from "react";
-import { format } from "date-fns";
 import styles from "./StorageTableRow.module.css";
 import FolderIcon from "../icons/FolderIcon";
 import FileIcon from "../icons/FileIcon";
 import EditIcon from "../icons/EditIcon";
 import DeleteIcon from "../icons/DeleteIcon";
 import OptionsIcon from "../icons/OptionsIcon";
+import useAxios from "../../hooks/useAxios";
+import { download, remove as removeFile } from "../../api/files";
+import { remove as removeDir } from "../../api/dirs";
+import { useEntities } from "../../contexts/EntitiesContext";
+import File from "../../models/File";
+import Dir from "../../models/Dir";
+import { useDialog } from "../../contexts/DialogContext";
+import RenameFileDialog from "../dialogs/RenameFileDialog/RenameFileDialog";
+import DownloadIcon from "../icons/DownloadIcon";
+import RenameDirDialog from "../dialogs/RenameDirDialog/RenameDirDialog";
+import { useStorage } from "../../contexts/StorageContext";
+import fileDownload from "js-file-download";
 
 interface Props {
-  id: string;
-  type: "folder" | "file";
-  name: string;
-  size: number;
-  date: Date;
+  entity: File | Dir;
 }
 
-const StorageTableRow: FC<Props> = ({ id, type, name, size, date }) => {
+const StorageTableRow: FC<Props> = ({ entity }) => {
   const [isHovered, setIsHovered] = useState(false);
 
-  const formattedDate = format(date, "yyyy-MM-dd HH:mm");
+  const isFile = entity.type === "file";
+  const { id, name } = entity;
+
+  const { sendRequest: sendDownload } = useAxios();
+  const { sendRequest: sendDelete } = useAxios();
+  const { refresh, setCurrentDir } = useEntities();
+  const { open } = useDialog();
+  const { storage } = useStorage();
+
+  const handleDelete = async () => {
+    await sendDelete(isFile ? removeFile(id) : removeDir(id));
+
+    refresh();
+  };
+
+  const handleRename = () => {
+    open(
+      isFile ? (
+        <RenameFileDialog id={id} oldName={name} />
+      ) : (
+        <RenameDirDialog id={id} oldName={name} />
+      )
+    );
+  };
+
+  const handleDirEnter = () => {
+    if (isFile) return;
+    if (!storage) return;
+
+    setCurrentDir({
+      ...entity,
+    });
+  };
+
+  const handleDownload = async () => {
+    if (!isFile) return;
+
+    const response = await sendDownload(download(id));
+
+    if (!response) return;
+
+    fileDownload(response.data, name);
+  };
 
   return (
     <tr
       className={styles.item}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+      onMouseOver={() => setIsHovered(true)}
+      onMouseOut={() => setIsHovered(false)}
+      onDoubleClick={handleDirEnter}
     >
       <td className={styles.type}>
-        {type === "file" ? (
+        {isFile ? (
           <FileIcon color={isHovered ? "white" : "#4676FB"} />
         ) : (
           <FolderIcon color={isHovered ? "white" : "#4676FB"} />
         )}
       </td>
       <td className={styles.name}>{name}</td>
-      <td className={styles.size}>{size} MB</td>
-      <td className={styles.size}>{formattedDate}</td>
+      <td className={styles.size}></td>
+      <td className={styles.size}></td>
       <td className={styles.centerTd}>
-        {type === "file" ? (
-          <button className={styles.download}>Скачать</button>
+        {isFile ? (
+          <button onClick={handleDownload}>
+            <DownloadIcon color="white" width="22" />
+          </button>
         ) : null}
       </td>
       <td className={styles.centerTd}>
-        <button className={styles.edit}>
-          <EditIcon
-            color={isHovered ? "white" : "#4676FB"}
-            width="12"
-            height="12"
-          />
-        </button>
+        {isHovered ? (
+          <button onClick={handleRename}>
+            <EditIcon width="18" height="18" color="white" />
+          </button>
+        ) : null}
       </td>
       <td className={styles.centerTd}>
-        <button className={styles.delete}>
-          <DeleteIcon
-            color={isHovered ? "white" : "#FF0000"}
-            width="12"
-            height="12"
-          />
-        </button>
+        {isHovered ? (
+          <button onClick={handleDelete}>
+            <DeleteIcon width="18" height="18" color="white" />
+          </button>
+        ) : null}
       </td>
       <td className={styles.centerTd}>
-        <button>
-          <OptionsIcon color={isHovered ? "white" : "#D0D7DD"} width="6" />
-        </button>
+        {isHovered ? (
+          <button>
+            <OptionsIcon width="6" color="white" />
+          </button>
+        ) : null}
       </td>
     </tr>
   );

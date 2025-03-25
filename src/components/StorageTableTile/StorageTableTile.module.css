@@ -1,0 +1,40 @@
+.tile {
+  user-select: none;
+  border-radius: 10px;
+  width: 86px;
+  height: 110px;
+  cursor: pointer;
+}
+
+.tileContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 14px;
+}
+
+.h1 {
+  color: var(--primary-blue);
+  font-size: 14px;
+  font-weight: var(--regular);
+  white-space: nowrap;
+  overflow: hidden;
+  width: 100%;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.textContainer {
+  width: 100%;
+  text-align: center;
+  margin-top: 6px;
+}
+
+.allowWrap {
+  white-space: normal;
+  word-break: break-word;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}

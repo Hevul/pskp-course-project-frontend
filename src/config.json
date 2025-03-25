@@ -4,5 +4,6 @@
   "file": "api/file",
   "storage": "api/storage",
   "link": "api/link",
-  "auth": "api/auth"
+  "auth": "api/auth",
+  "dir": "api/dir"
 }
