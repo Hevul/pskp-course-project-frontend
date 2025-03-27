@@ -5,6 +5,7 @@ export type MenuItem = {
   title: string;
   icon?: React.ReactNode;
   action: () => void;
+  hasSeparator?: boolean;
 };
 
 type ContextMenuContextType = {
@@ -29,7 +30,6 @@ export const ContextMenuProvider: React.FC<{ children: React.ReactNode }> = ({
     menuItems: MenuItem[],
     pos: { x: number; y: number }
   ) => {
-    console.log(menuItems);
     setItems(menuItems);
     setPosition(pos);
     setIsVisible(true);
@@ -85,6 +85,7 @@ export const ContextMenuProvider: React.FC<{ children: React.ReactNode }> = ({
                     i.action();
                     setIsVisible(false);
                   }}
+                  hasSeparator={i.hasSeparator}
                 />
               ))}
             </ul>

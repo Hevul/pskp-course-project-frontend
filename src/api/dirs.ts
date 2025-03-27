@@ -47,3 +47,23 @@ export const getDirsByStorageId = (
   method: "get",
   withCredentials: true,
 });
+
+export const copy = (id: string, parentId?: string): AxiosRequestConfig => ({
+  url: `${url}/copy`,
+  method: "post",
+  data: {
+    id,
+    parentId,
+  },
+  withCredentials: true,
+});
+
+export const move = (id: string, parentId?: string): AxiosRequestConfig => ({
+  url: `${url}/move`,
+  method: "put",
+  data: {
+    id,
+    parentId,
+  },
+  withCredentials: true,
+});

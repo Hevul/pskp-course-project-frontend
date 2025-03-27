@@ -29,7 +29,8 @@ const Dashboard = () => {
     {
       title: "Создать папку",
       icon: <PlusIcon />,
-      action: () => open(<CreateDirDialog />),
+      action: () =>
+        open(<CreateDirDialog currentDir={currentDir} onSuccess={refresh} />),
     },
     {
       title: "Загрузить файл",
@@ -80,7 +81,9 @@ const Dashboard = () => {
 
           <ContextMenuArea items={menuItems}>
             <div className={styles.center}>
-              <Path />
+              <div style={{ marginBottom: "36px" }}>
+                <Path />
+              </div>
 
               <div className={styles.storageTable}>
                 <StorageTableTiled />

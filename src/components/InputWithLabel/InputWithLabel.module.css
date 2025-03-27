@@ -12,10 +12,10 @@
 
 .input {
   all: unset;
-  border: 1px solid var(--primary-blue);
-  border-radius: 4px;
-  font-size: 14px;
-  padding: 8px 0 8px 20px;
+  border: 0.14em solid var(--primary-blue);
+  border-radius: 10px;
+  font-size: 15px;
+  padding: 12px 0 12px 20px;
   color: var(--primary-black);
   font-weight: var(--regular);
 }

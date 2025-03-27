@@ -1,4 +1,4 @@
-import { SetStateAction, useEffect, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import InputWithLabel from "../../InputWithLabel/InputWithLabel";
 import styles from "./CreateDirDialog.module.css";
 import Button from "../../Button/Button";
@@ -6,19 +6,21 @@ import { useDialog } from "../../../contexts/DialogContext";
 import useAxios from "../../../hooks/useAxios";
 import { create } from "../../../api/dirs";
 import { useStorage } from "../../../contexts/StorageContext";
-import { useEntities } from "../../../contexts/EntitiesContext";
 import DialogShell from "../DialogShell";
-import PlusIcon from "../../icons/PlusIcon";
-import SecondaryButton from "../../SecondaryButton/SecondaryButton";
 import InputValidationError from "../../InputValidationError/InputValidationError";
+import Dir from "../../../models/Dir";
 
-const CreateDirDialog = () => {
+interface Props {
+  currentDir: Dir | null;
+  onSuccess?: () => void;
+}
+
+const CreateDirDialog: FC<Props> = ({ currentDir, onSuccess }) => {
   const [name, setName] = useState("");
 
   const { response, error, sendRequest } = useAxios();
   const { close } = useDialog();
   const { storage } = useStorage();
-  const { refresh, currentDir } = useEntities();
 
   const handleCreate = async () => {
     if (!storage) return;
@@ -28,7 +30,7 @@ const CreateDirDialog = () => {
   useEffect(() => {
     if (response?.status === 200) {
       close();
-      refresh();
+      onSuccess?.();
     }
   }, [response]);
 
@@ -44,24 +46,19 @@ const CreateDirDialog = () => {
   }
 
   return (
-    <DialogShell title="Создание папки">
+    <DialogShell title="Укажите название папки" onEnterDown={handleCreate}>
       <div>
         <InputWithLabel
-          label="Название папки:"
-          placeholder={""}
+          placeholder={"Название папки"}
           value={name}
           setValue={setName}
+          hasError={createError !== null}
         />
         <InputValidationError error={createError} />
       </div>
 
       <div className={styles.buttons}>
-        <SecondaryButton title="Отмена" onClick={close} />
-        <Button
-          title="Создать"
-          onClick={handleCreate}
-          icon={<PlusIcon width="18" color="white" />}
-        />
+        <Button title="Создать" onClick={handleCreate} />
       </div>
     </DialogShell>
   );

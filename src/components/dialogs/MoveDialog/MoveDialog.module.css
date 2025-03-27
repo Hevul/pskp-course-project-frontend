@@ -1,3 +1,8 @@
+.tiles {
+  height: 400px;
+  overflow-y: scroll;
+}
+
 .buttons {
   display: flex;
   flex-direction: row;

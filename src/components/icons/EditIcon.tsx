@@ -27,8 +27,8 @@ const EditIcon = ({ color = "currentColor", width = "24", height = "24" }) => {
             >
               <path
                 id="Clip 4"
-                fill-rule="evenodd"
-                clip-rule="evenodd"
+                fillRule="evenodd"
+                clipRule="evenodd"
                 d="M2.00024 3.00024H19.1808V21.9398H2.00024V3.00024Z"
                 fill="white"
               />

@@ -27,11 +27,12 @@ export const rename = (id: string, name: string) => ({
   withCredentials: true,
 });
 
-export const remove = (id: string) => ({
+export const remove = (id: string, force = false) => ({
   url: `${url}/delete`,
   method: "delete",
   data: {
     id,
+    force,
   },
   withCredentials: true,
 });

@@ -45,7 +45,7 @@ export const EntitiesProvider: React.FC<{ children: React.ReactNode }> = ({
       type: "file",
       name: f._name,
       size: f.size,
-      date: new Date(f.uploadAt),
+      uploadAt: new Date(f.uploadAt),
     }));
 
     return files;
@@ -66,7 +66,7 @@ export const EntitiesProvider: React.FC<{ children: React.ReactNode }> = ({
       id: d.id,
       type: "dir",
       name: d._name,
-      date: new Date(d.uploadAt),
+      uploadAt: new Date(d.uploadAt),
       parent: d.parent,
     }));
 

@@ -6,6 +6,7 @@ import Storage from "./pages/Storage/Storage";
 import Trouble from "./pages/Trouble/Trouble";
 import PublicLayout from "./components/PublicLayout/PublicLayout";
 import PrivateLayout from "./components/PrivateLayout/PrivateLayout";
+import FileView from "./pages/FileView/FileView";
 
 const notFoundTrouble = (
   <Trouble
@@ -29,6 +30,7 @@ const router = createBrowserRouter([
       { path: "/register", element: <Register /> },
       { path: "/not-found", element: notFoundTrouble },
       { path: "/server-side-trouble", element: serverSideTrouble },
+      { path: "/file-view", element: <FileView /> },
     ],
   },
   {

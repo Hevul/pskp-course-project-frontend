@@ -1,8 +1,8 @@
-import { FC } from "react";
+import { FC, useState } from "react";
 import styles from "./InputWithLabel.module.css";
 
 interface Props {
-  label: string;
+  label?: string;
   placeholder: string;
   value: string;
   setValue: React.Dispatch<React.SetStateAction<string>>;
@@ -16,16 +16,23 @@ const InputWithLabel: FC<Props> = ({
   setValue,
   hasError = false,
 }) => {
+  const [isFocused, setIsFocused] = useState(false);
+
   return (
     <div className={styles.div}>
-      <p className={styles.p}>{label}</p>
+      {label && <p className={styles.p}>{label}</p>}
       <input
         className={styles.input}
         type="text"
         placeholder={placeholder}
         value={value}
         onChange={(e) => setValue(e.target.value)}
-        style={{ borderColor: hasError ? "#FF3030" : "#4676FB" }}
+        onFocus={() => setIsFocused(true)}
+        onBlur={() => setIsFocused(false)}
+        style={{
+          borderColor: hasError ? "#FF3030" : isFocused ? "#4676FB" : "#ADC0F8",
+          outline: "none",
+        }}
       />
     </div>
   );

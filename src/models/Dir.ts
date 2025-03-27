@@ -1,7 +1,7 @@
 export default interface Dir {
   id: string;
   name: string;
-  date: Date;
+  uploadAt: Date;
   type: "dir";
   parent?: string;
 }

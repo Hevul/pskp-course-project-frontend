@@ -15,7 +15,11 @@ const ContextMenuArea: FC<Props> = ({ children, items }) => {
     showContextMenu(items, { x: e.clientX, y: e.clientY });
   };
 
-  return <div onContextMenu={handleContextMenu}>{children}</div>;
+  return (
+    <div style={{ height: "100%" }} onContextMenu={handleContextMenu}>
+      {children}
+    </div>
+  );
 };
 
 export default ContextMenuArea;

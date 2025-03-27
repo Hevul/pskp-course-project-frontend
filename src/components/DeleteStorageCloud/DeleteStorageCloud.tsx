@@ -41,7 +41,7 @@ const DeleteStorageCloud = () => {
         <Button
           color="#FF0000"
           title="Удалить"
-          onClick={() => sendRequest(remove(storage ? storage.id : ""))}
+          onClick={() => sendRequest(remove(storage ? storage.id : "", true))}
           icon={<DeleteIcon width="13" height="13" />}
         />
       </div>

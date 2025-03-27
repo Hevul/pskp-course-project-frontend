@@ -2,7 +2,6 @@ import { FC, useEffect, useRef, useState } from "react";
 import Dir from "../../models/Dir";
 import File from "../../models/File";
 import styles from "./StorageTableTile.module.css";
-import FileIcon from "../icons/FileIcon";
 import FolderIcon from "../icons/FolderIcon";
 import { useStorage } from "../../contexts/StorageContext";
 import { useEntities } from "../../contexts/EntitiesContext";
@@ -10,8 +9,20 @@ import { Entity } from "../../models/Entity";
 import DeleteIcon from "../icons/DeleteIcon";
 import DownloadIcon from "../icons/DownloadIcon";
 import EditIcon from "../icons/EditIcon";
-import { useContextMenu } from "../../contexts/ContextMenuContext";
+import { download, remove as removeFile } from "../../api/files";
+import { remove as removeDir } from "../../api/dirs";
 import ContextMenuArea from "../ContextMenuArea/ContextMenuArea";
+import RenameDialog from "../dialogs/RenameDialog/RenameDialog";
+import { useDialog } from "../../contexts/DialogContext";
+import fileDownload from "js-file-download";
+import useAxios from "../../hooks/useAxios";
+import ExtFileIcon from "../icons/fileExts/ExtFileIcon";
+import ShowInfoDialog from "../dialogs/ShowInfoDialog/ShowInfoDialog";
+import InfoSquareIcon from "../icons/InfoSquareIcon";
+import CopyDialog from "../dialogs/CopyDialog/CopyDialog";
+import CopyIcon from "../icons/CopyIcon";
+import MoveDialog from "../dialogs/MoveDialog/MoveDialog";
+import CurvedIcon from "../icons/CurvedIcon";
 
 interface Props {
   entity: File | Dir;
@@ -28,12 +39,15 @@ const StorageTableTile: FC<Props> = ({
   const [needsWrap, setNeedsWrap] = useState(false);
   const textRef = useRef<HTMLHeadingElement>(null);
 
-  const { showContextMenu } = useContextMenu();
-  const { setCurrentDir } = useEntities();
+  const { sendRequest: sendDownload } = useAxios();
+  const { sendRequest: sendDelete } = useAxios();
+  const { setCurrentDir, refresh } = useEntities();
   const { storage } = useStorage();
+  const { open } = useDialog();
 
   const isFile = entity.type === "file";
   const { id, name } = entity;
+  const ext = name.split(".").pop() || "";
 
   useEffect(() => {
     if (textRef.current) {
@@ -52,6 +66,22 @@ const StorageTableTile: FC<Props> = ({
     });
   };
 
+  const handleDownload = async () => {
+    if (!isFile) return;
+
+    const response = await sendDownload(download(id));
+
+    if (!response) return;
+
+    fileDownload(response.data, name);
+  };
+
+  const handleDelete = async () => {
+    await sendDelete(isFile ? removeFile(id) : removeDir(id));
+
+    refresh();
+  };
+
   const isSelected = selectedEntity?.id === id;
 
   const menuItems = [
@@ -60,19 +90,37 @@ const StorageTableTile: FC<Props> = ({
           {
             title: "Скачать файл",
             icon: <DownloadIcon width="16" />,
-            action: () => console.log("download"),
+            action: handleDownload,
+            hasSeparator: true,
           },
         ]
       : []),
+
     {
       title: `Переименовать ${isFile ? "файл" : "папку"}`,
       icon: <EditIcon width="18" />,
-      action: () => console.log("edit"),
+      action: () => open(<RenameDialog entity={entity} />),
+    },
+    {
+      title: `Копировать ${isFile ? "файл" : "папку"}`,
+      icon: <CopyIcon width="18" />,
+      action: () => open(<CopyDialog entity={entity} onSuccess={refresh} />),
+    },
+    {
+      title: `Переместить ${isFile ? "файл" : "папку"}`,
+      icon: <CurvedIcon width="18" />,
+      action: () => open(<MoveDialog entity={entity} onSuccess={refresh} />),
     },
     {
       title: `Удалить ${isFile ? "файл" : "папку"}`,
       icon: <DeleteIcon width="18" />,
-      action: () => console.log("delete"),
+      action: handleDelete,
+      hasSeparator: true,
+    },
+    {
+      title: `Информация о ${isFile ? "файле" : "папке"}`,
+      icon: <InfoSquareIcon width="18" />,
+      action: () => open(<ShowInfoDialog entity={entity} />),
     },
   ];
 
@@ -80,11 +128,8 @@ const StorageTableTile: FC<Props> = ({
     <div
       onMouseOver={() => setIsHovered(true)}
       onMouseOut={() => setIsHovered(false)}
-      className={styles.tile}
-      onClick={() => {
-        if (isSelected) setSelectedEntity(null);
-        else setSelectedEntity(entity);
-      }}
+      className={`${styles.tile} tile`}
+      onClick={() => setSelectedEntity(entity)}
       onDoubleClick={handleDirEnter}
       style={{
         backgroundColor: isSelected
@@ -95,9 +140,17 @@ const StorageTableTile: FC<Props> = ({
       }}
     >
       <ContextMenuArea items={menuItems}>
-        <div className={styles.tileContainer}>
+        <div
+          className={styles.tileContainer}
+          onContextMenu={() => setSelectedEntity(entity)}
+        >
           {isFile ? (
-            <FileIcon width="40" color={isSelected ? "white" : "#4676FB"} />
+            <ExtFileIcon
+              ext={ext}
+              width="40"
+              color={isSelected ? "white" : "#4676FB"}
+              fontColor={isSelected ? "#4676FB" : "white"}
+            />
           ) : (
             <FolderIcon width="40" color={isSelected ? "white" : "#4676FB"} />
           )}

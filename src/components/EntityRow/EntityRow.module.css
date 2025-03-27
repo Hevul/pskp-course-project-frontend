@@ -1,0 +1,16 @@
+.row {
+  width: 100%;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 20px;
+  padding: 10px 0 10px 20px;
+}
+
+.h1 {
+  color: var(--primary-blue);
+  font-size: 16px;
+  font-weight: var(--regular);
+  user-select: none;
+}

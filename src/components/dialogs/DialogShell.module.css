@@ -1,15 +1,21 @@
 .dialog {
-  width: 600px;
   display: flex;
   flex-direction: column;
-  gap: 36px;
-  margin: 40px 60px 54px 60px;
+  gap: 24px;
+  margin: 30px 36px;
+}
+
+.header {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .h1 {
-  width: 100%;
-  text-align: center;
-  font-size: 28px;
+  text-align: left;
+  font-size: 22px;
   color: var(--primary-black);
-  font-weight: var(--regular);
+  font-weight: var(--semi-bold);
 }

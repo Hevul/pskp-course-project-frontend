@@ -12,9 +12,8 @@ import { useEntities } from "../../contexts/EntitiesContext";
 import File from "../../models/File";
 import Dir from "../../models/Dir";
 import { useDialog } from "../../contexts/DialogContext";
-import RenameFileDialog from "../dialogs/RenameFileDialog/RenameFileDialog";
+import RenameDialog from "../dialogs/RenameDialog/RenameDialog";
 import DownloadIcon from "../icons/DownloadIcon";
-import RenameDirDialog from "../dialogs/RenameDirDialog/RenameDirDialog";
 import { useStorage } from "../../contexts/StorageContext";
 import fileDownload from "js-file-download";
 
@@ -41,13 +40,7 @@ const StorageTableRow: FC<Props> = ({ entity }) => {
   };
 
   const handleRename = () => {
-    open(
-      isFile ? (
-        <RenameFileDialog id={id} oldName={name} />
-      ) : (
-        <RenameDirDialog id={id} oldName={name} />
-      )
-    );
+    open(<RenameDialog entity={entity} />);
   };
 
   const handleDirEnter = () => {
