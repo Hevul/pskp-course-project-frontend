@@ -1,10 +1,11 @@
 .button {
   color: white;
-  padding: 12px 24px;
+  padding: 0 24px;
+  height: 50px;
   font-size: 16px;
   font-weight: var(--medium);
   background-color: var(--primary-blue);
-  border-radius: 8px;
+  border-radius: 12px;
   cursor: pointer;
   display: flex;
   align-items: center;

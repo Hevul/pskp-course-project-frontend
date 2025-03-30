@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import CloudShell from "../CloudShell/CloudShell";
-import InputWithLabel from "../InputWithLabel/InputWithLabel";
+import Input from "../Input/Input";
 import styles from "./RenameStorageCloud.module.css";
 import useAxios from "../../hooks/useAxios";
 import Button from "../Button/Button";
@@ -40,7 +40,7 @@ const RenameStorageCloud = () => {
   return (
     <CloudShell header="Переименование хранилища">
       <div className={styles.inputDiv}>
-        <InputWithLabel
+        <Input
           label="Новое название:"
           placeholder="Название хранилища"
           value={storageName}

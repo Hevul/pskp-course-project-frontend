@@ -4,4 +4,5 @@ export default interface File {
   size: number;
   uploadAt: Date;
   type: "file";
+  hasLink?: boolean;
 }

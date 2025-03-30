@@ -1,5 +1,5 @@
 import { FC, useEffect, useState } from "react";
-import InputWithLabel from "../../InputWithLabel/InputWithLabel";
+import Input from "../../Input/Input";
 import styles from "./CreateDirDialog.module.css";
 import Button from "../../Button/Button";
 import { useDialog } from "../../../contexts/DialogContext";
@@ -48,7 +48,7 @@ const CreateDirDialog: FC<Props> = ({ currentDir, onSuccess }) => {
   return (
     <DialogShell title="Укажите название папки" onEnterDown={handleCreate}>
       <div>
-        <InputWithLabel
+        <Input
           placeholder={"Название папки"}
           value={name}
           setValue={setName}

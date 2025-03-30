@@ -1,5 +1,5 @@
 import { FC, useEffect, useState } from "react";
-import InputWithLabel from "../../InputWithLabel/InputWithLabel";
+import Input from "../../Input/Input";
 import DialogShell from "../DialogShell";
 import { useDialog } from "../../../contexts/DialogContext";
 import styles from "./RenameDialog.module.css";
@@ -54,7 +54,7 @@ const RenameDialog: FC<Props> = ({ entity }) => {
       onEnterDown={handleRename}
     >
       <div>
-        <InputWithLabel
+        <Input
           placeholder={`Новое название ${isFile ? "файла" : "папки"}`}
           value={name}
           setValue={setName}

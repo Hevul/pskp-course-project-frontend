@@ -23,6 +23,9 @@ import CopyDialog from "../dialogs/CopyDialog/CopyDialog";
 import CopyIcon from "../icons/CopyIcon";
 import MoveDialog from "../dialogs/MoveDialog/MoveDialog";
 import CurvedIcon from "../icons/CurvedIcon";
+import LinkDialog from "../dialogs/LinkDialog/LinkDialog";
+import AddUserIcon from "../icons/AddUserIcon";
+import LinkIcon from "../icons/LinkIcon";
 
 interface Props {
   entity: File | Dir;
@@ -93,6 +96,12 @@ const StorageTableTile: FC<Props> = ({
             action: handleDownload,
             hasSeparator: true,
           },
+          {
+            title: "Поделиться",
+            icon: <AddUserIcon width="16" />,
+            action: () => open(<LinkDialog file={entity} />),
+            hasSeparator: true,
+          },
         ]
       : []),
 
@@ -154,6 +163,7 @@ const StorageTableTile: FC<Props> = ({
           ) : (
             <FolderIcon width="40" color={isSelected ? "white" : "#4676FB"} />
           )}
+
           <div className={styles.textContainer}>
             <h1
               ref={textRef}
@@ -164,6 +174,12 @@ const StorageTableTile: FC<Props> = ({
               {name}
             </h1>
           </div>
+
+          {isFile && entity.hasLink && (
+            <div className={styles.linkIcon}>
+              <LinkIcon width="22" color={isSelected ? "white" : "#4676FB"} />
+            </div>
+          )}
         </div>
       </ContextMenuArea>
     </div>

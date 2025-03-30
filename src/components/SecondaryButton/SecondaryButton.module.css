@@ -9,3 +9,7 @@
   align-items: center;
   gap: 10px;
 }
+
+.button:hover {
+  background-color: #ecf5fe;
+}

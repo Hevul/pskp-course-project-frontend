@@ -12,15 +12,19 @@ export const getFilesByStorageId = (storageId: string, parentId?: string) => ({
 });
 
 export const upload = (
-  file: File,
+  files: File[],
   storageId: string,
   parentId?: string
 ): AxiosRequestConfig => {
   const formData = new FormData();
-  formData.append("file", file);
+
+  files.forEach((file) => {
+    formData.append("files", file);
+    formData.append("names[]", file.name);
+  });
+
   formData.append("storageId", storageId);
   formData.append("parentId", parentId || "");
-  formData.append("name", file.name);
 
   return {
     url: `${url}/upload`,

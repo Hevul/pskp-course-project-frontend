@@ -4,7 +4,7 @@ import Button from "../Button/Button";
 import CloudShell from "../CloudShell/CloudShell";
 import PlusIcon from "../icons/PlusIcon";
 import InputValidationError from "../InputValidationError/InputValidationError";
-import InputWithLabel from "../InputWithLabel/InputWithLabel";
+import Input from "../Input/Input";
 import styles from "./AddStorageCloud.module.css";
 import useAxios from "../../hooks/useAxios";
 import { useStorage } from "../../contexts/StorageContext";
@@ -34,7 +34,7 @@ const AddStorageCloud = () => {
   return (
     <CloudShell header="Создание хранилища">
       <div className={styles.inputDiv}>
-        <InputWithLabel
+        <Input
           label="Название:"
           placeholder="Название хранилища"
           value={storageName}

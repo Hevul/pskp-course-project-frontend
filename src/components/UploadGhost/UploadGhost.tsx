@@ -23,12 +23,10 @@ const UploadGhost: FC<Props> = ({ ref }) => {
   };
 
   const uploadFile = async (file: File | null) => {
-    if (!file) return;
-    if (!storage) return;
-
-    await sendRequest(upload(file, storage?.id, currentDir?.id));
-
-    refresh();
+    // if (!file) return;
+    // if (!storage) return;
+    // await sendRequest(upload(file, storage?.id, currentDir?.id));
+    // refresh();
   };
 
   return (

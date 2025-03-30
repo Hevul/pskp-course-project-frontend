@@ -8,6 +8,15 @@ export const get = () => ({
   withCredentials: true,
 });
 
+export const getByIds = (ids: string[]) => ({
+  url: `${url}/get-by-ids`,
+  method: "post",
+  data: {
+    ids,
+  },
+  withCredentials: true,
+});
+
 export const register = (username: string, password: string) => ({
   url: `${url}/register`,
   method: "post",

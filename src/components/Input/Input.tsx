@@ -1,17 +1,17 @@
 import { FC, useState } from "react";
-import styles from "./InputWithLabel.module.css";
+import styles from "./Input.module.css";
 
 interface Props {
   label?: string;
-  placeholder: string;
+  placeholder?: string;
   value: string;
   setValue: React.Dispatch<React.SetStateAction<string>>;
   hasError?: boolean;
 }
 
-const InputWithLabel: FC<Props> = ({
+const Input: FC<Props> = ({
   label,
-  placeholder,
+  placeholder = "",
   value,
   setValue,
   hasError = false,
@@ -38,4 +38,4 @@ const InputWithLabel: FC<Props> = ({
   );
 };
 
-export default InputWithLabel;
+export default Input;
