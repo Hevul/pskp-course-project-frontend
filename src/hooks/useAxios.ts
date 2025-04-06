@@ -1,18 +1,30 @@
-import { useEffect, useState } from "react";
-import axios, { AxiosRequestConfig, AxiosResponse, AxiosError } from "axios";
+import { useCallback, useEffect, useState } from "react";
+import axios, {
+  AxiosRequestConfig,
+  AxiosResponse,
+  AxiosError,
+  CancelTokenSource,
+} from "axios";
 
 const useAxios = (config?: AxiosRequestConfig, autoExecute = false) => {
   const [response, setResponse] = useState<AxiosResponse | null>(null);
   const [error, setError] = useState<any | null>(null);
   const [loading, setLoading] = useState(false);
-  const [abortController, setAbortController] =
-    useState<AbortController | null>(null);
+  const [cancelTokenSource, setCancelTokenSource] =
+    useState<CancelTokenSource | null>(null);
 
   const axiosInstance = axios.create();
 
+  const cancelRequest = useCallback(() => {
+    if (cancelTokenSource) {
+      cancelTokenSource.cancel("Request canceled by the user");
+      setCancelTokenSource(null);
+    }
+  }, [cancelTokenSource]);
+
   const sendRequest = async (requestConfig?: AxiosRequestConfig) => {
-    const controller = new AbortController();
-    setAbortController(controller);
+    const source = axios.CancelToken.source();
+    setCancelTokenSource(source);
 
     setLoading(true);
     setError(null);
@@ -21,7 +33,7 @@ const useAxios = (config?: AxiosRequestConfig, autoExecute = false) => {
       const result = await axiosInstance({
         ...(config || {}),
         ...(requestConfig || {}),
-        signal: controller.signal,
+        cancelToken: source.token,
       });
       setResponse(result);
 
@@ -32,25 +44,26 @@ const useAxios = (config?: AxiosRequestConfig, autoExecute = false) => {
       }
     } finally {
       setLoading(false);
-      setAbortController(null);
+      setCancelTokenSource(null);
     }
   };
 
   useEffect(() => {
-    if (autoExecute && config) {
-      sendRequest(config);
-    }
-  }, [autoExecute, config]);
+    if (autoExecute && config) sendRequest(config);
+  }, [autoExecute, config, sendRequest]);
 
   useEffect(() => {
-    return () => {
-      if (abortController) {
-        abortController.abort();
-      }
-    };
-  }, [abortController]);
+    return () => cancelRequest();
+  }, [cancelRequest]);
 
-  return { response, error, loading, sendRequest };
+  return {
+    response,
+    error,
+    loading,
+    sendRequest,
+    cancelRequest,
+    isCanceled: axios.isCancel(error),
+  };
 };
 
 export default useAxios;

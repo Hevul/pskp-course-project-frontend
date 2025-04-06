@@ -16,6 +16,7 @@ import SecondaryButton from "../../SecondaryButton/SecondaryButton";
 import useAxios from "../../../hooks/useAxios";
 import { copy as copyDir } from "../../../api/dirs";
 import { copy as copyFile } from "../../../api/files";
+import InputValidationError from "../../InputValidationError/InputValidationError";
 
 interface Props {
   entity: Entity;
@@ -27,7 +28,7 @@ const CopyDialogContent: FC<Props> = ({ entity, onSuccess }) => {
 
   const { entities, currentDir, refresh } = useEntities();
   const { open, close } = useDialog();
-  const { sendRequest, response } = useAxios();
+  const { sendRequest, response, error } = useAxios();
 
   const isFile = type === "file";
 
@@ -49,11 +50,23 @@ const CopyDialogContent: FC<Props> = ({ entity, onSuccess }) => {
     }
   }, [response]);
 
+  let errorMsg: string | null = null;
+
+  if (error) {
+    const errors = error?.response?.data?.errors;
+
+    const errorObj = errors[0];
+    if (errorObj) errorMsg = errorObj.msg;
+  }
+
   return (
     <DialogShell
       title={`Куда копировать ${isFile ? "файл" : "папку"} '${name}'?`}
     >
       <Path />
+
+      <InputValidationError error={errorMsg} />
+
       <div className={styles.tiles}>
         {sortedEntities.map((e) => (
           <EntityRow key={e.id} entity={e} />

@@ -9,6 +9,12 @@ export const get = (id: string): AxiosRequestConfig => ({
   withCredentials: true,
 });
 
+export const getByLink = (link: string): AxiosRequestConfig => ({
+  url: `${url}/get-by-link/${link}`,
+  method: "get",
+  withCredentials: true,
+});
+
 export const getOrGenerate = (fileId: string): AxiosRequestConfig => ({
   url: `${url}/get-or-generate`,
   method: "post",
@@ -22,6 +28,7 @@ export const download = (link: string): AxiosRequestConfig => ({
   url: `${url}/download/${link}`,
   method: "get",
   withCredentials: true,
+  responseType: "blob",
 });
 
 export const addFriend = (

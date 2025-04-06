@@ -1,24 +1,26 @@
 import { useRef, forwardRef, useImperativeHandle } from "react";
-import { upload } from "../../api/files";
+import { upload, uploadLarge } from "../../api/files";
 import useAxios from "../../hooks/useAxios";
 import { useStorage } from "../../contexts/StorageContext";
 import { useEntities } from "../../contexts/EntitiesContext";
+import { FileUpload, useUploads } from "../../contexts/UploadContext";
+import config from "../../config.json";
+import axios from "axios";
 
 export interface FileUploaderRef {
   triggerFileDialog: () => void;
 }
 
 interface FileUploaderProps {
-  onUploadStart?: () => void;
-  onUploadSuccess?: () => void;
-  onUploadError?: (error: unknown) => void;
+  maxParallelUploads?: number;
 }
 
 const FileUploader = forwardRef<FileUploaderRef, FileUploaderProps>(
-  ({ onUploadStart, onUploadSuccess, onUploadError }, ref) => {
-    const { sendRequest } = useAxios();
+  ({ maxParallelUploads = 3 }, ref) => {
     const { storage } = useStorage();
     const { currentDir, refresh } = useEntities();
+    const { addUpload, updateUploadProgress, completeUpload, failUpload } =
+      useUploads();
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const triggerFileDialog = () => {
@@ -32,22 +34,42 @@ const FileUploader = forwardRef<FileUploaderRef, FileUploaderProps>(
     }));
 
     const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-      const files = e.target.files;
-      if (!files || files.length === 0 || !storage) return;
+      const files = Array.from(e.target.files || []);
+      if (files.length === 0 || !storage) return;
 
       try {
-        onUploadStart?.();
-        await sendRequest(
-          upload(Array.from(files), storage.id, currentDir?.id)
-        );
-        onUploadSuccess?.();
-        refresh();
+        const uploadPromises = files.map(async (file) => {
+          const source = axios.CancelToken.source();
+          const uploadItem = addUpload(file, source);
+
+          const onUploadProgress = (progress: number) => {
+            updateUploadProgress(uploadItem.id, progress);
+          };
+
+          const requestConfig =
+            file.size > config.smallFileLimit * 1024 * 1024
+              ? uploadLarge(file, storage.id, currentDir?.id, onUploadProgress)
+              : upload(file, storage.id, currentDir?.id, onUploadProgress);
+
+          requestConfig.cancelToken = source.token;
+
+          return axios(requestConfig)
+            .then(() => {
+              refresh();
+              completeUpload(uploadItem.id);
+            })
+            .catch((error) => {
+              const errorMessage =
+                error instanceof Error ? error.message : "Unknown error";
+              failUpload(uploadItem.id, errorMessage);
+            });
+        });
+
+        Promise.all(uploadPromises);
       } catch (error) {
-        onUploadError?.(error);
+        console.log(error);
       } finally {
-        if (fileInputRef.current) {
-          fileInputRef.current.value = "";
-        }
+        if (fileInputRef.current) fileInputRef.current.value = "";
       }
     };
 

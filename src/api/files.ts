@@ -12,16 +12,16 @@ export const getFilesByStorageId = (storageId: string, parentId?: string) => ({
 });
 
 export const upload = (
-  files: File[],
+  file: File,
   storageId: string,
-  parentId?: string
+  parentId?: string,
+  onUploadProgress?: (progress: number) => void,
+  cancelToken?: any
 ): AxiosRequestConfig => {
   const formData = new FormData();
 
-  files.forEach((file) => {
-    formData.append("files", file);
-    formData.append("names[]", file.name);
-  });
+  formData.append("file", file);
+  formData.append("name", file.name);
 
   formData.append("storageId", storageId);
   formData.append("parentId", parentId || "");
@@ -34,6 +34,55 @@ export const upload = (
       "Content-Type": "multipart/form-data",
     },
     withCredentials: true,
+    cancelToken,
+    onUploadProgress: (progressEvent) => {
+      if (onUploadProgress && progressEvent.total) {
+        const total = progressEvent.total ?? 1;
+        const loaded = progressEvent.loaded;
+
+        const percent = Math.round((loaded / total) * 100);
+        onUploadProgress(percent);
+      }
+    },
+  };
+};
+
+export const uploadLarge = (
+  file: File,
+  storageId: string,
+  parentId?: string,
+  onUploadProgress?: (progress: number) => void,
+  cancelToken?: any
+): AxiosRequestConfig => {
+  const formData = new FormData();
+
+  formData.append("file", file);
+  formData.append("name", file.name);
+
+  formData.append("storageId", storageId);
+  formData.append("parentId", parentId || "");
+
+  return {
+    url: `${url}/upload-large`,
+    method: "post",
+    data: formData,
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+    withCredentials: true,
+    maxContentLength: Infinity,
+    maxBodyLength: Infinity,
+    timeout: 0,
+    cancelToken,
+    onUploadProgress: (progressEvent) => {
+      if (onUploadProgress && progressEvent.total) {
+        const total = progressEvent.total ?? 1;
+        const loaded = progressEvent.loaded;
+
+        const percent = Math.round((loaded / total) * 100);
+        onUploadProgress(percent);
+      }
+    },
   };
 };
 

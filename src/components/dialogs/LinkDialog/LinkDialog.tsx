@@ -1,4 +1,4 @@
-import { FC, ReactNode, useEffect, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import Button from "../../Button/Button";
 import PeopleIcon from "../../icons/PeopleIcon";
 import ShieldIcon from "../../icons/ShieldIcon";
@@ -6,7 +6,12 @@ import SecondaryButton from "../../SecondaryButton/SecondaryButton";
 import DialogShell from "../DialogShell";
 import styles from "./LinkDialog.module.css";
 import useAxios from "../../../hooks/useAxios";
-import { getOrGenerate, remove, setPublicity } from "../../../api/links";
+import {
+  download,
+  getOrGenerate,
+  remove,
+  setPublicity,
+} from "../../../api/links";
 import File from "../../../models/File";
 import { useDialog } from "../../../contexts/DialogContext";
 import Link from "../../../models/Link";
@@ -14,73 +19,11 @@ import IconButton from "../../IconButton/IconButton";
 import TwoUsersIcon from "../../icons/TwoUsersIcon";
 import EditFriendsList from "../EditFriendsList/EditFriendsList";
 import { useEntities } from "../../../contexts/EntitiesContext";
+import fileDownload from "js-file-download";
+import Tile from "./Tile";
+import config from "../../../config.json";
 
 type Status = "public" | "private";
-
-interface TileProps {
-  header: string;
-  description: string;
-  icon: ReactNode;
-  tileStatus: Status;
-  setStatus: React.Dispatch<React.SetStateAction<Status | null>>;
-  status: Status | null;
-  onClick: () => void;
-}
-
-const Tile: FC<TileProps> = ({
-  header,
-  description,
-  icon,
-  tileStatus,
-  setStatus,
-  status,
-  onClick,
-}) => {
-  const [isHovered, setIsHovered] = useState(false);
-
-  const handleClick = async () => {
-    onClick();
-    setStatus(tileStatus);
-  };
-
-  const isSelected = tileStatus === status;
-
-  return (
-    <div
-      className={styles.tile}
-      onMouseOver={() => setIsHovered(true)}
-      onMouseOut={() => setIsHovered(false)}
-      style={{
-        backgroundColor: isSelected
-          ? "#4676FB"
-          : isHovered
-          ? "#ECF5FE"
-          : "white",
-      }}
-      onClick={handleClick}
-    >
-      {icon}
-      <div className={styles.text}>
-        <h1
-          className={styles.h1}
-          style={{ color: isSelected ? "white" : "#41404B" }}
-        >
-          {header}
-        </h1>
-        <h2
-          className={styles.h2}
-          style={{
-            color: isSelected
-              ? "rgba(255, 255, 255, 0.8)"
-              : "rgba(65, 64, 75, 0.72)",
-          }}
-        >
-          {description}
-        </h2>
-      </div>
-    </div>
-  );
-};
 
 interface Props {
   file: File;
@@ -95,6 +38,7 @@ const LinkDialog: FC<Props> = ({ file }) => {
   const { sendRequest: sendGenerate, response: genResp } = useAxios();
   const { sendRequest: sendDelete } = useAxios();
   const { sendRequest: sendSetPublicity } = useAxios();
+  const { sendRequest: sendDownload } = useAxios();
 
   useEffect(() => {
     const fetch = async () => {
@@ -135,6 +79,22 @@ const LinkDialog: FC<Props> = ({ file }) => {
     await sendDelete(remove(link.id));
     refresh();
     close();
+  };
+
+  const copyToClipboard = () => {
+    if (!link?.link) return;
+
+    const text = `${config.base}/${config.link}/download/${link.link}`;
+
+    navigator.clipboard.writeText(text).catch((err) => {
+      console.error("Не удалось скопировать ссылку:", err);
+      const textArea = document.createElement("textarea");
+      textArea.value = text;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand("copy");
+      document.body.removeChild(textArea);
+    });
   };
 
   return (
@@ -181,7 +141,25 @@ const LinkDialog: FC<Props> = ({ file }) => {
       </div>
       <div className={styles.buttons}>
         <div className={styles.leftButtons}>
-          <Button title="Скопировать" onClick={() => console.log("copy")} />
+          <Button title="Скопировать" onClick={copyToClipboard} />
+          <Button
+            title="скачатъ"
+            onClick={async () => {
+              if (link) {
+                const res = await sendDownload(download(link?.link));
+
+                if (!res) return;
+
+                const data = res.data;
+
+                const contentDisposition = res.headers["content-disposition"];
+
+                const filename = decodeFilename(contentDisposition);
+
+                fileDownload(data, filename);
+              }
+            }}
+          />
           <div
             style={{
               visibility: link?.status === "private" ? "visible" : "collapse",
@@ -201,5 +179,21 @@ const LinkDialog: FC<Props> = ({ file }) => {
     </DialogShell>
   );
 };
+
+function decodeFilename(header: string) {
+  const utf8FilenameRegex = /filename\*=UTF-8''([^;]+)/i;
+  const asciiFilenameRegex = /filename=(["']?)(.*?[^\\])\1(;|$)/i;
+
+  let filename = "";
+  if (utf8FilenameRegex.test(header)) {
+    filename = decodeURIComponent(utf8FilenameRegex.exec(header)![1]);
+  } else {
+    const matches = asciiFilenameRegex.exec(header);
+    if (matches?.[2]) {
+      filename = matches[2];
+    }
+  }
+  return filename || "file";
+}
 
 export default LinkDialog;

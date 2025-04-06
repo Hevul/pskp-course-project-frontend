@@ -1,6 +1,5 @@
 import { useRef, useState } from "react";
 import styles from "./Dashboard.module.css";
-import Search from "../../components/Search/Search";
 import ProtectedRoute from "../../components/ProtectedRoute/ProtectedRoute";
 import StorageList from "../../components/StorageList/StorageList";
 import Layout from "../../components/Layout/Layout";
@@ -16,10 +15,10 @@ import { ContextMenuProvider } from "../../contexts/ContextMenuContext";
 import FileUploader, {
   FileUploaderRef,
 } from "../../components/FileUploader/FileUploader";
+import { UploadProvider } from "../../contexts/UploadContext";
+import UploadsMenu from "../../components/UploadsMenu/UploadsMenu";
 
 const Dashboard = () => {
-  const [search, setSearch] = useState("");
-
   const { open } = useDialog();
   const { refresh, currentDir } = useEntities();
   const fileUploaderRef = useRef<FileUploaderRef>(null);
@@ -41,26 +40,28 @@ const Dashboard = () => {
   return (
     <ProtectedRoute>
       <ContextMenuProvider>
-        <Layout>
-          <div className={styles.top}>
-            <StorageList />
-            {/* <Search search={search} setSearch={setSearch} /> */}
-          </div>
-
-          <FileUploader ref={fileUploaderRef} />
-
-          <ContextMenuArea items={menuItems}>
-            <div className={styles.center}>
-              <div style={{ marginBottom: "36px" }}>
-                <Path />
-              </div>
-
-              <div className={styles.storageTable}>
-                <StorageTableTiled />
-              </div>
+        <UploadProvider>
+          <Layout>
+            <div className={styles.top}>
+              <StorageList />
             </div>
-          </ContextMenuArea>
-        </Layout>
+
+            <ContextMenuArea items={menuItems}>
+              <div className={styles.center}>
+                <div style={{ marginBottom: "36px" }}>
+                  <Path />
+                </div>
+
+                <div className={styles.storageTable}>
+                  <StorageTableTiled />
+                </div>
+              </div>
+            </ContextMenuArea>
+
+            <FileUploader ref={fileUploaderRef} />
+            <UploadsMenu />
+          </Layout>
+        </UploadProvider>
       </ContextMenuProvider>
     </ProtectedRoute>
   );

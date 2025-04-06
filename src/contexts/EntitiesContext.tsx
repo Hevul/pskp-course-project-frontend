@@ -30,8 +30,6 @@ export const EntitiesProvider: React.FC<{ children: React.ReactNode }> = ({
   const { sendRequest: getDirs } = useAxios();
 
   const fetchFiles = async () => {
-    console.log("fetchFiles");
-
     if (!storage) return [];
 
     const response = await getFiles(
@@ -53,8 +51,6 @@ export const EntitiesProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   const fetchDirs = async () => {
-    console.log("fetchDirs");
-
     if (!storage) return [];
 
     const response = await getDirs(
