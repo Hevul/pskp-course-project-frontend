@@ -8,11 +8,11 @@ const PrivateLayout = () => {
   return (
     <StorageProvider>
       <EntitiesProvider>
-        <DialogProvider>
-          <PopupProvider>
+        <PopupProvider>
+          <DialogProvider>
             <Outlet />
-          </PopupProvider>
-        </DialogProvider>
+          </DialogProvider>
+        </PopupProvider>
       </EntitiesProvider>
     </StorageProvider>
   );

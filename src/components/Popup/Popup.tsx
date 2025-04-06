@@ -9,7 +9,7 @@ interface PopupProps {
   icon?: ReactNode;
 }
 
-const Popup: React.FC<PopupProps> = ({ isVisible, message, onClose }) => {
+const Popup: React.FC<PopupProps> = ({ isVisible, message, onClose, icon }) => {
   const [isMounted, setIsMounted] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
 
@@ -32,7 +32,7 @@ const Popup: React.FC<PopupProps> = ({ isVisible, message, onClose }) => {
     if (isVisible) {
       const timer = setTimeout(() => {
         onClose();
-      }, 5000);
+      }, 500000);
       return () => clearTimeout(timer);
     }
   }, [isVisible, onClose]);
@@ -44,7 +44,8 @@ const Popup: React.FC<PopupProps> = ({ isVisible, message, onClose }) => {
       className={`${styles.popup} ${isAnimating ? styles.show : styles.hide}`}
     >
       <div className={styles.content}>
-        <p>{message}</p>
+        {icon}
+        <p className={styles.p}>{message}</p>
         <button
           className={styles.closeButton}
           onClick={onClose}

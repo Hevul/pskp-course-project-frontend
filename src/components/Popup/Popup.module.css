@@ -22,10 +22,14 @@
   width: 100%;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+}
+
+.p {
+  margin-left: 12px;
 }
 
 .closeButton {
+  margin-left: 18px;
   display: flex;
   align-items: center;
   cursor: pointer;
