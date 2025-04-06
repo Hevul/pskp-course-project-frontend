@@ -17,6 +17,7 @@ import FileUploader, {
 } from "../../components/FileUploader/FileUploader";
 import { UploadProvider } from "../../contexts/UploadContext";
 import UploadsMenu from "../../components/UploadsMenu/UploadsMenu";
+import { usePopup } from "../../contexts/PopupContext";
 
 const Dashboard = () => {
   const { open } = useDialog();
@@ -37,6 +38,12 @@ const Dashboard = () => {
     },
   ];
 
+  const { show } = usePopup();
+
+  const handleClick = () => {
+    show("Это тестовое уведомление!");
+  };
+
   return (
     <ProtectedRoute>
       <ContextMenuProvider>
@@ -44,6 +51,8 @@ const Dashboard = () => {
           <Layout>
             <div className={styles.top}>
               <StorageList />
+
+              <button onClick={handleClick}>Показать уведомление</button>
             </div>
 
             <ContextMenuArea items={menuItems}>
