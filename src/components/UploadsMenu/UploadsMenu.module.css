@@ -8,6 +8,28 @@
   box-shadow: 0px 0px 3px 1px rgba(0, 0, 0, 0.15);
   border-top-left-radius: 26px;
   border-top-right-radius: 26px;
+  overflow: hidden;
+  transform: translateY(calc(100% - 50px));
+  transition: all 0.4s cubic-bezier(0.65, 0, 0.35, 1), opacity 0.3s ease,
+    visibility 0.3s ease;
+  max-height: 50px;
+  opacity: 0;
+  visibility: hidden;
+}
+
+.menu.visible {
+  opacity: 1;
+  visibility: visible;
+}
+
+.menu.hidden {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.menu.open {
+  transform: translateY(0);
+  max-height: 400px;
 }
 
 .closeButton {
@@ -43,7 +65,16 @@
   display: flex;
   flex-direction: column;
   max-height: 300px;
-  overflow-y: scroll;
+  overflow-y: auto;
+  padding: 0 16px;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.3s ease 0.1s, transform 0.3s ease 0.1s;
+}
+
+.menu.open .rows {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .clearButtonContainer {
