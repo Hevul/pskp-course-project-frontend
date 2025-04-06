@@ -6,12 +6,7 @@ import SecondaryButton from "../../SecondaryButton/SecondaryButton";
 import DialogShell from "../DialogShell";
 import styles from "./LinkDialog.module.css";
 import useAxios from "../../../hooks/useAxios";
-import {
-  download,
-  getOrGenerate,
-  remove,
-  setPublicity,
-} from "../../../api/links";
+import { getOrGenerate, remove, setPublicity } from "../../../api/links";
 import File from "../../../models/File";
 import { useDialog } from "../../../contexts/DialogContext";
 import Link from "../../../models/Link";
@@ -19,9 +14,9 @@ import IconButton from "../../IconButton/IconButton";
 import TwoUsersIcon from "../../icons/TwoUsersIcon";
 import EditFriendsList from "../EditFriendsList/EditFriendsList";
 import { useEntities } from "../../../contexts/EntitiesContext";
-import fileDownload from "js-file-download";
 import Tile from "./Tile";
 import config from "../../../config.json";
+import { usePopup } from "../../../contexts/PopupContext";
 
 type Status = "public" | "private";
 
@@ -35,51 +30,62 @@ const LinkDialog: FC<Props> = ({ file }) => {
 
   const { close, open } = useDialog();
   const { refresh } = useEntities();
-  const { sendRequest: sendGenerate, response: genResp } = useAxios();
-  const { sendRequest: sendDelete } = useAxios();
-  const { sendRequest: sendSetPublicity } = useAxios();
-  const { sendRequest: sendDownload } = useAxios();
+  const { show } = usePopup();
+
+  const { sendRequest: sendGenerate } = useAxios({
+    onSuccess(response) {
+      if (response.status === 200) {
+        const {
+          id,
+          link,
+          friends,
+          fileInfoId: fileId,
+          isPublic,
+        } = response.data.link;
+
+        const status = isPublic ? "public" : "private";
+
+        setLink({
+          id,
+          link,
+          status,
+          friends,
+          fileId,
+        });
+
+        setStatus(status);
+      }
+    },
+  });
+  const { sendRequest: sendDelete } = useAxios({
+    onSuccess(response) {
+      if (response.status === 200) {
+        show(`Ссылка удалена!`, { iconType: "success" });
+        refresh();
+        close();
+      }
+    },
+  });
+  const { sendRequest: sendSetPublicity } = useAxios({
+    onSuccess(response) {
+      if (response.status === 200) {
+        show(
+          `Ссылка теперь ${
+            link?.status === "public" ? "публичная" : "приватная"
+          }!`,
+          { iconType: "success" }
+        );
+      }
+    },
+  });
 
   useEffect(() => {
     const fetch = async () => {
       await sendGenerate(getOrGenerate(file.id));
       refresh();
     };
-
     fetch();
   }, []);
-
-  useEffect(() => {
-    if (genResp?.status === 200) {
-      const {
-        id,
-        link,
-        friends,
-        fileInfoId: fileId,
-        isPublic,
-      } = genResp.data.link;
-
-      const status = isPublic ? "public" : "private";
-
-      setLink({
-        id,
-        link,
-        status,
-        friends,
-        fileId,
-      });
-
-      setStatus(status);
-    }
-  }, [genResp]);
-
-  const handleDelete = async () => {
-    if (!link) return;
-
-    await sendDelete(remove(link.id));
-    refresh();
-    close();
-  };
 
   const copyToClipboard = () => {
     if (!link?.link) return;
@@ -95,6 +101,20 @@ const LinkDialog: FC<Props> = ({ file }) => {
       document.execCommand("copy");
       document.body.removeChild(textArea);
     });
+
+    show("Ссылка скопирована в буфер обмена!", { iconType: "success" });
+  };
+
+  const handleDelete = async () => {
+    if (!link) return;
+    sendDelete(remove(link.id));
+  };
+
+  const handleToggleStatus = async (status: Status) => {
+    if (!link) return;
+    if (link.status === status) return;
+    await sendSetPublicity(setPublicity(link.id, status === "public"));
+    sendGenerate(getOrGenerate(file.id));
   };
 
   return (
@@ -112,12 +132,7 @@ const LinkDialog: FC<Props> = ({ file }) => {
           }
           setStatus={setStatus}
           status={status}
-          onClick={async () => {
-            if (!link) return;
-            if (link.status === "public") return;
-            await sendSetPublicity(setPublicity(link.id, true));
-            sendGenerate(getOrGenerate(file.id));
-          }}
+          onClick={() => handleToggleStatus("public")}
         />
         <Tile
           tileStatus="private"
@@ -131,35 +146,12 @@ const LinkDialog: FC<Props> = ({ file }) => {
           }
           setStatus={setStatus}
           status={status}
-          onClick={async () => {
-            if (!link) return;
-            if (link.status === "private") return;
-            await sendSetPublicity(setPublicity(link.id, false));
-            sendGenerate(getOrGenerate(file.id));
-          }}
+          onClick={() => handleToggleStatus("private")}
         />
       </div>
       <div className={styles.buttons}>
         <div className={styles.leftButtons}>
           <Button title="Скопировать" onClick={copyToClipboard} />
-          <Button
-            title="скачатъ"
-            onClick={async () => {
-              if (link) {
-                const res = await sendDownload(download(link?.link));
-
-                if (!res) return;
-
-                const data = res.data;
-
-                const contentDisposition = res.headers["content-disposition"];
-
-                const filename = decodeFilename(contentDisposition);
-
-                fileDownload(data, filename);
-              }
-            }}
-          />
           <div
             style={{
               visibility: link?.status === "private" ? "visible" : "collapse",
@@ -179,21 +171,5 @@ const LinkDialog: FC<Props> = ({ file }) => {
     </DialogShell>
   );
 };
-
-function decodeFilename(header: string) {
-  const utf8FilenameRegex = /filename\*=UTF-8''([^;]+)/i;
-  const asciiFilenameRegex = /filename=(["']?)(.*?[^\\])\1(;|$)/i;
-
-  let filename = "";
-  if (utf8FilenameRegex.test(header)) {
-    filename = decodeURIComponent(utf8FilenameRegex.exec(header)![1]);
-  } else {
-    const matches = asciiFilenameRegex.exec(header);
-    if (matches?.[2]) {
-      filename = matches[2];
-    }
-  }
-  return filename || "file";
-}
 
 export default LinkDialog;

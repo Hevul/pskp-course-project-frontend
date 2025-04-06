@@ -17,10 +17,11 @@ import FileUploader, {
 } from "../../components/FileUploader/FileUploader";
 import { UploadProvider } from "../../contexts/UploadContext";
 import UploadsMenu from "../../components/UploadsMenu/UploadsMenu";
+import Loading from "../../components/Loading/Loading";
 
 const Dashboard = () => {
   const { open } = useDialog();
-  const { refresh, currentDir } = useEntities();
+  const { refresh, currentDir, isLoading } = useEntities();
   const fileUploaderRef = useRef<FileUploaderRef>(null);
 
   const menuItems = [
@@ -39,30 +40,28 @@ const Dashboard = () => {
 
   return (
     <ProtectedRoute>
-      <ContextMenuProvider>
-        <UploadProvider>
-          <Layout>
-            <div className={styles.top}>
-              <StorageList />
-            </div>
+      <UploadProvider>
+        <Layout>
+          <div className={styles.top}>
+            <StorageList />
+          </div>
 
-            <ContextMenuArea items={menuItems}>
-              <div className={styles.center}>
-                <div style={{ marginBottom: "36px" }}>
-                  <Path />
-                </div>
-
-                <div className={styles.storageTable}>
-                  <StorageTableTiled />
-                </div>
+          <ContextMenuArea items={menuItems}>
+            <div className={styles.center}>
+              <div style={{ marginBottom: "36px" }}>
+                <Path />
               </div>
-            </ContextMenuArea>
 
-            <FileUploader ref={fileUploaderRef} />
-            <UploadsMenu />
-          </Layout>
-        </UploadProvider>
-      </ContextMenuProvider>
+              <div className={styles.storageTable}>
+                {isLoading ? <Loading size="large" /> : <StorageTableTiled />}
+              </div>
+            </div>
+          </ContextMenuArea>
+
+          <FileUploader ref={fileUploaderRef} />
+          <UploadsMenu />
+        </Layout>
+      </UploadProvider>
     </ProtectedRoute>
   );
 };

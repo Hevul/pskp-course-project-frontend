@@ -1,4 +1,4 @@
-import { FC, useEffect } from "react";
+import { FC, useEffect, useState } from "react";
 import { Entity } from "../../../models/Entity";
 import DialogShell from "../DialogShell";
 import styles from "./MoveDialog.module.css";
@@ -17,6 +17,8 @@ import useAxios from "../../../hooks/useAxios";
 import { move as moveDir } from "../../../api/dirs";
 import { move as moveFile } from "../../../api/files";
 import InputValidationError from "../../InputValidationError/InputValidationError";
+import { usePopup } from "../../../contexts/PopupContext";
+import { useStorage } from "../../../contexts/StorageContext";
 
 interface Props {
   entity: Entity;
@@ -24,18 +26,49 @@ interface Props {
 }
 
 const MoveDialogContent: FC<Props> = ({ entity, onSuccess }) => {
-  const { id, name, type } = entity;
+  const [moveError, setMoveError] = useState<string | null>(null);
 
-  const { entities, currentDir, refresh } = useEntities();
+  const { show } = usePopup();
+  const { storage } = useStorage();
   const { open, close } = useDialog();
-  const { sendRequest, response, error } = useAxios();
+  const { entities, currentDir, refresh } = useEntities();
 
+  const { id, name, type } = entity;
   const isFile = type === "file";
-
   const sortedEntities = [...entities].sort((a, b) => {
     if (a.type === "dir" && b.type !== "dir") return -1;
     if (a.type !== "dir" && b.type === "dir") return 1;
     return 0;
+  });
+
+  const { sendRequest } = useAxios({
+    onSuccess(response) {
+      if (response.status === 200) {
+        show(
+          `${isFile ? "Файл" : "Папка"} ${name} перемещён${
+            isFile ? "" : "а"
+          } в ${currentDir ? currentDir.name : storage?.name}!`,
+          {
+            iconType: "success",
+          }
+        );
+        close();
+        onSuccess?.();
+        refresh();
+      }
+    },
+    onError(error) {
+      show(`Не удалось переместить ${isFile ? "файл" : "папка"}!`, {
+        iconType: "error",
+      });
+
+      const errors = error?.response?.data?.errors;
+
+      if (errors) {
+        const errorObj = errors[0];
+        if (errorObj) setMoveError(errorObj.msg);
+      }
+    },
   });
 
   const handleMove = () =>
@@ -43,29 +76,13 @@ const MoveDialogContent: FC<Props> = ({ entity, onSuccess }) => {
       isFile ? moveFile(id, currentDir?.id) : moveDir(id, currentDir?.id)
     );
 
-  useEffect(() => {
-    if (response?.status === 200) {
-      close();
-      onSuccess?.();
-    }
-  }, [response]);
-
-  let errorMsg: string | null = null;
-
-  if (error) {
-    const errors = error?.response?.data?.errors;
-
-    const errorObj = errors[0];
-    if (errorObj) errorMsg = errorObj.msg;
-  }
-
   return (
     <DialogShell
       title={`Куда переместить ${isFile ? "файл" : "папку"} '${name}'?`}
     >
       <Path />
 
-      <InputValidationError error={errorMsg} />
+      <InputValidationError error={moveError} />
 
       <div className={styles.tiles}>
         {sortedEntities.map((e) => (

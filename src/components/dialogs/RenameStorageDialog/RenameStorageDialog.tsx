@@ -1,47 +1,41 @@
-import { FC, useEffect, useState } from "react";
+import { FC, useState } from "react";
 import Input from "../../Input/Input";
 import DialogShell from "../DialogShell";
 import { useDialog } from "../../../contexts/DialogContext";
-import styles from "./RenameDialog.module.css";
+import styles from "./RenameStorageDialog.module.css";
 import Button from "../../Button/Button";
-import { useEntities } from "../../../contexts/EntitiesContext";
 import useAxios from "../../../hooks/useAxios";
-import { rename as renameFile } from "../../../api/files";
-import { rename as renameDir } from "../../../api/dirs";
+import { rename } from "../../../api/storages";
 import InputValidationError from "../../InputValidationError/InputValidationError";
-import { Entity } from "../../../models/Entity";
 import { usePopup } from "../../../contexts/PopupContext";
+import Storage from "../../../models/Storage";
 
 interface Props {
-  entity: Entity;
+  storage: Storage;
+  onSuccess?: () => void;
 }
 
-const RenameDialog: FC<Props> = ({ entity }) => {
-  const { id, name: oldName } = entity;
-  const isFile = entity.type === "file";
+const RenameStorageDialog: FC<Props> = ({ storage, onSuccess }) => {
+  const { name: oldName, id } = storage;
 
   const [name, setName] = useState(oldName);
   const [renameError, setRenameError] = useState<string | null>(null);
 
   const { close } = useDialog();
-  const { refresh } = useEntities();
   const { show } = usePopup();
 
   const { sendRequest } = useAxios({
     onSuccess(response) {
       if (response?.status === 200) {
-        show(
-          `${isFile ? "Файл" : "Папка"} ${oldName} переименован${
-            isFile ? "" : "а"
-          } в ${name}!`,
-          { iconType: "success" }
-        );
+        show(`Хранилище ${oldName} переименовано в ${name}!`, {
+          iconType: "success",
+        });
         close();
-        refresh();
+        onSuccess?.();
       }
     },
     onError(error) {
-      show(`Не удалось переименовать ${isFile ? "файл" : "папка"}!`, {
+      show(`Не удалось переименовать хранилище!`, {
         iconType: "error",
       });
 
@@ -55,17 +49,17 @@ const RenameDialog: FC<Props> = ({ entity }) => {
   });
 
   const handleRename = async () => {
-    sendRequest(isFile ? renameFile(id, name) : renameDir(id, name));
+    sendRequest(rename(id, name));
   };
 
   return (
     <DialogShell
-      title={`Укажите новое название ${isFile ? "файла" : "папки"}`}
+      title={`Укажите новое название хранилища`}
       onEnterDown={handleRename}
     >
       <div>
         <Input
-          placeholder={`Новое название ${isFile ? "файла" : "папки"}`}
+          placeholder={`Новое название хранилища`}
           value={name}
           setValue={setName}
           hasError={renameError !== null}
@@ -80,4 +74,4 @@ const RenameDialog: FC<Props> = ({ entity }) => {
   );
 };
 
-export default RenameDialog;
+export default RenameStorageDialog;

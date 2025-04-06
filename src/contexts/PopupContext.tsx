@@ -1,7 +1,7 @@
 import React, { createContext, ReactNode, useContext, useState } from "react";
 import Popup from "../components/Popup/Popup";
 
-export type IconType = "error" | "success";
+export type IconType = "error" | "success" | "info";
 
 interface PopupOptions {
   icon?: ReactNode;

@@ -3,18 +3,21 @@ import { DialogProvider } from "../../contexts/DialogContext";
 import { EntitiesProvider } from "../../contexts/EntitiesContext";
 import { StorageProvider } from "../../contexts/StorageContext";
 import { PopupProvider } from "../../contexts/PopupContext";
+import { ContextMenuProvider } from "../../contexts/ContextMenuContext";
 
 const PrivateLayout = () => {
   return (
-    <StorageProvider>
-      <EntitiesProvider>
-        <PopupProvider>
-          <DialogProvider>
-            <Outlet />
-          </DialogProvider>
-        </PopupProvider>
-      </EntitiesProvider>
-    </StorageProvider>
+    <PopupProvider>
+      <ContextMenuProvider>
+        <StorageProvider>
+          <EntitiesProvider>
+            <DialogProvider>
+              <Outlet />
+            </DialogProvider>
+          </EntitiesProvider>
+        </StorageProvider>
+      </ContextMenuProvider>
+    </PopupProvider>
   );
 };
 

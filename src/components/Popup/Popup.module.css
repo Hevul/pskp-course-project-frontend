@@ -22,14 +22,11 @@
   width: 100%;
   display: flex;
   align-items: center;
-}
-
-.p {
-  margin-left: 12px;
+  justify-content: space-between;
+  gap: 18px;
 }
 
 .closeButton {
-  margin-left: 18px;
   display: flex;
   align-items: center;
   cursor: pointer;

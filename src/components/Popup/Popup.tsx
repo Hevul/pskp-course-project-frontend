@@ -4,6 +4,7 @@ import CrossIcon from "../icons/CrossIcon";
 import TickSquareIcon from "../icons/TickSquareIcon";
 import DangerCircleIcon from "../icons/DangerCircleIcon";
 import { IconType } from "../../contexts/PopupContext";
+import InfoSquareIcon from "../icons/InfoSquareIcon";
 
 interface PopupProps {
   isVisible: boolean;
@@ -29,6 +30,8 @@ const Popup: React.FC<PopupProps> = ({
     switch (iconType) {
       case "error":
         return <DangerCircleIcon color="#FF3030" />;
+      case "info":
+        return <InfoSquareIcon color="#ECF5FE" />;
       case "success":
         return <TickSquareIcon color="#3EE657" />;
       default:

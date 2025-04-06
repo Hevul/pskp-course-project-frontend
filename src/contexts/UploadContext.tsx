@@ -1,5 +1,6 @@
 import { CancelTokenSource } from "axios";
 import { createContext, useContext, useState, useMemo } from "react";
+import { usePopup } from "./PopupContext";
 
 export interface FileUpload {
   id: string;
@@ -29,6 +30,7 @@ export const UploadProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const [uploads, setUploads] = useState<FileUpload[]>([]);
+  const { show } = usePopup();
 
   const totalProgress = useMemo(() => {
     if (uploads.length === 0) return 0;
@@ -55,6 +57,9 @@ export const UploadProvider: React.FC<{ children: React.ReactNode }> = ({
     };
 
     setUploads((prev) => [...prev, newUpload]);
+    show(`Файл ${file.name} добавлен в очередь загрузки.`, {
+      iconType: "info",
+    });
 
     return newUpload;
   };
@@ -86,6 +91,12 @@ export const UploadProvider: React.FC<{ children: React.ReactNode }> = ({
         return upload.id === id ? { ...upload, status, error } : upload;
       })
     );
+
+    const upload = uploads.find((u) => u.id === id);
+    if (upload)
+      show(`Не удалось загрузить файл ${upload.filename}!`, {
+        iconType: "error",
+      });
   };
 
   const clearCompleted = () => {
@@ -110,6 +121,12 @@ export const UploadProvider: React.FC<{ children: React.ReactNode }> = ({
         return upload;
       })
     );
+
+    const upload = uploads.find((u) => u.id === id);
+    if (upload)
+      show(`Загрузка файла ${upload.filename} отменена!`, {
+        iconType: "success",
+      });
   };
 
   return (

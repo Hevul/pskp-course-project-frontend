@@ -16,6 +16,7 @@ import RenameDialog from "../dialogs/RenameDialog/RenameDialog";
 import DownloadIcon from "../icons/DownloadIcon";
 import { useStorage } from "../../contexts/StorageContext";
 import fileDownload from "js-file-download";
+import { usePopup } from "../../contexts/PopupContext";
 
 interface Props {
   entity: File | Dir;
@@ -27,11 +28,13 @@ const StorageTableRow: FC<Props> = ({ entity }) => {
   const isFile = entity.type === "file";
   const { id, name } = entity;
 
-  const { sendRequest: sendDownload } = useAxios();
-  const { sendRequest: sendDelete } = useAxios();
   const { refresh, setCurrentDir } = useEntities();
   const { open } = useDialog();
   const { storage } = useStorage();
+  const { show } = usePopup();
+
+  const { sendRequest: sendDownload } = useAxios();
+  const { sendRequest: sendDelete } = useAxios();
 
   const handleDelete = async () => {
     await sendDelete(isFile ? removeFile(id) : removeDir(id));

@@ -1,39 +1,35 @@
-import { FC, useEffect, useState } from "react";
+import { FC, useState } from "react";
 import Input from "../../Input/Input";
-import styles from "./CreateDirDialog.module.css";
+import styles from "./CreateStorageDialog.module.css";
 import Button from "../../Button/Button";
 import { useDialog } from "../../../contexts/DialogContext";
 import useAxios from "../../../hooks/useAxios";
-import { create } from "../../../api/dirs";
-import { useStorage } from "../../../contexts/StorageContext";
+import { create } from "../../../api/storages";
 import DialogShell from "../DialogShell";
 import InputValidationError from "../../InputValidationError/InputValidationError";
-import Dir from "../../../models/Dir";
 import { usePopup } from "../../../contexts/PopupContext";
 
 interface Props {
-  currentDir: Dir | null;
   onSuccess?: () => void;
 }
 
-const CreateDirDialog: FC<Props> = ({ currentDir, onSuccess }) => {
+const CreateStorageDialog: FC<Props> = ({ onSuccess }) => {
   const [name, setName] = useState("");
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   const { close } = useDialog();
-  const { storage } = useStorage();
   const { show } = usePopup();
 
   const { sendRequest } = useAxios({
     onSuccess(response) {
-      if (response?.status === 200) {
-        show(`Папка ${name} успешно создана!`, { iconType: "success" });
+      if (response?.status === 201) {
+        show(`Хранилище ${name} успешно создано!`, { iconType: "success" });
         close();
         onSuccess?.();
       }
     },
     onError(error) {
-      show("Не удалось создать папку!", { iconType: "error" });
+      show("Не удалось создать хранилище!", { iconType: "error" });
 
       const errors = error?.response?.data?.errors;
 
@@ -45,16 +41,15 @@ const CreateDirDialog: FC<Props> = ({ currentDir, onSuccess }) => {
   });
 
   const handleCreate = async () => {
-    if (!storage) return;
     setErrorMsg(null);
-    sendRequest(create(name, storage.id, currentDir?.id));
+    sendRequest(create(name));
   };
 
   return (
-    <DialogShell title="Укажите название папки" onEnterDown={handleCreate}>
+    <DialogShell title="Укажите название хранилища" onEnterDown={handleCreate}>
       <div>
         <Input
-          placeholder={"Название папки"}
+          placeholder={"Название хранилища"}
           value={name}
           setValue={setName}
           hasError={errorMsg !== null}
@@ -69,4 +64,4 @@ const CreateDirDialog: FC<Props> = ({ currentDir, onSuccess }) => {
   );
 };
 
-export default CreateDirDialog;
+export default CreateStorageDialog;

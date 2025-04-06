@@ -1,9 +1,0 @@
-.right {
-  align-self: flex-end;
-}
-
-.p {
-  font-size: 16px;
-  color: var(--primary-black);
-  font-weight: var(--semi-bold);
-}

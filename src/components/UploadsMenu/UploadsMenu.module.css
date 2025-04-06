@@ -133,3 +133,11 @@
   background-color: #4676fb;
   transition: width 0.3s ease;
 }
+
+.iconButton {
+  cursor: pointer;
+}
+
+.iconButton:hover {
+  opacity: 0.7;
+}

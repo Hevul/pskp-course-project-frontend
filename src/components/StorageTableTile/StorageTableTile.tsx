@@ -26,6 +26,7 @@ import CurvedIcon from "../icons/CurvedIcon";
 import LinkDialog from "../dialogs/LinkDialog/LinkDialog";
 import AddUserIcon from "../icons/AddUserIcon";
 import LinkIcon from "../icons/LinkIcon";
+import { usePopup } from "../../contexts/PopupContext";
 
 interface Props {
   entity: File | Dir;
@@ -42,11 +43,25 @@ const StorageTableTile: FC<Props> = ({
   const [needsWrap, setNeedsWrap] = useState(false);
   const textRef = useRef<HTMLHeadingElement>(null);
 
-  const { sendRequest: sendDownload } = useAxios();
-  const { sendRequest: sendDelete } = useAxios();
   const { setCurrentDir, refresh } = useEntities();
   const { storage } = useStorage();
   const { open } = useDialog();
+  const { show } = usePopup();
+
+  const { sendRequest: sendDownload } = useAxios({
+    onSuccess(response) {
+      show(`Файл ${name} скачан!`, {
+        iconType: "success",
+      });
+    },
+  });
+  const { sendRequest: sendDelete } = useAxios({
+    onSuccess(response) {
+      show(`${isFile ? "Файл" : "Папка"} ${name} удалён${isFile ? "" : "а"}!`, {
+        iconType: "success",
+      });
+    },
+  });
 
   const isFile = entity.type === "file";
   const { id, name } = entity;
@@ -72,6 +87,7 @@ const StorageTableTile: FC<Props> = ({
   const handleDownload = async () => {
     if (!isFile) return;
 
+    show("Скачивание файла скоро начнётся!", { iconType: "info" });
     const response = await sendDownload(download(id));
 
     if (!response) return;

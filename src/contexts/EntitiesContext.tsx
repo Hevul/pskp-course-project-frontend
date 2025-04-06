@@ -14,6 +14,7 @@ interface EntitiesContextType {
   currentDir: Dir | null;
   setCurrentDir: (dir: Dir | null) => void;
   path: Dir[];
+  isLoading: boolean;
 }
 
 const EntitiesContext = createContext<EntitiesContextType | null>(null);
@@ -24,6 +25,7 @@ export const EntitiesProvider: React.FC<{ children: React.ReactNode }> = ({
   const [entities, setEntities] = useState<Entity[]>([]);
   const [currentDir, setDir] = useState<Dir | null>(null);
   const [path, setPath] = useState<Dir[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   const { storage } = useStorage();
   const { sendRequest: getFiles } = useAxios();
@@ -71,8 +73,12 @@ export const EntitiesProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   const fetchEntities = async () => {
+    setIsLoading(true);
+
     const [files, dirs] = await Promise.all([fetchFiles(), fetchDirs()]);
     setEntities([...files, ...dirs]);
+
+    setIsLoading(false);
   };
 
   useEffect(() => {
@@ -106,7 +112,7 @@ export const EntitiesProvider: React.FC<{ children: React.ReactNode }> = ({
 
   return (
     <EntitiesContext.Provider
-      value={{ entities, refresh, currentDir, setCurrentDir, path }}
+      value={{ entities, refresh, currentDir, setCurrentDir, path, isLoading }}
     >
       {children}
     </EntitiesContext.Provider>

@@ -6,6 +6,7 @@ import { useEntities } from "../../contexts/EntitiesContext";
 import { FileUpload, useUploads } from "../../contexts/UploadContext";
 import config from "../../config.json";
 import axios from "axios";
+import { usePopup } from "../../contexts/PopupContext";
 
 export interface FileUploaderRef {
   triggerFileDialog: () => void;
@@ -21,6 +22,8 @@ const FileUploader = forwardRef<FileUploaderRef, FileUploaderProps>(
     const { currentDir, refresh } = useEntities();
     const { addUpload, updateUploadProgress, completeUpload, failUpload } =
       useUploads();
+    const { show } = usePopup();
+
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const triggerFileDialog = () => {
@@ -55,6 +58,9 @@ const FileUploader = forwardRef<FileUploaderRef, FileUploaderProps>(
 
           return axios(requestConfig)
             .then(() => {
+              show(`Файл ${file.name} успешно загружен!`, {
+                iconType: "success",
+              });
               refresh();
               completeUpload(uploadItem.id);
             })

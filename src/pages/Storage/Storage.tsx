@@ -5,9 +5,6 @@ import DeleteIcon from "../../components/icons/DeleteIcon";
 import StorageList from "../../components/StorageList/StorageList";
 import ProtectedRoute from "../../components/ProtectedRoute/ProtectedRoute";
 import Layout from "../../components/Layout/Layout";
-import AddStorageCloud from "../../components/AddStorageCloud/AddStorageCloud";
-import RenameStorageCloud from "../../components/RenameStorageCloud/RenameStorageCloud";
-import DeleteStorageCloud from "../../components/DeleteStorageCloud/DeleteStorageCloud";
 
 const Storage = () => {
   return (
@@ -16,11 +13,7 @@ const Storage = () => {
         <div className={styles.top}>
           <StorageList />
         </div>
-        <div className={styles.center}>
-          <AddStorageCloud />
-          <RenameStorageCloud />
-          <DeleteStorageCloud />
-        </div>
+        <div className={styles.center}></div>
       </Layout>
     </ProtectedRoute>
   );

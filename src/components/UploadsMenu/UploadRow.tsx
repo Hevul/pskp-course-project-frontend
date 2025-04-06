@@ -111,7 +111,7 @@ const UploadRow: FC<Props> = ({
       </div>
 
       <div
-        className={style.right}
+        className={style.iconButton}
         onClick={status === "uploading" ? handleCancel : handleRemove}
       >
         <CloseCircleIcon color="#ADC0F8" />
