@@ -6,7 +6,19 @@ import axios, {
   CancelTokenSource,
 } from "axios";
 
-const useAxios = (config?: AxiosRequestConfig, autoExecute = false) => {
+interface UseAxiosOptions {
+  config?: AxiosRequestConfig;
+  autoExecute?: boolean;
+  onSuccess?: (response: AxiosResponse) => void;
+  onError?: (error: any) => void;
+}
+
+const useAxios = ({
+  config,
+  autoExecute = false,
+  onSuccess,
+  onError,
+}: UseAxiosOptions = {}) => {
   const [response, setResponse] = useState<AxiosResponse | null>(null);
   const [error, setError] = useState<any | null>(null);
   const [loading, setLoading] = useState(false);
@@ -35,12 +47,16 @@ const useAxios = (config?: AxiosRequestConfig, autoExecute = false) => {
         ...(requestConfig || {}),
         cancelToken: source.token,
       });
+
       setResponse(result);
+      onSuccess?.(result);
 
       return result;
     } catch (err) {
       if (!axios.isCancel(err)) {
-        setError(err as AxiosError);
+        const axiosError = err as AxiosError;
+        setError(err);
+        onError?.(axiosError);
       }
     } finally {
       setLoading(false);

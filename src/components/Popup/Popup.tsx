@@ -32,7 +32,7 @@ const Popup: React.FC<PopupProps> = ({ isVisible, message, onClose, icon }) => {
     if (isVisible) {
       const timer = setTimeout(() => {
         onClose();
-      }, 500000);
+      }, 5000);
       return () => clearTimeout(timer);
     }
   }, [isVisible, onClose]);

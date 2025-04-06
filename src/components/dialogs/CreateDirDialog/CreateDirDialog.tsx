@@ -19,38 +19,38 @@ interface Props {
 
 const CreateDirDialog: FC<Props> = ({ currentDir, onSuccess }) => {
   const [name, setName] = useState("");
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
-  const { response, error, sendRequest } = useAxios();
   const { close } = useDialog();
   const { storage } = useStorage();
   const { show } = usePopup();
 
+  const { sendRequest } = useAxios({
+    onSuccess(response) {
+      if (response?.status === 200) {
+        show(
+          `Папка ${name} успешно создана!`,
+          <TickSquareIcon color="#3EE657" />
+        );
+        close();
+        onSuccess?.();
+      }
+    },
+    onError(error) {
+      const errors = error?.response?.data?.errors;
+
+      if (errors) {
+        const errorObj = errors[0];
+        if (errorObj) setErrorMsg(errorObj.msg);
+      }
+    },
+  });
+
   const handleCreate = async () => {
     if (!storage) return;
+    setErrorMsg(null);
     sendRequest(create(name, storage.id, currentDir?.id));
   };
-
-  useEffect(() => {
-    if (response?.status === 200) {
-      show(
-        `Папка ${name} успешно создана!`,
-        <TickSquareIcon color="#3EE657" />
-      );
-      close();
-      onSuccess?.();
-    }
-  }, [response]);
-
-  let createError: string | null = null;
-
-  if (error) {
-    const errors = error?.response?.data?.errors;
-
-    if (errors) {
-      const errorObj = errors[0];
-      if (errorObj) createError = errorObj.msg;
-    }
-  }
 
   return (
     <DialogShell title="Укажите название папки" onEnterDown={handleCreate}>
@@ -59,9 +59,9 @@ const CreateDirDialog: FC<Props> = ({ currentDir, onSuccess }) => {
           placeholder={"Название папки"}
           value={name}
           setValue={setName}
-          hasError={createError !== null}
+          hasError={errorMsg !== null}
         />
-        <InputValidationError error={createError} />
+        <InputValidationError error={errorMsg} />
       </div>
 
       <div className={styles.buttons}>
