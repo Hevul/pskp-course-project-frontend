@@ -1,17 +1,40 @@
 import React, { ReactNode, useEffect, useState } from "react";
 import styles from "./Popup.module.css";
 import CrossIcon from "../icons/CrossIcon";
+import TickSquareIcon from "../icons/TickSquareIcon";
+import DangerCircleIcon from "../icons/DangerCircleIcon";
+import { IconType } from "../../contexts/PopupContext";
 
 interface PopupProps {
   isVisible: boolean;
   message: string;
   onClose: () => void;
-  icon?: ReactNode;
+  icon: ReactNode | null;
+  iconType?: IconType;
 }
 
-const Popup: React.FC<PopupProps> = ({ isVisible, message, onClose, icon }) => {
+const Popup: React.FC<PopupProps> = ({
+  isVisible,
+  message,
+  onClose,
+  icon,
+  iconType,
+}) => {
   const [isMounted, setIsMounted] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
+
+  const renderIcon = () => {
+    if (icon) return icon;
+
+    switch (iconType) {
+      case "error":
+        return <DangerCircleIcon color="#FF3030" />;
+      case "success":
+        return <TickSquareIcon color="#3EE657" />;
+      default:
+        return null;
+    }
+  };
 
   useEffect(() => {
     if (isVisible) {
@@ -44,7 +67,7 @@ const Popup: React.FC<PopupProps> = ({ isVisible, message, onClose, icon }) => {
       className={`${styles.popup} ${isAnimating ? styles.show : styles.hide}`}
     >
       <div className={styles.content}>
-        {icon}
+        {renderIcon()}
         <p className={styles.p}>{message}</p>
         <button
           className={styles.closeButton}

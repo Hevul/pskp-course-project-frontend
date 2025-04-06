@@ -10,7 +10,6 @@ import DialogShell from "../DialogShell";
 import InputValidationError from "../../InputValidationError/InputValidationError";
 import Dir from "../../../models/Dir";
 import { usePopup } from "../../../contexts/PopupContext";
-import TickSquareIcon from "../../icons/TickSquareIcon";
 
 interface Props {
   currentDir: Dir | null;
@@ -28,10 +27,7 @@ const CreateDirDialog: FC<Props> = ({ currentDir, onSuccess }) => {
   const { sendRequest } = useAxios({
     onSuccess(response) {
       if (response?.status === 200) {
-        show(
-          `Папка ${name} успешно создана!`,
-          <TickSquareIcon color="#3EE657" />
-        );
+        show(`Папка ${name} успешно создана!`, { iconType: "success" });
         close();
         onSuccess?.();
       }

@@ -1,8 +1,15 @@
 import React, { createContext, ReactNode, useContext, useState } from "react";
 import Popup from "../components/Popup/Popup";
 
+export type IconType = "error" | "success";
+
+interface PopupOptions {
+  icon?: ReactNode;
+  iconType?: IconType;
+}
+
 interface PopupContextType {
-  show: (message: string, icon?: ReactNode) => void;
+  show: (message: string, options?: PopupOptions) => void;
   hide: () => void;
 }
 
@@ -14,12 +21,20 @@ export const PopupProvider: React.FC<{ children: React.ReactNode }> = ({
   const [isVisible, setIsVisible] = useState(false);
   const [message, setMessage] = useState("");
   const [icon, setIcon] = useState<ReactNode | null>(null);
+  const [iconType, setIconType] = useState<IconType | undefined>(undefined);
 
-  const show = (msg: string, icon?: ReactNode) => {
+  const show = (msg: string, options?: PopupOptions) => {
+    setIcon(null);
+    setIconType(undefined);
+
+    if (options) {
+      setIcon(options.icon);
+      setIconType(options.iconType);
+    }
+
     setIsVisible(false);
     setTimeout(() => {
       setMessage(msg);
-      setIcon(icon);
       setIsVisible(true);
     }, 300);
   };
@@ -36,6 +51,7 @@ export const PopupProvider: React.FC<{ children: React.ReactNode }> = ({
         message={message}
         onClose={hide}
         icon={icon}
+        iconType={iconType}
       />
     </PopupContext.Provider>
   );
