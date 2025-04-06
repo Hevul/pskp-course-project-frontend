@@ -1,11 +1,12 @@
-// components/Popup/Popup.tsx
-import React, { useEffect, useState } from "react";
+import React, { ReactNode, useEffect, useState } from "react";
 import styles from "./Popup.module.css";
+import CrossIcon from "../icons/CrossIcon";
 
 interface PopupProps {
   isVisible: boolean;
   message: string;
   onClose: () => void;
+  icon?: ReactNode;
 }
 
 const Popup: React.FC<PopupProps> = ({ isVisible, message, onClose }) => {
@@ -15,7 +16,6 @@ const Popup: React.FC<PopupProps> = ({ isVisible, message, onClose }) => {
   useEffect(() => {
     if (isVisible) {
       setIsMounted(true);
-      // Небольшая задержка перед началом анимации для корректного рендера
       requestAnimationFrame(() => {
         setIsAnimating(true);
       });
@@ -23,7 +23,7 @@ const Popup: React.FC<PopupProps> = ({ isVisible, message, onClose }) => {
       setIsAnimating(false);
       const timer = setTimeout(() => {
         setIsMounted(false);
-      }, 500); // Ждем завершения анимации исчезновения
+      }, 500);
       return () => clearTimeout(timer);
     }
   }, [isVisible]);
@@ -50,7 +50,7 @@ const Popup: React.FC<PopupProps> = ({ isVisible, message, onClose }) => {
           onClick={onClose}
           aria-label="Close notification"
         >
-          ×
+          <CrossIcon />
         </button>
       </div>
     </div>

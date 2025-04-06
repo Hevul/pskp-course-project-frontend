@@ -1,9 +1,8 @@
-// contexts/PopupContext.tsx
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, ReactNode, useContext, useState } from "react";
 import Popup from "../components/Popup/Popup";
 
 interface PopupContextType {
-  show: (message: string) => void;
+  show: (message: string, icon?: ReactNode) => void;
   hide: () => void;
 }
 
@@ -14,11 +13,13 @@ export const PopupProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   const [isVisible, setIsVisible] = useState(false);
   const [message, setMessage] = useState("");
+  const [icon, setIcon] = useState<ReactNode | null>(null);
 
-  const show = (msg: string) => {
+  const show = (msg: string, icon?: ReactNode) => {
     setIsVisible(false);
     setTimeout(() => {
       setMessage(msg);
+      setIcon(icon);
       setIsVisible(true);
     }, 300);
   };
@@ -30,7 +31,12 @@ export const PopupProvider: React.FC<{ children: React.ReactNode }> = ({
   return (
     <PopupContext.Provider value={{ show, hide }}>
       {children}
-      <Popup isVisible={isVisible} message={message} onClose={hide} />
+      <Popup
+        isVisible={isVisible}
+        message={message}
+        onClose={hide}
+        icon={icon}
+      />
     </PopupContext.Provider>
   );
 };
