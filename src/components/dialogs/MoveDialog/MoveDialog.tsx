@@ -41,7 +41,7 @@ const MoveDialogContent: FC<Props> = ({ entity, onSuccess }) => {
     return 0;
   });
 
-  const { sendRequest } = useAxios({
+  const { sendRequest, loading } = useAxios({
     onSuccess(response) {
       if (response.status === 200) {
         show(
@@ -99,7 +99,7 @@ const MoveDialogContent: FC<Props> = ({ entity, onSuccess }) => {
           }
           icon={<PlusIcon />}
         />
-        <Button title="Переместить" onClick={handleMove} />
+        <Button title="Переместить" onClick={handleMove} loading={loading} />
       </div>
     </DialogShell>
   );

@@ -19,7 +19,7 @@ const DeleteStorageDialog: FC<Props> = ({ storage, onSuccess }) => {
   const { close } = useDialog();
   const { show } = usePopup();
 
-  const { sendRequest } = useAxios({
+  const { sendRequest, loading } = useAxios({
     onSuccess(response) {
       if (response.status === 200) {
         show(`Хранилище ${name} удалено!`, { iconType: "success" });
@@ -39,12 +39,17 @@ const DeleteStorageDialog: FC<Props> = ({ storage, onSuccess }) => {
   return (
     <DialogShell title={`Вы правда хотите удалить хранилище ${name}?`}>
       <h1 className={styles.h1}>
-        Вместе с хранилищем будут удалены все его файлы и папки! Удаёлнное
+        Вместе с хранилищем будут удалены все его файлы и папки! Удалённое
         хранилище нельзу будет восстановить.
       </h1>
 
       <div className={styles.buttons}>
-        <Button title="Удалить" onClick={handleDelete} color="#FF3030" />
+        <Button
+          title="Удалить"
+          onClick={handleDelete}
+          color="#FF3030"
+          loading={loading}
+        />
       </div>
     </DialogShell>
   );

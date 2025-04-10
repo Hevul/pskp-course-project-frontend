@@ -4,13 +4,18 @@ import styles from "./Search.module.css";
 interface Props {
   search: string;
   setSearch: React.Dispatch<React.SetStateAction<string>>;
+  width?: string;
 }
 
-const Search: FC<Props> = ({ search, setSearch }) => {
+const Search: FC<Props> = ({ search, setSearch, width }) => {
   return (
     <div className={styles.searchContainer}>
-      <input type="text" className={styles.search} placeholder="Поиск" />
-      <img className={styles.img} src="Search.svg" alt="" />
+      <input
+        style={{ width }}
+        type="text"
+        className={styles.search}
+        placeholder="Поиск"
+      />
     </div>
   );
 };

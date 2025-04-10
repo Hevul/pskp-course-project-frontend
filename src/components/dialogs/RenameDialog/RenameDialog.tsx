@@ -27,7 +27,7 @@ const RenameDialog: FC<Props> = ({ entity }) => {
   const { refresh } = useEntities();
   const { show } = usePopup();
 
-  const { sendRequest } = useAxios({
+  const { sendRequest, loading } = useAxios({
     onSuccess(response) {
       if (response?.status === 200) {
         show(
@@ -74,7 +74,11 @@ const RenameDialog: FC<Props> = ({ entity }) => {
       </div>
 
       <div className={styles.buttons}>
-        <Button title="Переименовать" onClick={handleRename} />
+        <Button
+          title="Переименовать"
+          onClick={handleRename}
+          loading={loading}
+        />
       </div>
     </DialogShell>
   );

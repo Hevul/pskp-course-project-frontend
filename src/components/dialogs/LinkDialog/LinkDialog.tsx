@@ -17,6 +17,7 @@ import { useEntities } from "../../../contexts/EntitiesContext";
 import Tile from "./Tile";
 import config from "../../../config.json";
 import { usePopup } from "../../../contexts/PopupContext";
+import TickSquareIcon from "../../icons/TickSquareIcon";
 
 type Status = "public" | "private";
 
@@ -27,6 +28,7 @@ interface Props {
 const LinkDialog: FC<Props> = ({ file }) => {
   const [status, setStatus] = useState<Status | null>(null);
   const [link, setLink] = useState<Link | null>(null);
+  const [isButtonDisabled, setIsButtonDisabled] = useState(false);
 
   const { close, open } = useDialog();
   const { refresh } = useEntities();
@@ -88,9 +90,9 @@ const LinkDialog: FC<Props> = ({ file }) => {
   }, []);
 
   const copyToClipboard = () => {
-    if (!link?.link) return;
+    if (!link?.link || isButtonDisabled) return;
 
-    const text = `${config.base}/${config.link}/download/${link.link}`;
+    const text = `${config.base}/link/${link.link}`;
 
     navigator.clipboard.writeText(text).catch((err) => {
       console.error("Не удалось скопировать ссылку:", err);
@@ -103,6 +105,9 @@ const LinkDialog: FC<Props> = ({ file }) => {
     });
 
     show("Ссылка скопирована в буфер обмена!", { iconType: "success" });
+
+    setIsButtonDisabled(true);
+    setTimeout(() => setIsButtonDisabled(false), 1000);
   };
 
   const handleDelete = async () => {
@@ -151,7 +156,11 @@ const LinkDialog: FC<Props> = ({ file }) => {
       </div>
       <div className={styles.buttons}>
         <div className={styles.leftButtons}>
-          <Button title="Скопировать" onClick={copyToClipboard} />
+          <Button
+            title="Скопировать"
+            onClick={copyToClipboard}
+            loading={isButtonDisabled}
+          />
           <div
             style={{
               visibility: link?.status === "private" ? "visible" : "collapse",

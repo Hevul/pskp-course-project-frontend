@@ -24,7 +24,7 @@ const RenameStorageDialog: FC<Props> = ({ storage, onSuccess }) => {
   const { close } = useDialog();
   const { show } = usePopup();
 
-  const { sendRequest } = useAxios({
+  const { sendRequest, loading } = useAxios({
     onSuccess(response) {
       if (response?.status === 200) {
         show(`Хранилище ${oldName} переименовано в ${name}!`, {
@@ -68,7 +68,11 @@ const RenameStorageDialog: FC<Props> = ({ storage, onSuccess }) => {
       </div>
 
       <div className={styles.buttons}>
-        <Button title="Переименовать" onClick={handleRename} />
+        <Button
+          title="Переименовать"
+          onClick={handleRename}
+          loading={loading}
+        />
       </div>
     </DialogShell>
   );

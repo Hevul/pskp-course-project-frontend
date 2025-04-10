@@ -1,5 +1,61 @@
-.center {
+.main {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  background-color: white;
+  box-shadow: var(--primary-shadow);
+  border-radius: 22px;
+  padding: 34px 35px;
+  height: 100%;
+  gap: 120px;
+}
+
+.h1 {
+  font-size: 28px;
+  font-weight: var(--regular);
+  color: var(--primary-black);
+}
+
+.h2 {
+  font-size: 23px;
+  color: var(--primary-black);
+  font-weight: var(--bold);
+}
+
+.top {
   display: flex;
   flex-direction: row;
-  justify-content: space-evenly;
+  width: 100%;
+  justify-content: space-between;
+}
+
+.storages {
+  display: flex;
+  flex-direction: row;
+  overflow-x: auto;
+}
+
+.storage {
+  width: 260px;
+  height: 200px;
+  background-color: #ecf5fe;
+  border-radius: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  cursor: pointer;
+}
+
+.options {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  align-items: flex-start;
+}
+
+.storageName {
+  font-size: 23px;
+  color: rgba(65, 64, 75, 0.6);
+  font-weight: var(--bold);
 }

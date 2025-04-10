@@ -27,7 +27,7 @@ export const rename = (id: string, name: string) => ({
   withCredentials: true,
 });
 
-export const remove = (id: string, force = false) => ({
+export const remove = (id: string, force = true) => ({
   url: `${url}/delete`,
   method: "delete",
   data: {

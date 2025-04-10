@@ -24,7 +24,7 @@ const CreateDirDialog: FC<Props> = ({ currentDir, onSuccess }) => {
   const { storage } = useStorage();
   const { show } = usePopup();
 
-  const { sendRequest } = useAxios({
+  const { sendRequest, loading } = useAxios({
     onSuccess(response) {
       if (response?.status === 200) {
         show(`Папка ${name} успешно создана!`, { iconType: "success" });
@@ -63,7 +63,7 @@ const CreateDirDialog: FC<Props> = ({ currentDir, onSuccess }) => {
       </div>
 
       <div className={styles.buttons}>
-        <Button title="Создать" onClick={handleCreate} />
+        <Button title="Создать" onClick={handleCreate} loading={loading} />
       </div>
     </DialogShell>
   );

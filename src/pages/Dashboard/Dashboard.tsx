@@ -1,5 +1,5 @@
-import { useRef, useState } from "react";
 import styles from "./Dashboard.module.css";
+import { useRef, useState } from "react";
 import ProtectedRoute from "../../components/ProtectedRoute/ProtectedRoute";
 import StorageList from "../../components/StorageList/StorageList";
 import Layout from "../../components/Layout/Layout";
@@ -11,7 +11,6 @@ import UploadIcon from "../../components/icons/UploadIcon";
 import Path from "../../components/Path/Path";
 import { useEntities } from "../../contexts/EntitiesContext";
 import StorageTableTiled from "../../components/StorageTableTiled/StorageTableTiled";
-import { ContextMenuProvider } from "../../contexts/ContextMenuContext";
 import FileUploader, {
   FileUploaderRef,
 } from "../../components/FileUploader/FileUploader";

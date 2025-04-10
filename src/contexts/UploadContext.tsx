@@ -2,12 +2,20 @@ import { CancelTokenSource } from "axios";
 import { createContext, useContext, useState, useMemo } from "react";
 import { usePopup } from "./PopupContext";
 
+export type UploadStatus =
+  | "pending"
+  | "uploading"
+  | "completed"
+  | "error"
+  | "canceled"
+  | "conflicted";
+
 export interface FileUpload {
   id: string;
   filename: string;
   size: number;
   progress: number;
-  status: "pending" | "uploading" | "completed" | "error" | "canceled";
+  status: UploadStatus;
   cancelToken: CancelTokenSource;
   error?: string;
 }
@@ -22,6 +30,7 @@ interface UploadContextType {
   failUpload: (id: string, error: string) => void;
   clearCompleted: () => void;
   cancelUpload: (id: string) => void;
+  conflictUpload: (id: string) => void;
 }
 
 const UploadContext = createContext<UploadContextType | undefined>(undefined);
@@ -99,6 +108,14 @@ export const UploadProvider: React.FC<{ children: React.ReactNode }> = ({
       });
   };
 
+  const conflictUpload = (id: string) => {
+    setUploads((prev) =>
+      prev.map((upload) => {
+        return upload.id === id ? { ...upload, status: "conflicted" } : upload;
+      })
+    );
+  };
+
   const clearCompleted = () => {
     setUploads((prev) =>
       prev.filter((u) => u.status !== "completed" && u.status !== "canceled")
@@ -141,6 +158,7 @@ export const UploadProvider: React.FC<{ children: React.ReactNode }> = ({
         failUpload,
         clearCompleted,
         cancelUpload,
+        conflictUpload,
       }}
     >
       {children}

@@ -1,5 +1,5 @@
 import { useRef, forwardRef, useImperativeHandle } from "react";
-import { upload, uploadLarge } from "../../api/files";
+import { upload } from "../../api/files";
 import useAxios from "../../hooks/useAxios";
 import { useStorage } from "../../contexts/StorageContext";
 import { useEntities } from "../../contexts/EntitiesContext";
@@ -20,8 +20,14 @@ const FileUploader = forwardRef<FileUploaderRef, FileUploaderProps>(
   ({ maxParallelUploads = 3 }, ref) => {
     const { storage } = useStorage();
     const { currentDir, refresh } = useEntities();
-    const { addUpload, updateUploadProgress, completeUpload, failUpload } =
-      useUploads();
+    const {
+      addUpload,
+      updateUploadProgress,
+      completeUpload,
+      failUpload,
+      conflictUpload,
+      cancelUpload,
+    } = useUploads();
     const { show } = usePopup();
 
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -49,25 +55,34 @@ const FileUploader = forwardRef<FileUploaderRef, FileUploaderProps>(
             updateUploadProgress(uploadItem.id, progress);
           };
 
-          const requestConfig =
-            file.size > config.smallFileLimit * 1024 * 1024
-              ? uploadLarge(file, storage.id, currentDir?.id, onUploadProgress)
-              : upload(file, storage.id, currentDir?.id, onUploadProgress);
-
-          requestConfig.cancelToken = source.token;
+          const requestConfig = upload(file, storage.id, currentDir?.id, {
+            isLarge: file.size > config.smallFileLimit * 1024 * 1024,
+            onUploadProgress,
+            cancelToken: source.token,
+          });
 
           return axios(requestConfig)
             .then(() => {
               show(`Файл ${file.name} успешно загружен!`, {
                 iconType: "success",
               });
-              refresh();
               completeUpload(uploadItem.id);
+              refresh();
             })
             .catch((error) => {
               const errorMessage =
                 error instanceof Error ? error.message : "Unknown error";
-              failUpload(uploadItem.id, errorMessage);
+
+              if (axios.isCancel(error)) cancelUpload(uploadItem.id);
+              else if (error?.response?.data?.errors?.[0]?.path === "upload") {
+                conflictUpload(uploadItem.id);
+                show(
+                  `Файл с именем ${file.name} уже есть в текущей директории. Разрешите конфликт!`,
+                  {
+                    iconType: "error",
+                  }
+                );
+              } else failUpload(uploadItem.id, errorMessage);
             });
         });
 

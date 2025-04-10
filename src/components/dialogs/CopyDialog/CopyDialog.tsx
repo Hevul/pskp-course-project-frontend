@@ -41,7 +41,7 @@ const CopyDialogContent: FC<Props> = ({ entity, onSuccess }) => {
     return 0;
   });
 
-  const { sendRequest } = useAxios({
+  const { sendRequest, loading } = useAxios({
     onSuccess(response) {
       if (response.status === 200) {
         show(
@@ -99,7 +99,7 @@ const CopyDialogContent: FC<Props> = ({ entity, onSuccess }) => {
           }
           icon={<PlusIcon />}
         />
-        <Button title="Копировать" onClick={handleCopy} />
+        <Button title="Копировать" loading={loading} onClick={handleCopy} />
       </div>
     </DialogShell>
   );

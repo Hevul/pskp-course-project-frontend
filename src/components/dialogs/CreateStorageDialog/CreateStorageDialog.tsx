@@ -20,7 +20,7 @@ const CreateStorageDialog: FC<Props> = ({ onSuccess }) => {
   const { close } = useDialog();
   const { show } = usePopup();
 
-  const { sendRequest } = useAxios({
+  const { sendRequest, loading } = useAxios({
     onSuccess(response) {
       if (response?.status === 201) {
         show(`Хранилище ${name} успешно создано!`, { iconType: "success" });
@@ -58,7 +58,7 @@ const CreateStorageDialog: FC<Props> = ({ onSuccess }) => {
       </div>
 
       <div className={styles.buttons}>
-        <Button title="Создать" onClick={handleCreate} />
+        <Button title="Создать" onClick={handleCreate} loading={loading} />
       </div>
     </DialogShell>
   );
