@@ -1,5 +1,5 @@
 import styles from "./Dashboard.module.css";
-import { useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import ProtectedRoute from "../../components/ProtectedRoute/ProtectedRoute";
 import StorageList from "../../components/StorageList/StorageList";
 import Layout from "../../components/Layout/Layout";

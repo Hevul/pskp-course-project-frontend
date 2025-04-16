@@ -17,7 +17,7 @@ import { useEntities } from "../../../contexts/EntitiesContext";
 import Tile from "./Tile";
 import config from "../../../config.json";
 import { usePopup } from "../../../contexts/PopupContext";
-import TickSquareIcon from "../../icons/TickSquareIcon";
+import { useLinks } from "../../../contexts/LinksContext";
 
 type Status = "public" | "private";
 
@@ -33,6 +33,7 @@ const LinkDialog: FC<Props> = ({ file }) => {
   const { close, open } = useDialog();
   const { refresh } = useEntities();
   const { show } = usePopup();
+  const { refresh: refreshLinks } = useLinks();
 
   const { sendRequest: sendGenerate } = useAxios({
     onSuccess(response) {
@@ -56,6 +57,7 @@ const LinkDialog: FC<Props> = ({ file }) => {
         });
 
         setStatus(status);
+        refreshLinks();
       }
     },
   });
@@ -64,6 +66,7 @@ const LinkDialog: FC<Props> = ({ file }) => {
       if (response.status === 200) {
         show(`Ссылка удалена!`, { iconType: "success" });
         refresh();
+        refreshLinks();
         close();
       }
     },
@@ -73,10 +76,11 @@ const LinkDialog: FC<Props> = ({ file }) => {
       if (response.status === 200) {
         show(
           `Ссылка теперь ${
-            link?.status === "public" ? "публичная" : "приватная"
+            link?.status === "public" ? "приватная" : "публичная"
           }!`,
           { iconType: "success" }
         );
+        refreshLinks();
       }
     },
   });

@@ -4,7 +4,7 @@ import config from "../config.json";
 const url = `${config.base}/${config.file}`;
 
 export const get = (id: string) => ({
-  url: `${url}/${id}`,
+  url: `${url}/get/${id}`,
   method: "get",
   withCredentials: true,
 });

@@ -4,6 +4,7 @@ import { EntitiesProvider } from "../../contexts/EntitiesContext";
 import { StorageProvider } from "../../contexts/StorageContext";
 import { PopupProvider } from "../../contexts/PopupContext";
 import { ContextMenuProvider } from "../../contexts/ContextMenuContext";
+import { LinksProvider } from "../../contexts/LinksContext";
 
 const PrivateLayout = () => {
   return (
@@ -11,9 +12,11 @@ const PrivateLayout = () => {
       <ContextMenuProvider>
         <StorageProvider>
           <EntitiesProvider>
-            <DialogProvider>
-              <Outlet />
-            </DialogProvider>
+            <LinksProvider>
+              <DialogProvider>
+                <Outlet />
+              </DialogProvider>
+            </LinksProvider>
           </EntitiesProvider>
         </StorageProvider>
       </ContextMenuProvider>

@@ -1,0 +1,55 @@
+.row {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  align-items: center;
+}
+
+.num {
+  color: #adc0f8;
+  font-size: 23px;
+  font-weight: var(--bold);
+  margin-right: 28px;
+}
+
+.content {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  background-color: rgba(224, 238, 253, 0.6);
+  border-radius: 10px;
+  width: 100%;
+  height: 70px;
+  padding-left: 20px;
+  padding-right: 22px;
+}
+
+.icon {
+  flex: 0;
+  margin-right: 26px;
+}
+
+.name,
+.status {
+  color: #4676fb;
+  font-size: 16px;
+}
+
+.name {
+  flex: 1;
+}
+
+.status {
+  flex: 1;
+}
+
+.buttons {
+  display: flex;
+  flex-direction: row;
+  gap: 12px;
+}
+
+.button {
+  padding: 16px;
+  cursor: pointer;
+}

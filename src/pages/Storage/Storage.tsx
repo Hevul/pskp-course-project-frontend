@@ -1,64 +1,47 @@
 import styles from "./Storage.module.css";
 import ProtectedRoute from "../../components/ProtectedRoute/ProtectedRoute";
 import Layout from "../../components/Layout/Layout";
-import Search from "../../components/Search/Search";
-import { SetStateAction } from "react";
 import Button from "../../components/Button/Button";
-import OptionsIcon from "../../components/icons/OptionsIcon";
+import StorageButton from "./components/StorageButton";
+import { useStorage } from "../../contexts/StorageContext";
+import { useDialog } from "../../contexts/DialogContext";
+import CreateStorageDialog from "../../components/dialogs/CreateStorageDialog/CreateStorageDialog";
+import EmptyState from "../../components/EmptyState/EmptyState";
+import EmptyBoxIcon from "../../components/icons/EmptyBoxIcon";
 
 const Storage = () => {
+  const { storages, refresh } = useStorage();
+  const { open } = useDialog();
+
+  const isEmpty = storages.length === 0;
+
   return (
     <ProtectedRoute>
       <Layout>
         <div className={styles.main}>
-          <h1 className={styles.h1}>Панель управления</h1>
+          <div className={styles.top}>
+            <h2 className={styles.h2}>Мои хранилища</h2>
+            <Button
+              title={"Создать новое хранилище"}
+              onClick={() => open(<CreateStorageDialog onSuccess={refresh} />)}
+            />
+          </div>
 
-          <div className={styles.storagesPanel}>
-            <div className={styles.top}>
-              <h2 className={styles.h2}>Хранилища</h2>
-              <Button
-                title={"Создать новое хранилище"}
-                onClick={function (): void {
-                  throw new Error("Function not implemented.");
-                }}
+          {isEmpty ? (
+            <div className={styles.emptyDiv}>
+              <EmptyState
+                message="Нет доступных хранилищ"
+                subMessage="Создайте первое хранилище, чтобы оно появилось здесь"
+                icon={<EmptyBoxIcon />}
               />
             </div>
-
+          ) : (
             <div className={styles.storages}>
-              <div className={styles.storage}>
-                <div className={styles.options}>
-                  <OptionsIcon color="rgba(65, 64, 75, 0.6)" />
-                </div>
-                <h1 className={styles.storageName}>Storage 2</h1>
-              </div>
+              {storages.map((s) => (
+                <StorageButton key={s.id} storage={s} />
+              ))}
             </div>
-          </div>
-
-          <div className={styles.savedLinksPanel}>
-            <div className={styles.top}>
-              <h2 className={styles.h2}>Сохранённые ссылки</h2>
-              <Search
-                width="500px"
-                search={""}
-                setSearch={function (value: SetStateAction<string>): void {
-                  throw new Error("Function not implemented.");
-                }}
-              />
-            </div>
-          </div>
-
-          <div className={styles.myLinksPanel}>
-            <div className={styles.top}>
-              <h2 className={styles.h2}>Мои ссылки</h2>
-              <Search
-                width="500px"
-                search={""}
-                setSearch={function (value: SetStateAction<string>): void {
-                  throw new Error("Function not implemented.");
-                }}
-              />
-            </div>
-          </div>
+          )}
         </div>
       </Layout>
     </ProtectedRoute>

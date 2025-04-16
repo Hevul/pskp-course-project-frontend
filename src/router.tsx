@@ -8,6 +8,7 @@ import PublicLayout from "./components/PublicLayout/PublicLayout";
 import PrivateLayout from "./components/PrivateLayout/PrivateLayout";
 import FileView from "./pages/FileView/FileView";
 import DownloadByLink from "./pages/DownloadByLink/DownloadByLink";
+import MyLinks from "./pages/MyLinks/MyLinks";
 
 const notFoundTrouble = (
   <Trouble
@@ -41,6 +42,7 @@ const router = createBrowserRouter([
     children: [
       { path: "/dashboard", element: <Dashboard /> },
       { path: "/storage", element: <Storage /> },
+      { path: "/my-links", element: <MyLinks /> },
     ],
   },
   {

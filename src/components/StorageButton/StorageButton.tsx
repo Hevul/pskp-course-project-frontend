@@ -9,6 +9,7 @@ import CreateStorageDialog from "../dialogs/CreateStorageDialog/CreateStorageDia
 import { useDialog } from "../../contexts/DialogContext";
 import RenameStorageDialog from "../dialogs/RenameStorageDialog/RenameStorageDialog";
 import DeleteStorageDialog from "../dialogs/DeleteStorageDialog/DeleteStorageDialog";
+import { useEntities } from "../../contexts/EntitiesContext";
 
 interface Props {
   name: string;
@@ -19,6 +20,7 @@ interface Props {
 const StorageButton: FC<Props> = ({ name, id, className }) => {
   const { storage, selectStorage, refresh } = useStorage();
   const { open } = useDialog();
+  const { setCurrentDir } = useEntities();
 
   const isActive = storage?.id === id;
 
@@ -51,13 +53,18 @@ const StorageButton: FC<Props> = ({ name, id, className }) => {
     },
   ];
 
+  const handleClick = () => {
+    selectStorage({ id, name });
+    setCurrentDir(null);
+  };
+
   return (
     <ContextMenuArea items={items}>
-      <div className={className}>
+      <div className={styles.div}>
         <button
           style={{ color: isActive ? "#4676FB" : "#ADC0F8" }}
           className={styles.button}
-          onClick={() => selectStorage({ id, name })}
+          onClick={handleClick}
         >
           {name}
         </button>

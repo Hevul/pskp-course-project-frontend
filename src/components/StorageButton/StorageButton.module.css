@@ -1,8 +1,16 @@
+.div {
+  height: 100%;
+}
+
 .button {
   color: var(--primary-blue);
   font-size: 23px;
   font-weight: var(--bold);
   cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: inline-block;
 }
 
 .underline {

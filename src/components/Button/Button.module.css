@@ -1,18 +1,62 @@
 .button {
+  --button-color: #4676fb;
+  --hover-color: #4676fbcc;
+  --active-color: #4676fb99;
+
   color: white;
   padding: 0 24px;
   height: 50px;
   font-size: 16px;
   font-weight: var(--medium);
-  background-color: var(--primary-blue);
+  background-color: var(--button-color);
   border-radius: 12px;
   cursor: pointer;
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 10px;
   box-shadow: var(--primary-shadow);
+  border: none;
+  outline: none;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.button:hover:not(:disabled) {
+  background-color: var(--hover-color);
+  box-shadow: 0 4px 12px rgba(70, 118, 251, 0.4);
+}
+
+.button:active:not(:disabled) {
+  background-color: var(--active-color);
+  box-shadow: 0 2px 6px rgba(70, 118, 251, 0.4);
 }
 
 .button:disabled {
   cursor: not-allowed;
+  opacity: 0.7;
+  transform: none !important;
+}
+
+.button .content {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  position: relative;
+  z-index: 1;
+}
+
+.button .icon {
+  display: flex;
+  transition: transform 0.2s ease;
+}
+
+.button:hover:not(:disabled) .icon {
+  transform: scale(1.1);
+}
+
+/* Анимация загрузки */
+.button.loading {
+  cursor: progress;
 }

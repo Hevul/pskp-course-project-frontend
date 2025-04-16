@@ -5,3 +5,7 @@
   gap: 30px;
   flex-wrap: wrap;
 }
+
+.emptyDiv {
+  width: 100%;
+}

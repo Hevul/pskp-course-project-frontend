@@ -9,6 +9,12 @@ export const get = (id: string): AxiosRequestConfig => ({
   withCredentials: true,
 });
 
+export const getAllByOwner = (): AxiosRequestConfig => ({
+  url: `${url}/get-all-by-owner`,
+  method: "get",
+  withCredentials: true,
+});
+
 export const getByLink = (link: string): AxiosRequestConfig => ({
   url: `${url}/get-by-link/${link}`,
   method: "get",

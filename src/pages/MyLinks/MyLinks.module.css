@@ -10,12 +10,6 @@
   gap: 40px;
 }
 
-.h1 {
-  font-size: 28px;
-  font-weight: var(--regular);
-  color: var(--primary-black);
-}
-
 .h2 {
   font-size: 23px;
   color: var(--primary-black);
@@ -29,17 +23,11 @@
   justify-content: space-between;
 }
 
-.storages {
+.links {
   display: flex;
-  flex-direction: row;
-  justify-content: flex-start;
-  flex-wrap: wrap;
+  flex-direction: column;
+  width: 100%;
+  gap: 16px;
   overflow-y: auto;
-  gap: 20px;
-  padding: 10px;
-}
-
-.storages > * {
-  flex: 0 0 calc(25% - 20px);
-  margin-bottom: 20px;
+  padding-right: 40px;
 }

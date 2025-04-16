@@ -44,7 +44,7 @@ const DownloadByLink = () => {
   });
   const { sendRequest: sendGetFileInfo } = useAxios({
     onSuccess(response) {
-      if (response.status !== 200) return;
+      setFilename(response.data?._name);
     },
   });
 
@@ -84,7 +84,7 @@ const DownloadByLink = () => {
 
         <FileIcon color="#4676FB" width="160" strokeWidth="0.5" />
 
-        <h1 className={styles.h1}>{link?.fileId}</h1>
+        <h1 className={styles.h1}>{filename}</h1>
 
         <div className={styles.buttons}>
           <SecondaryButton

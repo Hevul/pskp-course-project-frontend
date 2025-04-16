@@ -18,4 +18,7 @@
   font-size: 22px;
   color: var(--primary-black);
   font-weight: var(--semi-bold);
+  flex: 1;
+  word-break: break-word;
+  padding-right: 16px;
 }

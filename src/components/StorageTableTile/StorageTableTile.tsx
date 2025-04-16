@@ -17,7 +17,7 @@ import { useDialog } from "../../contexts/DialogContext";
 import fileDownload from "js-file-download";
 import useAxios from "../../hooks/useAxios";
 import ExtFileIcon from "../icons/fileExts/ExtFileIcon";
-import ShowInfoDialog from "../dialogs/ShowInfoDialog/ShowInfoDialog";
+import InfoDialog from "../dialogs/InfoDialog/InfoDialog";
 import InfoSquareIcon from "../icons/InfoSquareIcon";
 import CopyDialog from "../dialogs/CopyDialog/CopyDialog";
 import CopyIcon from "../icons/CopyIcon";
@@ -27,6 +27,7 @@ import LinkDialog from "../dialogs/LinkDialog/LinkDialog";
 import AddUserIcon from "../icons/AddUserIcon";
 import LinkIcon from "../icons/LinkIcon";
 import { usePopup } from "../../contexts/PopupContext";
+import { formatDate, formatSize } from "../../utils";
 
 interface Props {
   entity: File | Dir;
@@ -145,7 +146,28 @@ const StorageTableTile: FC<Props> = ({
     {
       title: `Информация о ${isFile ? "файле" : "папке"}`,
       icon: <InfoSquareIcon width="18" />,
-      action: () => open(<ShowInfoDialog entity={entity} />),
+      action: () =>
+        open(
+          <InfoDialog
+            title={`Информация о ${isFile ? "файле" : "папке"}`}
+            fields={[
+              { label: "Название:", value: name },
+              ...(isFile
+                ? [
+                    { label: "Размер:", value: formatSize(entity.size) },
+                    { label: "Тип:", value: ext.toUpperCase() },
+                  ]
+                : []),
+              {
+                label: "Дата создания:",
+                value: formatDate(entity.uploadAt),
+              },
+              ...(isFile && entity.hasLink
+                ? [{ label: "Доступ по ссылке:", value: "Да" }]
+                : []),
+            ]}
+          />
+        ),
     },
   ];
 

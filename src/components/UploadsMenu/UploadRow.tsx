@@ -4,8 +4,6 @@ import style from "./UploadsMenu.module.css";
 import { UploadStatus, useUploads } from "../../contexts/UploadContext";
 import CloseCircleIcon from "../icons/CloseCircleIcon";
 import SecondaryButton from "../SecondaryButton/SecondaryButton";
-import config from "../../config.json";
-import { overwrite } from "../../api/files";
 
 interface Props {
   id: string;
@@ -137,7 +135,9 @@ const UploadRow: FC<Props> = ({
         />
       </div>
 
-      <SecondaryButton title={"Перезаписать"} onClick={() => {}} />
+      {isConflicted && (
+        <SecondaryButton title={"Перезаписать"} onClick={() => {}} />
+      )}
 
       <div
         className={style.iconButton}

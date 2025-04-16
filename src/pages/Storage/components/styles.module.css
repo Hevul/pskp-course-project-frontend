@@ -1,0 +1,47 @@
+/* StorageButton */
+.storage {
+  width: 260px;
+  height: 230px;
+  background-color: #ecf5fe;
+  border-radius: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.storage.selected {
+  background-color: #4676fb;
+  transform: scale(1.02);
+  box-shadow: 0 8px 15px rgba(70, 118, 251, 0.3);
+}
+
+.options {
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  align-items: flex-start;
+  padding: 24px;
+  transition: transform 0.3s ease;
+}
+
+.options:hover {
+  transform: scale(1.1);
+}
+
+.storageName {
+  width: 100%;
+  text-align: center;
+  padding: 0 20px;
+  font-size: 23px;
+  color: rgba(65, 64, 75, 0.6);
+  font-weight: var(--bold);
+  word-wrap: break-word;
+  transition: color 0.3s ease;
+}
+
+.storage.selected .storageName {
+  color: white;
+}

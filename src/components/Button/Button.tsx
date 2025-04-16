@@ -8,6 +8,7 @@ interface Props {
   icon?: ReactNode;
   color?: string;
   loading?: boolean;
+  disabled?: boolean;
 }
 
 const Button: FC<Props> = ({
@@ -16,19 +17,26 @@ const Button: FC<Props> = ({
   icon,
   color = "#4676fb",
   loading = false,
+  disabled = false,
 }) => {
   return (
     <button
-      className={styles.button}
+      className={`${styles.button} ${loading ? styles.loading : ""}`}
       onClick={onClick}
-      style={{ background: color }}
-      disabled={loading}
+      style={
+        {
+          "--button-color": color,
+          "--hover-color": `${color}cc`, // Добавляем прозрачность
+          "--active-color": `${color}99`,
+        } as React.CSSProperties
+      }
+      disabled={loading || disabled}
     >
       {loading ? (
         <Loading color="white" size="small" />
       ) : (
-        <div>
-          {icon}
+        <div className={styles.content}>
+          {icon && <span className={styles.icon}>{icon}</span>}
           {title}
         </div>
       )}

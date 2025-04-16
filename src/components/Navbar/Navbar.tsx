@@ -7,6 +7,7 @@ import LogoutIcon from "../icons/LogoutIcon";
 import useAxios from "../../hooks/useAxios";
 import { logout } from "../../api/auth";
 import { useStorage } from "../../contexts/StorageContext";
+import LinkIcon from "../icons/LinkIcon";
 
 const Navbar = () => {
   const location = useLocation();
@@ -30,6 +31,11 @@ const Navbar = () => {
             icon={<RepositoryIcon />}
             isActive={"/storage" === currentUrl}
             onClick={() => navigate("/storage")}
+          />
+          <NavButton
+            icon={<LinkIcon />}
+            isActive={"/my-links" === currentUrl}
+            onClick={() => navigate("/my-links")}
           />
         </div>
 
