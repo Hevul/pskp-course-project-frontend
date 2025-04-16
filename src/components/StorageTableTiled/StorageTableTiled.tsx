@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { SetStateAction, useEffect, useRef, useState } from "react";
 import { useEntities } from "../../contexts/EntitiesContext";
 import { Entity } from "../../models/Entity";
 import StorageTableTile from "../StorageTableTile/StorageTableTile";
@@ -6,6 +6,8 @@ import styles from "./StorageTableTiled.module.css";
 import EmptyState from "../EmptyState/EmptyState";
 import EmptyBoxIcon from "../icons/EmptyBoxIcon";
 import { useStorage } from "../../contexts/StorageContext";
+import FileTile from "../FileTile/FileTile";
+import DirTile from "../DirTile/DirTile";
 
 const StorageTableTiled = () => {
   const { entities } = useEntities();
@@ -62,14 +64,23 @@ const StorageTableTiled = () => {
           />
         </div>
       ) : (
-        sortedEntities.map((e) => (
-          <StorageTableTile
-            key={e.id}
-            entity={e}
-            selectedEntity={selectedEntity}
-            setSelectedEntity={setSelectedEntity}
-          />
-        ))
+        sortedEntities.map((e) =>
+          e.type === "file" ? (
+            <FileTile
+              key={e.id}
+              file={e}
+              selectedEntity={selectedEntity}
+              setSelectedEntity={setSelectedEntity}
+            />
+          ) : (
+            <DirTile
+              key={e.id}
+              dir={e}
+              selectedEntity={selectedEntity}
+              setSelectedEntity={setSelectedEntity}
+            />
+          )
+        )
       )}
     </div>
   );

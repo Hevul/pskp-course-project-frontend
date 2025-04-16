@@ -18,6 +18,12 @@ export const create = (
   withCredentials: true,
 });
 
+export const getFullInfo = (id: string) => ({
+  url: `${url}/get-full-info/${id}`,
+  method: "get",
+  withCredentials: true,
+});
+
 export const remove = (id: string): AxiosRequestConfig => ({
   url: `${url}/delete`,
   method: "delete",
