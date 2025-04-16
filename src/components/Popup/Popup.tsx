@@ -29,11 +29,11 @@ const Popup: React.FC<PopupProps> = ({
 
     switch (iconType) {
       case "error":
-        return <DangerCircleIcon color="#FF3030" />;
+        return <DangerCircleIcon color="#FF3030" width="30px" />;
       case "info":
-        return <InfoSquareIcon color="#ECF5FE" />;
+        return <InfoSquareIcon color="#ECF5FE" width="30px" />;
       case "success":
-        return <TickSquareIcon color="#3EE657" />;
+        return <TickSquareIcon color="#3EE657" width="30px" />;
       default:
         return null;
     }

@@ -1,4 +1,3 @@
-import Layout from "../../components/Layout/Layout";
 import ProtectedRoute from "../../components/ProtectedRoute/ProtectedRoute";
 import Search from "../../components/Search/Search";
 import LinkRow from "./components/LinkRow";
@@ -7,6 +6,7 @@ import { useLinks } from "../../contexts/LinksContext";
 import Loading from "../../components/Loading/Loading";
 import EmptyState from "../../components/EmptyState/EmptyState";
 import EmptyBoxIcon from "../../components/icons/EmptyBoxIcon";
+import Layout from "../Layout/Layout";
 
 const MyLinks = () => {
   const { links, loading } = useLinks();

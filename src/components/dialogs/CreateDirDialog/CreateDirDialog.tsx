@@ -45,7 +45,12 @@ const CreateDirDialog: FC<Props> = ({ currentDir, onSuccess }) => {
   });
 
   const handleCreate = async () => {
-    if (!storage) return;
+    if (!storage) {
+      show("Необходимо выбрать хранилище!", { iconType: "error" });
+      setErrorMsg("Необходимо выбрать хранилище!");
+      return;
+    }
+
     setErrorMsg(null);
     sendRequest(create(name, storage.id, currentDir?.id));
   };

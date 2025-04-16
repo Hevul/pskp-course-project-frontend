@@ -28,7 +28,7 @@ interface UploadContextType {
   updateUploadProgress: (id: string, uploaded: number) => void;
   completeUpload: (id: string) => void;
   failUpload: (id: string, error: string) => void;
-  clearCompleted: () => void;
+  clear: () => void;
   cancelUpload: (id: string) => void;
   conflictUpload: (id: string) => void;
 }
@@ -116,10 +116,8 @@ export const UploadProvider: React.FC<{ children: React.ReactNode }> = ({
     );
   };
 
-  const clearCompleted = () => {
-    setUploads((prev) =>
-      prev.filter((u) => u.status !== "completed" && u.status !== "canceled")
-    );
+  const clear = () => {
+    setUploads((prev) => []);
   };
 
   const removeUpload = (id: string) => {
@@ -156,7 +154,7 @@ export const UploadProvider: React.FC<{ children: React.ReactNode }> = ({
         updateUploadProgress,
         completeUpload,
         failUpload,
-        clearCompleted,
+        clear,
         cancelUpload,
         conflictUpload,
       }}

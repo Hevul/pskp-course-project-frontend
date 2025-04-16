@@ -1,11 +1,10 @@
 import { SetStateAction, useEffect, useRef, useState } from "react";
-import { useEntities } from "../../contexts/EntitiesContext";
-import { Entity } from "../../models/Entity";
-import StorageTableTile from "../StorageTableTile/StorageTableTile";
+import { useEntities } from "../../../../contexts/EntitiesContext";
+import { Entity } from "../../../../models/Entity";
 import styles from "./StorageTableTiled.module.css";
-import EmptyState from "../EmptyState/EmptyState";
-import EmptyBoxIcon from "../icons/EmptyBoxIcon";
-import { useStorage } from "../../contexts/StorageContext";
+import EmptyState from "../../../../components/EmptyState/EmptyState";
+import EmptyBoxIcon from "../../../../components/icons/EmptyBoxIcon";
+import { useStorage } from "../../../../contexts/StorageContext";
 import FileTile from "../FileTile/FileTile";
 import DirTile from "../DirTile/DirTile";
 

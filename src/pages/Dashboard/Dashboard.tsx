@@ -1,8 +1,7 @@
 import styles from "./Dashboard.module.css";
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 import ProtectedRoute from "../../components/ProtectedRoute/ProtectedRoute";
-import StorageList from "../../components/StorageList/StorageList";
-import Layout from "../../components/Layout/Layout";
+import StorageList from "./components/StorageList/StorageList";
 import ContextMenuArea from "../../components/ContextMenuArea/ContextMenuArea";
 import PlusIcon from "../../components/icons/PlusIcon";
 import { useDialog } from "../../contexts/DialogContext";
@@ -10,13 +9,14 @@ import CreateDirDialog from "../../components/dialogs/CreateDirDialog/CreateDirD
 import UploadIcon from "../../components/icons/UploadIcon";
 import Path from "../../components/Path/Path";
 import { useEntities } from "../../contexts/EntitiesContext";
-import StorageTableTiled from "../../components/StorageTableTiled/StorageTableTiled";
+import StorageTableTiled from "./components/StorageTableTiled/StorageTableTiled";
+import { UploadProvider } from "../../contexts/UploadContext";
+import UploadsMenu from "./components/UploadsMenu/UploadsMenu";
+import Loading from "../../components/Loading/Loading";
+import Layout from "../Layout/Layout";
 import FileUploader, {
   FileUploaderRef,
-} from "../../components/FileUploader/FileUploader";
-import { UploadProvider } from "../../contexts/UploadContext";
-import UploadsMenu from "../../components/UploadsMenu/UploadsMenu";
-import Loading from "../../components/Loading/Loading";
+} from "./components/FileUploader/FileUploader";
 
 const Dashboard = () => {
   const { open } = useDialog();

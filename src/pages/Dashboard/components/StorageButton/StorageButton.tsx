@@ -1,15 +1,15 @@
 import { FC } from "react";
 import styles from "./StorageButton.module.css";
-import { useStorage } from "../../contexts/StorageContext";
-import ContextMenuArea from "../ContextMenuArea/ContextMenuArea";
-import EditIcon from "../icons/EditIcon";
-import DeleteIcon from "../icons/DeleteIcon";
-import PlusIcon from "../icons/PlusIcon";
-import CreateStorageDialog from "../dialogs/CreateStorageDialog/CreateStorageDialog";
-import { useDialog } from "../../contexts/DialogContext";
-import RenameStorageDialog from "../dialogs/RenameStorageDialog/RenameStorageDialog";
-import DeleteStorageDialog from "../dialogs/DeleteStorageDialog/DeleteStorageDialog";
-import { useEntities } from "../../contexts/EntitiesContext";
+import { useStorage } from "../../../../contexts/StorageContext";
+import ContextMenuArea from "../../../../components/ContextMenuArea/ContextMenuArea";
+import EditIcon from "../../../../components/icons/EditIcon";
+import DeleteIcon from "../../../../components/icons/DeleteIcon";
+import PlusIcon from "../../../../components/icons/PlusIcon";
+import CreateStorageDialog from "../../../../components/dialogs/CreateStorageDialog/CreateStorageDialog";
+import { useDialog } from "../../../../contexts/DialogContext";
+import RenameStorageDialog from "../../../../components/dialogs/RenameStorageDialog/RenameStorageDialog";
+import DeleteStorageDialog from "../../../../components/dialogs/DeleteStorageDialog/DeleteStorageDialog";
+import { useEntities } from "../../../../contexts/EntitiesContext";
 
 interface Props {
   name: string;

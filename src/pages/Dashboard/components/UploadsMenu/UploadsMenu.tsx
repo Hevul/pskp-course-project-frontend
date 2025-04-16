@@ -1,16 +1,16 @@
 import { useEffect, useState } from "react";
-import ChevronUpIcon from "../icons/ChevronUpIcon";
+import ChevronUpIcon from "../../../../components/icons/ChevronUpIcon";
 import UploadRow from "./UploadRow";
 import styles from "./UploadsMenu.module.css";
-import ChevronDownIcon from "../icons/ChevronDownIcon";
-import { useUploads } from "../../contexts/UploadContext";
-import SecondaryButton from "../SecondaryButton/SecondaryButton";
+import ChevronDownIcon from "../../../../components/icons/ChevronDownIcon";
+import { useUploads } from "../../../../contexts/UploadContext";
+import SecondaryButton from "../../../../components/SecondaryButton/SecondaryButton";
 
 const UploadsMenu = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
-  const { uploads, totalProgress, clearCompleted } = useUploads();
+  const { uploads, totalProgress, clear: clearCompleted } = useUploads();
   const [isAnimating, setIsAnimating] = useState(false);
 
   const isCompleted = totalProgress === 100;

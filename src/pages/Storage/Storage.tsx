@@ -1,6 +1,5 @@
 import styles from "./Storage.module.css";
 import ProtectedRoute from "../../components/ProtectedRoute/ProtectedRoute";
-import Layout from "../../components/Layout/Layout";
 import Button from "../../components/Button/Button";
 import StorageButton from "./components/StorageButton";
 import { useStorage } from "../../contexts/StorageContext";
@@ -8,6 +7,7 @@ import { useDialog } from "../../contexts/DialogContext";
 import CreateStorageDialog from "../../components/dialogs/CreateStorageDialog/CreateStorageDialog";
 import EmptyState from "../../components/EmptyState/EmptyState";
 import EmptyBoxIcon from "../../components/icons/EmptyBoxIcon";
+import Layout from "../Layout/Layout";
 
 const Storage = () => {
   const { storages, refresh } = useStorage();

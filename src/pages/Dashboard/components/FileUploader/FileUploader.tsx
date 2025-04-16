@@ -1,12 +1,12 @@
 import { useRef, forwardRef, useImperativeHandle } from "react";
-import { upload } from "../../api/files";
-import useAxios from "../../hooks/useAxios";
-import { useStorage } from "../../contexts/StorageContext";
-import { useEntities } from "../../contexts/EntitiesContext";
-import { FileUpload, useUploads } from "../../contexts/UploadContext";
-import config from "../../config.json";
+import { upload } from "../../../../api/files";
+import useAxios from "../../../../hooks/useAxios";
+import { useStorage } from "../../../../contexts/StorageContext";
+import { useEntities } from "../../../../contexts/EntitiesContext";
+import { FileUpload, useUploads } from "../../../../contexts/UploadContext";
+import config from "../../../../config.json";
 import axios from "axios";
-import { usePopup } from "../../contexts/PopupContext";
+import { usePopup } from "../../../../contexts/PopupContext";
 
 export interface FileUploaderRef {
   triggerFileDialog: () => void;
@@ -44,7 +44,11 @@ const FileUploader = forwardRef<FileUploaderRef, FileUploaderProps>(
 
     const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
       const files = Array.from(e.target.files || []);
-      if (files.length === 0 || !storage) return;
+      if (files.length === 0) return;
+      if (!storage) {
+        show("Необходимо выбрать хранилище!", { iconType: "error" });
+        return;
+      }
 
       try {
         const uploadPromises = files.map(async (file) => {

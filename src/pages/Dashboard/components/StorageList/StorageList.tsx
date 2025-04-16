@@ -1,6 +1,6 @@
 import StorageButton from "../StorageButton/StorageButton";
 import styles from "./StorageList.module.css";
-import { useStorage } from "../../contexts/StorageContext";
+import { useStorage } from "../../../../contexts/StorageContext";
 
 const StorageList = ({}) => {
   const { storages } = useStorage();

@@ -1,9 +1,9 @@
 import { FC, useState } from "react";
-import ExtFileIcon from "../icons/fileExts/ExtFileIcon";
+import ExtFileIcon from "../../../../components/icons/fileExts/ExtFileIcon";
 import style from "./UploadsMenu.module.css";
-import { UploadStatus, useUploads } from "../../contexts/UploadContext";
-import CloseCircleIcon from "../icons/CloseCircleIcon";
-import SecondaryButton from "../SecondaryButton/SecondaryButton";
+import { UploadStatus, useUploads } from "../../../../contexts/UploadContext";
+import CloseCircleIcon from "../../../../components/icons/CloseCircleIcon";
+import SecondaryButton from "../../../../components/SecondaryButton/SecondaryButton";
 
 interface Props {
   id: string;

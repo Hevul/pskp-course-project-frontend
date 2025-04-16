@@ -1,13 +1,13 @@
 import styles from "./Navbar.module.css";
 import { useLocation, useNavigate } from "react-router-dom";
-import FilesIcon from "../icons/FilesIcon";
-import RepositoryIcon from "../icons/RepositoryIcon";
+import FilesIcon from "../../../../components/icons/FilesIcon";
+import RepositoryIcon from "../../../../components/icons/RepositoryIcon";
 import NavButton from "../NavButton/NavButton";
-import LogoutIcon from "../icons/LogoutIcon";
-import useAxios from "../../hooks/useAxios";
-import { logout } from "../../api/auth";
-import { useStorage } from "../../contexts/StorageContext";
-import LinkIcon from "../icons/LinkIcon";
+import LogoutIcon from "../../../../components/icons/LogoutIcon";
+import useAxios from "../../../../hooks/useAxios";
+import { logout } from "../../../../api/auth";
+import { useStorage } from "../../../../contexts/StorageContext";
+import LinkIcon from "../../../../components/icons/LinkIcon";
 
 const Navbar = () => {
   const location = useLocation();

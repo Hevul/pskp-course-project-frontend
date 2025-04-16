@@ -1,6 +1,6 @@
 import { FC, ReactNode, useState, useEffect, useRef } from "react";
 import styles from "./Layout.module.css";
-import Navbar from "../Navbar/Navbar";
+import Navbar from "./components/Navbar/Navbar";
 
 interface Props {
   children?: ReactNode;
