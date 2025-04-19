@@ -1,3 +1,11 @@
+.loaderContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
 .loader {
   display: flex;
   align-items: center;
@@ -29,5 +37,26 @@
   40% {
     transform: scale(1);
     opacity: 1;
+  }
+}
+
+.label {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+    Ubuntu, Cantarell, sans-serif;
+  font-weight: 500;
+  letter-spacing: 0.25px;
+  animation: pulse 1.4s infinite ease-in-out;
+  opacity: 0.9;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.6;
   }
 }

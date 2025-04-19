@@ -21,11 +21,17 @@ export const getByLink = (link: string): AxiosRequestConfig => ({
   withCredentials: true,
 });
 
-export const getOrGenerate = (fileId: string): AxiosRequestConfig => ({
-  url: `${url}/get-or-generate`,
+export const getByFileInfoId = (id: string): AxiosRequestConfig => ({
+  url: `${url}/get-by-fileinfo-id/${id}`,
+  method: "get",
+  withCredentials: true,
+});
+
+export const create = (id: string): AxiosRequestConfig => ({
+  url: `${url}/create`,
   method: "post",
   data: {
-    fileId,
+    id,
   },
   withCredentials: true,
 });

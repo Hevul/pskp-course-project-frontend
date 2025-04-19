@@ -46,6 +46,7 @@ export const EntitiesProvider: React.FC<{ children: React.ReactNode }> = ({
       name: f._name,
       size: f.size,
       uploadAt: new Date(f.uploadAt),
+      updateAt: f.updateAt ? new Date(f.updateAt) : undefined,
       hasLink: f.hasLink,
     }));
 

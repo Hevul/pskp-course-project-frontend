@@ -4,6 +4,11 @@ import style from "./UploadsMenu.module.css";
 import { UploadStatus, useUploads } from "../../../../contexts/UploadContext";
 import CloseCircleIcon from "../../../../components/icons/CloseCircleIcon";
 import SecondaryButton from "../../../../components/SecondaryButton/SecondaryButton";
+import useAxios from "../../../../hooks/useAxios";
+import { confirmOverwrite } from "../../../../api/files";
+import { formatSize } from "../../../../utils";
+import { useDialog } from "../../../../contexts/DialogContext";
+import ResolveConflictDialog from "../../../../components/dialogs/ResolveConflictDialog/ResolveConflictDialog";
 
 interface Props {
   id: string;
@@ -12,25 +17,6 @@ interface Props {
   progress: number;
   status: UploadStatus;
   error?: string;
-}
-
-function formatFileSize(bytes: number, locale = "ru-RU"): string {
-  const units = ["B", "KB", "MB", "GB", "TB"];
-  let size = bytes;
-  let unitIndex = 0;
-
-  while (size >= 1024 && unitIndex < units.length - 1) {
-    size /= 1024;
-    unitIndex++;
-  }
-
-  return (
-    new Intl.NumberFormat(locale, {
-      maximumFractionDigits: 2,
-    }).format(size) +
-    " " +
-    units[unitIndex]
-  );
 }
 
 const UploadRow: FC<Props> = ({
@@ -43,7 +29,8 @@ const UploadRow: FC<Props> = ({
 }) => {
   const [isHovered, setIsHovered] = useState(false);
 
-  const { removeUpload, cancelUpload } = useUploads();
+  const { removeUpload, cancelUpload, getUpload } = useUploads();
+  const { open } = useDialog();
 
   const isCompleted = status === "completed";
   const isCanceled = status === "canceled";
@@ -53,13 +40,9 @@ const UploadRow: FC<Props> = ({
 
   const handleRemove = () => removeUpload(id);
   const handleCancel = () => cancelUpload(id);
-
   const handleOverwrite = () => {
-    // const requestConfig = overwrite(file, storage.id, currentDir?.id, {
-    //   isLarge: file.size > config.smallFileLimit * 1024 * 1024,
-    //   onUploadProgress,
-    //   cancelToken: source.token,
-    // });
+    const upload = getUpload(id);
+    if (upload) open(<ResolveConflictDialog upload={upload} />);
   };
 
   return (
@@ -96,7 +79,6 @@ const UploadRow: FC<Props> = ({
                 : isConflicted
                 ? "#FB8546"
                 : "#41404B",
-              width: isUploading ? "200px" : "100%",
             }}
             title={filename}
           >
@@ -115,28 +97,26 @@ const UploadRow: FC<Props> = ({
                 : "rgba(65, 64, 75, 0.6)",
             }}
           >
-            {formatFileSize(size)}
+            {formatSize(size)}
           </h2>
         </div>
       </div>
 
-      <div
-        style={{
-          visibility:
-            isCompleted || isCanceled || isConflicted ? "hidden" : "visible",
-        }}
-        className={style.fileLoadingEmpty}
-      >
-        <div
-          className={style.fileLoadingFilled}
-          style={{
-            width: `${progress}%`,
-          }}
-        />
-      </div>
+      {!isCompleted && !isCanceled && !isConflicted && (
+        <div className={style.fileLoadingEmpty}>
+          <div
+            className={style.fileLoadingFilled}
+            style={{
+              width: `${progress}%`,
+            }}
+          />
+        </div>
+      )}
 
       {isConflicted && (
-        <SecondaryButton title={"Перезаписать"} onClick={() => {}} />
+        <div className={style.conflictButton}>
+          <SecondaryButton title={"Разрешить"} onClick={handleOverwrite} />
+        </div>
       )}
 
       <div

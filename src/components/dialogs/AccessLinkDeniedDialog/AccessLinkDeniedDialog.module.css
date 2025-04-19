@@ -1,0 +1,11 @@
+.h1 {
+  font-size: 16px;
+  color: var(--primary-black);
+  font-weight: var(--semi-bold);
+}
+
+.buttons {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+}

@@ -3,6 +3,7 @@ export default interface File {
   name: string;
   size: number;
   uploadAt: Date;
+  updateAt?: Date;
   type: "file";
   hasLink?: boolean;
 }

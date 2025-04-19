@@ -22,21 +22,22 @@ export const upload = (
   storageId: string,
   parentId?: string,
   options: {
-    isLarge?: boolean;
     onUploadProgress?: (progress: number) => void;
     cancelToken?: any;
+    overwrite?: boolean;
   } = {}
 ): AxiosRequestConfig => {
-  const { isLarge = false, onUploadProgress, cancelToken } = options;
+  const { onUploadProgress, cancelToken, overwrite = false } = options;
 
   const formData = new FormData();
   formData.append("file", file);
   formData.append("name", file.name);
   formData.append("storageId", storageId);
   formData.append("parentId", parentId || "");
+  formData.append("overwrite", overwrite.toString());
 
-  const baseConfig: AxiosRequestConfig = {
-    url: `${url}/${isLarge ? "upload-large" : "upload"}`,
+  return {
+    url: `${url}/upload`,
     method: "post",
     data: formData,
     headers: {
@@ -52,58 +53,32 @@ export const upload = (
         onUploadProgress(percent);
       }
     },
-  };
-
-  const largeFileConfig: AxiosRequestConfig = {
     maxContentLength: Infinity,
     maxBodyLength: Infinity,
     timeout: 0,
   };
-
-  return isLarge ? { ...baseConfig, ...largeFileConfig } : baseConfig;
 };
 
-export const overwrite = (
-  file: File,
-  id: string,
+export const confirmOverwrite = (
+  tempFileId: string,
+  existingFileId: string,
   options: {
-    isLarge?: boolean;
-    onUploadProgress?: (progress: number) => void;
     cancelToken?: any;
   } = {}
 ): AxiosRequestConfig => {
-  const { isLarge = false, onUploadProgress, cancelToken } = options;
-
-  const formData = new FormData();
-  formData.append("file", file);
-  formData.append("id", id);
-
-  const baseConfig: AxiosRequestConfig = {
-    url: `${url}/${isLarge ? "overwrite-large" : "overwrite"}`,
+  return {
+    url: `${url}/confirm-overwrite`,
     method: "post",
-    data: formData,
+    data: {
+      tempFileId,
+      existingFileId,
+    },
     headers: {
-      "Content-Type": "multipart/form-data",
+      "Content-Type": "application/json",
     },
     withCredentials: true,
-    cancelToken,
-    onUploadProgress: (progressEvent) => {
-      if (onUploadProgress && progressEvent.total) {
-        const total = progressEvent.total ?? 1;
-        const loaded = progressEvent.loaded;
-        const percent = Math.round((loaded / total) * 100);
-        onUploadProgress(percent);
-      }
-    },
+    cancelToken: options.cancelToken,
   };
-
-  const largeFileConfig: AxiosRequestConfig = {
-    maxContentLength: Infinity,
-    maxBodyLength: Infinity,
-    timeout: 0,
-  };
-
-  return isLarge ? { ...baseConfig, ...largeFileConfig } : baseConfig;
 };
 
 export const remove = (id: string): AxiosRequestConfig => ({

@@ -6,7 +6,12 @@ import SecondaryButton from "../../SecondaryButton/SecondaryButton";
 import DialogShell from "../DialogShell";
 import styles from "./LinkDialog.module.css";
 import useAxios from "../../../hooks/useAxios";
-import { getOrGenerate, remove, setPublicity } from "../../../api/links";
+import {
+  create,
+  getByFileInfoId,
+  remove,
+  setPublicity,
+} from "../../../api/links";
 import File from "../../../models/File";
 import { useDialog } from "../../../contexts/DialogContext";
 import Link from "../../../models/Link";
@@ -35,32 +40,62 @@ const LinkDialog: FC<Props> = ({ file }) => {
   const { show } = usePopup();
   const { refresh: refreshLinks } = useLinks();
 
-  const { sendRequest: sendGenerate } = useAxios({
+  const { sendRequest: sendCreate } = useAxios({
     onSuccess(response) {
-      if (response.status === 200) {
-        const {
-          id,
-          link,
-          friends,
-          fileInfoId: fileId,
-          isPublic,
-        } = response.data.link;
+      const {
+        id,
+        link,
+        friends,
+        fileInfoId: fileId,
+        isPublic,
+      } = response.data.link;
 
-        const status = isPublic ? "public" : "private";
+      const status = isPublic ? "public" : "private";
 
-        setLink({
-          id,
-          link,
-          status,
-          friends,
-          fileId,
-        });
+      setLink({
+        id,
+        link,
+        status,
+        friends,
+        fileId,
+      });
 
-        setStatus(status);
-        refreshLinks();
+      setStatus(status);
+
+      refresh();
+    },
+  });
+  const { sendRequest: sendGet } = useAxios({
+    onSuccess(response) {
+      const {
+        id,
+        link,
+        friends,
+        fileInfoId: fileId,
+        isPublic,
+      } = response.data.link;
+
+      const status = isPublic ? "public" : "private";
+
+      setLink({
+        id,
+        link,
+        status,
+        friends,
+        fileId,
+      });
+
+      setStatus(status);
+    },
+    onError(error) {
+      if (error?.response.status === 404) {
+        sendCreate(create(file.id));
+      } else {
+        console.log(error.message);
       }
     },
   });
+
   const { sendRequest: sendDelete } = useAxios({
     onSuccess(response) {
       if (response.status === 200) {
@@ -86,11 +121,7 @@ const LinkDialog: FC<Props> = ({ file }) => {
   });
 
   useEffect(() => {
-    const fetch = async () => {
-      await sendGenerate(getOrGenerate(file.id));
-      refresh();
-    };
-    fetch();
+    sendGet(getByFileInfoId(file.id));
   }, []);
 
   const copyToClipboard = () => {
@@ -123,7 +154,7 @@ const LinkDialog: FC<Props> = ({ file }) => {
     if (!link) return;
     if (link.status === status) return;
     await sendSetPublicity(setPublicity(link.id, status === "public"));
-    sendGenerate(getOrGenerate(file.id));
+    sendGet(getByFileInfoId(file.id));
   };
 
   return (

@@ -14,11 +14,14 @@ import { removeFriend } from "../../../api/links";
 import { removeAllFriends } from "../../../api/links";
 import User from "../../../models/User";
 import { getByIds } from "../../../api/users";
+import InputValidationError from "../../InputValidationError/InputValidationError";
+import { AxiosResponse } from "axios";
+import Loading from "../../Loading/Loading";
 
 interface RowProps {
   linkId: string;
   friend: User;
-  refreshLink: () => Promise<void>;
+  refreshLink: () => void;
 }
 
 const Row: FC<RowProps> = ({ linkId, friend, refreshLink }) => {
@@ -69,54 +72,65 @@ const EditFriendsList: FC<Props> = ({ refLink }) => {
   const [link, setLink] = useState<Link>(refLink);
   const [name, setName] = useState("");
   const [friends, setFriends] = useState<User[]>([]);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
-  const { sendRequest: sendGetFriends } = useAxios();
-  const { sendRequest: sendAdd } = useAxios();
-  const { sendRequest: sendGetLink } = useAxios();
-  const { sendRequest: sendRemoveAllFriends } = useAxios();
+  const { sendRequest: sendGetFriends, loading: loadingFriends } = useAxios({
+    onSuccess(response) {
+      const data = response.data.users;
+      const respFriends = data.map((u: any) => ({ id: u.id, name: u.name }));
+      setFriends(respFriends);
+    },
+  });
+  const { sendRequest: sendAdd, loading: loadingAdd } = useAxios({
+    onSuccess(response) {
+      refreshLink();
+      setName("");
+      setErrorMsg(null);
+    },
+    onError(error) {
+      const response = error.response as AxiosResponse;
+
+      if (!response) {
+        console.log(error.message);
+        return;
+      }
+
+      const errors = response.data.errors;
+
+      console.log(errors);
+
+      if (errors) setErrorMsg(errors[0].msg);
+    },
+  });
+  const { sendRequest: sendGetLink } = useAxios({
+    onSuccess(response) {
+      const data = response.data.link;
+
+      setLink({
+        id: data.id,
+        link: data.link,
+        status: data.isPublic ? "public" : "private",
+        friends: data.friends,
+        fileId: data.fileInfoId,
+      });
+
+      setErrorMsg(null);
+    },
+  });
+  const { sendRequest: sendRemoveAllFriends } = useAxios({
+    onSuccess(response) {
+      refreshLink();
+    },
+  });
 
   useEffect(() => {
-    const fetch = async () => {
-      const response = await sendGetFriends(getByIds(link.friends));
-
-      if (!response) return;
-
-      const data = response.data.users;
-
-      const respFriends = data.map((u: any) => ({ id: u.id, name: u.name }));
-
-      setFriends(respFriends);
-    };
-
-    fetch();
+    sendGetFriends(getByIds(link.friends));
   }, [link]);
 
-  const handleAdd = async () => {
-    const response = await sendAdd(addFriend(link.id, name));
-    if (response) refreshLink();
-    setName("");
-  };
-
-  const refreshLink = async () => {
-    const response = await sendGetLink(get(link.id));
-
-    if (!response) return;
-
-    const data = response.data.link;
-
-    setLink({
-      id: data.id,
-      link: data.link,
-      status: data.isPublic ? "public" : "private",
-      friends: data.friends,
-      fileId: data.fileInfoId,
-    });
-  };
-
-  const handleRemoveAllFriends = async () => {
-    await sendRemoveAllFriends(removeAllFriends(link.id));
-    refreshLink();
-  };
+  const handleAdd = () => sendAdd(addFriend(link.id, name));
+  const refreshLink = () => sendGetLink(get(link.id));
+  const handleRemoveAllFriends = () =>
+    sendRemoveAllFriends(removeAllFriends(link.id));
 
   return (
     <DialogShell title="Список избранных">
@@ -126,21 +140,27 @@ const EditFriendsList: FC<Props> = ({ refLink }) => {
             placeholder="Имя пользователя"
             value={name}
             setValue={setName}
+            hasError={errorMsg !== null}
           />
+          <InputValidationError error={errorMsg} />
         </div>
 
-        <Button title="Добавить" onClick={handleAdd} />
+        <Button title="Добавить" onClick={handleAdd} loading={loadingAdd} />
       </div>
 
       <div className={styles.list}>
-        {friends.map((f) => (
-          <Row
-            key={f.id}
-            friend={f}
-            linkId={link.id}
-            refreshLink={refreshLink}
-          />
-        ))}
+        {loadingFriends ? (
+          <Loading size="large" />
+        ) : (
+          friends.map((f) => (
+            <Row
+              key={f.id}
+              friend={f}
+              linkId={link.id}
+              refreshLink={refreshLink}
+            />
+          ))
+        )}
       </div>
 
       <div className={styles.rightButton}>

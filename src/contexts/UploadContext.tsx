@@ -18,6 +18,8 @@ export interface FileUpload {
   status: UploadStatus;
   cancelToken: CancelTokenSource;
   error?: string;
+  existingFileId?: string;
+  tempFileId?: string;
 }
 
 interface UploadContextType {
@@ -30,7 +32,11 @@ interface UploadContextType {
   failUpload: (id: string, error: string) => void;
   clear: () => void;
   cancelUpload: (id: string) => void;
-  conflictUpload: (id: string) => void;
+  conflictUpload: (
+    id: string,
+    options: { existingFileId: string; tempFileId: string }
+  ) => void;
+  getUpload: (id: string) => FileUpload | undefined;
 }
 
 const UploadContext = createContext<UploadContextType | undefined>(undefined);
@@ -108,10 +114,15 @@ export const UploadProvider: React.FC<{ children: React.ReactNode }> = ({
       });
   };
 
-  const conflictUpload = (id: string) => {
+  const conflictUpload = (
+    id: string,
+    options: { existingFileId: string; tempFileId: string }
+  ) => {
     setUploads((prev) =>
       prev.map((upload) => {
-        return upload.id === id ? { ...upload, status: "conflicted" } : upload;
+        return upload.id === id
+          ? { ...upload, status: "conflicted", ...options }
+          : upload;
       })
     );
   };
@@ -144,6 +155,10 @@ export const UploadProvider: React.FC<{ children: React.ReactNode }> = ({
       });
   };
 
+  const getUpload = (id: string): FileUpload | undefined => {
+    return uploads.find((upload) => upload.id === id);
+  };
+
   return (
     <UploadContext.Provider
       value={{
@@ -157,6 +172,7 @@ export const UploadProvider: React.FC<{ children: React.ReactNode }> = ({
         clear,
         cancelUpload,
         conflictUpload,
+        getUpload,
       }}
     >
       {children}

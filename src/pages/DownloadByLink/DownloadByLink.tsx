@@ -1,25 +1,32 @@
 import fileDownload from "js-file-download";
 import { download, getByLink } from "../../api/links";
-import { get } from "../../api/files";
 import Button from "../../components/Button/Button";
 import useAxios from "../../hooks/useAxios";
 import { useParams } from "react-router-dom";
 import styles from "./DownloadByLink.module.css";
 import FileIcon from "../../components/icons/FileIcon";
-import SecondaryButton from "../../components/SecondaryButton/SecondaryButton";
 import OptionsIcon from "../../components/icons/OptionsIcon";
 import { useEffect, useState } from "react";
 import Link from "../../models/Link";
+import { usePopup } from "../../contexts/PopupContext";
+import { useDialog } from "../../contexts/DialogContext";
+import AccessLinkDeniedDialog from "../../components/dialogs/AccessLinkDeniedDialog/AccessLinkDeniedDialog";
+import DangerCircleIcon from "../../components/icons/DangerCircleIcon";
+import Loading from "../../components/Loading/Loading";
+import IconButton from "../../components/IconButton/IconButton";
 
 const DownloadByLink = () => {
   const [isHovered, setIsHovered] = useState(false);
-  const [filename, setFilename] = useState("");
   const [link, setLink] = useState<Link | null>(null);
+  const [denied, setDenied] = useState(false);
+  const [notFound, setNotFound] = useState(false);
 
   const { link: linkString } = useParams();
+  const { show } = usePopup();
+  const { open } = useDialog();
 
   const { sendRequest: sendDownload } = useAxios();
-  const { sendRequest: sendGetByLink } = useAxios({
+  const { sendRequest: sendGetByLink, loading } = useAxios({
     onSuccess(response) {
       if (response.status !== 200) return;
 
@@ -29,6 +36,7 @@ const DownloadByLink = () => {
         friends,
         fileInfoId: fileId,
         isPublic,
+        filename,
       } = response.data.link;
 
       const status = isPublic ? "public" : "private";
@@ -39,22 +47,41 @@ const DownloadByLink = () => {
         status,
         friends,
         fileId,
+        filename,
       });
+
+      setDenied(false);
+      setNotFound(false);
     },
-  });
-  const { sendRequest: sendGetFileInfo } = useAxios({
-    onSuccess(response) {
-      setFilename(response.data?._name);
+    onError(error) {
+      const status = error?.response?.status;
+
+      if (status === 404) {
+        setNotFound(true);
+        setDenied(false);
+        show("Ссылка на файл не найдена!", {
+          iconType: "error",
+        });
+      } else {
+        setDenied(true);
+        setNotFound(false);
+
+        if (status === 403) {
+          show("Доступ к ссылке запрещён!", { iconType: "error" });
+          open(<AccessLinkDeniedDialog reason={"no-access"} />);
+        } else if (status === 401) {
+          show("Доступ к ссылке запрещён! Необходимо войти в аккаунт.", {
+            iconType: "error",
+          });
+          open(<AccessLinkDeniedDialog reason={"not-authorized"} />);
+        }
+      }
     },
   });
 
   useEffect(() => {
     if (linkString) sendGetByLink(getByLink(linkString));
   }, [linkString]);
-
-  useEffect(() => {
-    if (link) sendGetFileInfo(get(link.fileId));
-  }, [link]);
 
   const handleDownload = async () => {
     if (linkString) {
@@ -71,31 +98,67 @@ const DownloadByLink = () => {
     }
   };
 
-  return (
-    <div className={styles.main}>
-      <div className={styles.cloud}>
-        <div
-          className={styles.options}
-          onMouseOver={() => setIsHovered(true)}
-          onMouseOut={() => setIsHovered(false)}
-        >
-          <OptionsIcon color={isHovered ? "#4676FB" : "#ACC2FF"} />
-        </div>
-
-        <FileIcon color="#4676FB" width="160" strokeWidth="0.5" />
-
-        <h1 className={styles.h1}>{filename}</h1>
-
-        <div className={styles.buttons}>
-          <SecondaryButton
-            title={"Сохранить ссылку"}
-            onClick={function (): void {
-              throw new Error("Function not implemented.");
-            }}
-          />
-          <Button title={"Скачать"} onClick={handleDownload} />
+  if (loading) {
+    return (
+      <div className={styles.main}>
+        <div className={styles.cloud}>
+          <Loading size="large" label="Загрузка ссылки" />
         </div>
       </div>
+    );
+  }
+
+  return (
+    <div className={styles.main}>
+      {notFound ? (
+        <div className={styles.cloud}>
+          <DangerCircleIcon color="#41404b" width="160" />
+          <h1 className={styles.h1}>Ссылка не найдена!</h1>
+          <div className={styles.buttons}>
+            <Button
+              title={"Попробовать ещё раз"}
+              onClick={() => {
+                if (linkString) sendGetByLink(getByLink(linkString));
+              }}
+            />
+          </div>
+        </div>
+      ) : denied ? (
+        <div className={styles.cloud}>
+          <DangerCircleIcon color="#41404b" width="160" />
+          <h1 className={styles.h1}>Доступ запрещён!</h1>
+          <div className={styles.buttons}>
+            <Button
+              title={"Попробовать ещё раз"}
+              onClick={() => {
+                if (linkString) sendGetByLink(getByLink(linkString));
+              }}
+            />
+          </div>
+        </div>
+      ) : (
+        <div className={styles.cloud}>
+          <div
+            className={styles.options}
+            onMouseOver={() => setIsHovered(true)}
+            onMouseOut={() => setIsHovered(false)}
+          >
+            <IconButton
+              icon={<OptionsIcon color={isHovered ? "#4676FB" : "#ACC2FF"} />}
+              onClick={() => {}}
+              hasBorder={false}
+            />
+          </div>
+
+          <FileIcon color="#4676FB" width="160" strokeWidth="0.5" />
+
+          <h1 className={styles.h1}>{link?.filename}</h1>
+
+          <div className={styles.buttons}>
+            <Button title={"Скачать"} onClick={handleDownload} />
+          </div>
+        </div>
+      )}
     </div>
   );
 };

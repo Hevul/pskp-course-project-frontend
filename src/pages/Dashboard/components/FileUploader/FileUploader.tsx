@@ -1,4 +1,10 @@
-import { useRef, forwardRef, useImperativeHandle } from "react";
+import {
+  useRef,
+  forwardRef,
+  useImperativeHandle,
+  useEffect,
+  useState,
+} from "react";
 import { upload } from "../../../../api/files";
 import useAxios from "../../../../hooks/useAxios";
 import { useStorage } from "../../../../contexts/StorageContext";
@@ -12,12 +18,10 @@ export interface FileUploaderRef {
   triggerFileDialog: () => void;
 }
 
-interface FileUploaderProps {
-  maxParallelUploads?: number;
-}
+interface FileUploaderProps {}
 
 const FileUploader = forwardRef<FileUploaderRef, FileUploaderProps>(
-  ({ maxParallelUploads = 3 }, ref) => {
+  ({}, ref) => {
     const { storage } = useStorage();
     const { currentDir, refresh } = useEntities();
     const {
@@ -29,6 +33,8 @@ const FileUploader = forwardRef<FileUploaderRef, FileUploaderProps>(
       cancelUpload,
     } = useUploads();
     const { show } = usePopup();
+    const [completedUploads, setCompletedUploads] = useState<number>(0);
+    const refreshTimeoutRef = useRef<NodeJS.Timeout>(null);
 
     const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -41,6 +47,21 @@ const FileUploader = forwardRef<FileUploaderRef, FileUploaderProps>(
     useImperativeHandle(ref, () => ({
       triggerFileDialog,
     }));
+
+    useEffect(() => {
+      if (completedUploads > 0) {
+        if (refreshTimeoutRef.current) clearTimeout(refreshTimeoutRef.current);
+
+        refreshTimeoutRef.current = setTimeout(() => {
+          refresh();
+          setCompletedUploads(0);
+        }, 300);
+      }
+
+      return () => {
+        if (refreshTimeoutRef.current) clearTimeout(refreshTimeoutRef.current);
+      };
+    }, [completedUploads, refresh]);
 
     const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
       const files = Array.from(e.target.files || []);
@@ -60,7 +81,6 @@ const FileUploader = forwardRef<FileUploaderRef, FileUploaderProps>(
           };
 
           const requestConfig = upload(file, storage.id, currentDir?.id, {
-            isLarge: file.size > config.smallFileLimit * 1024 * 1024,
             onUploadProgress,
             cancelToken: source.token,
           });
@@ -71,15 +91,20 @@ const FileUploader = forwardRef<FileUploaderRef, FileUploaderProps>(
                 iconType: "success",
               });
               completeUpload(uploadItem.id);
-              refresh();
+              setCompletedUploads((prev) => prev + 1);
             })
             .catch((error) => {
               const errorMessage =
                 error instanceof Error ? error.message : "Unknown error";
 
               if (axios.isCancel(error)) cancelUpload(uploadItem.id);
-              else if (error?.response?.data?.errors?.[0]?.path === "upload") {
-                conflictUpload(uploadItem.id);
+              else if (error?.response?.data?.conflict) {
+                const response = error?.response?.data;
+
+                conflictUpload(uploadItem.id, {
+                  existingFileId: response.existingFileId,
+                  tempFileId: response.tempFileId,
+                });
                 show(
                   `Файл с именем ${file.name} уже есть в текущей директории. Разрешите конфликт!`,
                   {

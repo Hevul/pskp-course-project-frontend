@@ -39,28 +39,26 @@ const Dashboard = () => {
 
   return (
     <ProtectedRoute>
-      <UploadProvider>
-        <Layout>
-          <div className={styles.top}>
-            <StorageList />
-          </div>
+      <Layout>
+        <div className={styles.top}>
+          <StorageList />
+        </div>
 
-          <ContextMenuArea items={menuItems}>
-            <div className={styles.center}>
-              <div style={{ marginBottom: "36px" }}>
-                <Path />
-              </div>
-
-              <div className={styles.storageTable}>
-                {isLoading ? <Loading size="large" /> : <StorageTableTiled />}
-              </div>
+        <ContextMenuArea items={menuItems}>
+          <div className={styles.center}>
+            <div style={{ marginBottom: "36px" }}>
+              <Path />
             </div>
-          </ContextMenuArea>
 
-          <FileUploader ref={fileUploaderRef} />
-          <UploadsMenu />
-        </Layout>
-      </UploadProvider>
+            <div className={styles.storageTable}>
+              {isLoading ? <Loading size="large" /> : <StorageTableTiled />}
+            </div>
+          </div>
+        </ContextMenuArea>
+
+        <FileUploader ref={fileUploaderRef} />
+        <UploadsMenu />
+      </Layout>
     </ProtectedRoute>
   );
 };

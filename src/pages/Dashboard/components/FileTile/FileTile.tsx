@@ -131,6 +131,14 @@ const FileTile: FC<Props> = ({ file, selectedEntity, setSelectedEntity }) => {
                 label: "Дата создания:",
                 value: formatDate(file.uploadAt),
               },
+              ...(file.updateAt
+                ? [
+                    {
+                      label: "Дата обновления:",
+                      value: formatDate(file.updateAt),
+                    },
+                  ]
+                : []),
               {
                 label: "Доступ по ссылке:",
                 value: file.hasLink ? "Да" : "Нет",

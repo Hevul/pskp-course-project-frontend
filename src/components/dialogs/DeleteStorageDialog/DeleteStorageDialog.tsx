@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { FC } from "react";
 import Storage from "../../../models/Storage";
 import DialogShell from "../DialogShell";
 import styles from "./DeleteStorageDialog.module.css";
