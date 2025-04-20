@@ -1,0 +1,90 @@
+/* Добавляем новые стили */
+.docxContainer {
+  padding: 20px;
+  background: white;
+  border-radius: 4px;
+}
+
+.pageNumber {
+  position: absolute;
+  right: 20px;
+  bottom: 5px;
+  font-size: 12px;
+  color: #666;
+  background: rgba(255, 255, 255, 0.7);
+  padding: 2px 8px;
+  border-radius: 10px;
+}
+
+/* Улучшаем отображение страниц */
+.docx-wrapper section.docx {
+  position: relative;
+  margin-bottom: 40px;
+  padding-bottom: 25px;
+  background: white;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.05);
+}
+
+.docx-wrapper section.docx::after {
+  content: "";
+  display: block;
+  position: absolute;
+  bottom: 10px;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #1976d2, transparent);
+  opacity: 0.5;
+}
+
+.viewerContainer {
+  max-height: 80vh;
+  overflow-y: auto;
+  padding: 20px;
+  background: #f9f9f9;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+}
+
+.officeViewer {
+  width: 100%;
+  height: 100%;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.excelContainer {
+  padding: 15px;
+  overflow: auto;
+}
+
+.excelContainer table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.excelContainer th,
+.excelContainer td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+.excelContainer th {
+  background-color: #f2f2f2;
+}
+
+.pptxPlaceholder {
+  padding: 20px;
+  text-align: center;
+  color: #666;
+}
+
+.pptxPlaceholder a {
+  color: #1976d2;
+  text-decoration: none;
+}
+
+.pptxPlaceholder a:hover {
+  text-decoration: underline;
+}

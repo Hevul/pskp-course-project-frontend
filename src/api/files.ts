@@ -9,6 +9,12 @@ export const get = (id: string) => ({
   withCredentials: true,
 });
 
+export const view = (id: string) => ({
+  url: `${url}/view/${id}`,
+  method: "get",
+  withCredentials: true,
+});
+
 export const getFilesByStorageId = (storageId: string, parentId?: string) => ({
   url: `${url}/get-all-by-storage/${storageId}${
     parentId ? `/${parentId}` : ""

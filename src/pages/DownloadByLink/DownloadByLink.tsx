@@ -1,5 +1,5 @@
 import fileDownload from "js-file-download";
-import { download, getByLink } from "../../api/links";
+import { download, getByLink, getFullInfo } from "../../api/links";
 import Button from "../../components/Button/Button";
 import useAxios from "../../hooks/useAxios";
 import { useParams } from "react-router-dom";
@@ -14,6 +14,9 @@ import AccessLinkDeniedDialog from "../../components/dialogs/AccessLinkDeniedDia
 import DangerCircleIcon from "../../components/icons/DangerCircleIcon";
 import Loading from "../../components/Loading/Loading";
 import IconButton from "../../components/IconButton/IconButton";
+import InfoDialog from "../../components/dialogs/InfoDialog/InfoDialog";
+import { LinkFullInfo } from "../../models/LinkFullInfo";
+import { formatDate, formatSize } from "../../utils";
 
 const DownloadByLink = () => {
   const [isHovered, setIsHovered] = useState(false);
@@ -25,7 +28,44 @@ const DownloadByLink = () => {
   const { show } = usePopup();
   const { open } = useDialog();
 
-  const { sendRequest: sendDownload } = useAxios();
+  const { sendRequest: sendDownload } = useAxios({
+    onSuccess(response) {
+      const data = response.data;
+
+      const contentDisposition = response.headers["content-disposition"];
+      const filename = decodeFilename(contentDisposition);
+
+      fileDownload(data, filename);
+    },
+    onError(error) {
+      show("Не удалось скачать файл по ссылке!", { iconType: "error" });
+      if (linkString) sendGetByLink(getByLink(linkString));
+    },
+  });
+  const { sendRequest: sendGetFullInfo } = useAxios({
+    onSuccess(response) {
+      const fullInfo = response.data.fullInfo as LinkFullInfo;
+      open(
+        <InfoDialog
+          title={"Информация о ссылке"}
+          fields={[
+            { label: "Название:", value: fullInfo.filename },
+            { label: "Размер:", value: formatSize(fullInfo.size) },
+            { label: "Владелец:", value: fullInfo.owner },
+            { label: "Дата создания:", value: formatDate(fullInfo.createAt) },
+            {
+              label: "Количество скачиваний:",
+              value: `${fullInfo.downloadCount}`,
+            },
+          ]}
+        />
+      );
+    },
+    onError(error) {
+      show("Не удалось получить информации о ссылке!", { iconType: "error" });
+      if (linkString) sendGetByLink(getByLink(linkString));
+    },
+  });
   const { sendRequest: sendGetByLink, loading } = useAxios({
     onSuccess(response) {
       if (response.status !== 200) return;
@@ -83,19 +123,12 @@ const DownloadByLink = () => {
     if (linkString) sendGetByLink(getByLink(linkString));
   }, [linkString]);
 
-  const handleDownload = async () => {
-    if (linkString) {
-      const res = await sendDownload(download(linkString));
+  const handleDownload = () => {
+    if (linkString) sendDownload(download(linkString));
+  };
 
-      if (!res) return;
-
-      const data = res.data;
-
-      const contentDisposition = res.headers["content-disposition"];
-      const filename = decodeFilename(contentDisposition);
-
-      fileDownload(data, filename);
-    }
+  const handleGetFullInfo = () => {
+    if (link) sendGetFullInfo(getFullInfo(link?.id));
   };
 
   if (loading) {
@@ -145,7 +178,7 @@ const DownloadByLink = () => {
           >
             <IconButton
               icon={<OptionsIcon color={isHovered ? "#4676FB" : "#ACC2FF"} />}
-              onClick={() => {}}
+              onClick={handleGetFullInfo}
               hasBorder={false}
             />
           </div>
