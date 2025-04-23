@@ -24,3 +24,23 @@
   overflow-y: auto;
   will-change: transform, opacity;
 }
+
+.fileViewerOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.fileViewerContainer {
+  background: transparent;
+  max-width: 90vw;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+}

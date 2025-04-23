@@ -25,7 +25,8 @@ import LinkIcon from "../../../../components/icons/LinkIcon";
 import { usePopup } from "../../../../contexts/PopupContext";
 import { formatDate, formatSize } from "../../../../utils";
 import ShowIcon from "../../../../components/icons/ShowIcon";
-import { useNavigate } from "react-router-dom";
+import FileViewer from "../../../../components/viewers/FileViewer";
+import { useFileViewer } from "../../../../contexts/FileViewerContext";
 
 interface Props {
   file: File;
@@ -40,8 +41,8 @@ const FileTile: FC<Props> = ({ file, selectedEntity, setSelectedEntity }) => {
 
   const { refresh } = useEntities();
   const { open } = useDialog();
+  const { view } = useFileViewer();
   const { show } = usePopup();
-  const navigate = useNavigate();
 
   const { sendRequest: sendDownload } = useAxios({
     onSuccess(response) {
@@ -69,7 +70,9 @@ const FileTile: FC<Props> = ({ file, selectedEntity, setSelectedEntity }) => {
     }
   }, [name]);
 
-  const handleOpen = () => navigate(`/view/${file.id}`);
+  const handleOpen = () => {
+    view(<FileViewer file={file} />);
+  };
 
   const handleDownload = async () => {
     show("Скачивание файла скоро начнётся!", { iconType: "info" });

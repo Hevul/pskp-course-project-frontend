@@ -5,12 +5,15 @@ import styles from "./LinkRow.module.css";
 import FileIcon from "../../../components/icons/FileIcon";
 import CopyIcon from "../../../components/icons/CopyIcon";
 import Link from "../../../models/Link";
-import config from "../../../config.json";
 import { usePopup } from "../../../contexts/PopupContext";
 import useAxios from "../../../hooks/useAxios";
 import { useLinks } from "../../../contexts/LinksContext";
-import { remove } from "../../../api/links";
+import { getFullInfo, remove } from "../../../api/links";
 import { get } from "../../../api/files";
+import InfoDialog from "../../../components/dialogs/InfoDialog/InfoDialog";
+import { LinkFullInfo } from "../../../models/LinkFullInfo";
+import { useDialog } from "../../../contexts/DialogContext";
+import { formatDate, formatSize } from "../../../utils";
 
 interface Props {
   id: number;
@@ -23,6 +26,7 @@ const LinkRow: FC<Props> = ({ id, link }) => {
 
   const { refresh } = useLinks();
   const { show } = usePopup();
+  const { open } = useDialog();
 
   const { sendRequest: sendDelete } = useAxios({
     onSuccess(response) {
@@ -33,6 +37,26 @@ const LinkRow: FC<Props> = ({ id, link }) => {
   const { sendRequest: sendGetFile } = useAxios({
     onSuccess(response) {
       setFilename(response.data?._name);
+    },
+  });
+  const { sendRequest: sendGetFullInfo } = useAxios({
+    onSuccess(response) {
+      const fullInfo = response.data.fullInfo as LinkFullInfo;
+      open(
+        <InfoDialog
+          title={"Информация о ссылке"}
+          fields={[
+            { label: "Название:", value: fullInfo.filename },
+            { label: "Размер:", value: formatSize(fullInfo.size) },
+            { label: "Владелец:", value: fullInfo.owner },
+            { label: "Дата создания:", value: formatDate(fullInfo.createAt) },
+            {
+              label: "Количество скачиваний:",
+              value: `${fullInfo.downloadCount}`,
+            },
+          ]}
+        />
+      );
     },
   });
 
@@ -55,6 +79,10 @@ const LinkRow: FC<Props> = ({ id, link }) => {
 
     show("Ссылка скопирована в буфер обмена!", { iconType: "success" });
   };
+
+  const handleCopy = () => copyToClipboard();
+  const handleFullInfo = () => sendGetFullInfo(getFullInfo(link.id));
+  const handleRemove = () => sendDelete(remove(link.id));
 
   return (
     <div className={styles.row}>
@@ -89,20 +117,20 @@ const LinkRow: FC<Props> = ({ id, link }) => {
           <div
             className={styles.button}
             title="Копировать ссылку"
-            onClick={copyToClipboard}
+            onClick={handleCopy}
           >
             <CopyIcon color={isHovered ? "white" : "#4676fb"} width="26" />
           </div>
 
-          <div
-            className={styles.button}
-            title="Удалить"
-            onClick={() => sendDelete(remove(link.id))}
-          >
+          <div className={styles.button} title="Удалить" onClick={handleRemove}>
             <DeleteIcon color={isHovered ? "white" : "#4676fb"} width="26" />
           </div>
 
-          <div className={styles.button}>
+          <div
+            className={styles.button}
+            title="Информация о ссылке"
+            onClick={handleFullInfo}
+          >
             <OptionsIcon color={isHovered ? "white" : "#4676fb"} width="26" />
           </div>
         </div>

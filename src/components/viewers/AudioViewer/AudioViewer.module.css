@@ -1,0 +1,101 @@
+.audioPlayer {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  background: white;
+  border-radius: 10px;
+  padding-right: 40px;
+}
+
+.playerControls {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.controlButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 5px;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.controlButton:hover {
+  background: #ecf5fe;
+}
+
+/* Progress bar styles */
+.progressTrack {
+  height: 4px;
+  width: 200px;
+  background: #cde6ff;
+  position: relative;
+  margin: 0 10px;
+}
+
+.progressFill {
+  height: 100%;
+  background: #4676fb81;
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
+.progressThumb {
+  height: 10px;
+  width: 12px;
+  background: #4676fb;
+  border-radius: 30%;
+}
+
+/* Adjust time info layout */
+.timeInfo {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.timeInfo span {
+  font-size: 0.9rem;
+  color: #41404b;
+  min-width: 40px;
+  flex-shrink: 0;
+}
+
+/* Volume controls */
+
+.volumeControls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 120px;
+}
+
+.volumeTrack {
+  height: 4px;
+  width: 80px;
+  background: #cde6ff;
+  position: relative;
+}
+
+.volumeFill {
+  height: 100%;
+  background: #4676fb81;
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
+.volumeThumb {
+  height: 10px;
+  width: 12px;
+  background: #4676fb;
+  border-radius: 30%;
+}

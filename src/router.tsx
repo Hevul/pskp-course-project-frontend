@@ -8,7 +8,6 @@ import PublicLayout from "./components/PublicLayout/PublicLayout";
 import PrivateLayout from "./components/PrivateLayout/PrivateLayout";
 import DownloadByLink from "./pages/DownloadByLink/DownloadByLink";
 import MyLinks from "./pages/MyLinks/MyLinks";
-import FileView from "./pages/FileView/FileView";
 
 const notFoundTrouble = (
   <Trouble
@@ -27,13 +26,12 @@ const router = createBrowserRouter([
     path: "/",
     element: <PublicLayout />,
     children: [
-      { index: true, element: <Navigate to="/login" replace /> },
+      { index: true, element: <Navigate to="/dashboard" replace /> },
       { path: "/login", element: <Login /> },
       { path: "/register", element: <Register /> },
       { path: "/not-found", element: notFoundTrouble },
       { path: "/server-side-trouble", element: serverSideTrouble },
       { path: "/link/:link", element: <DownloadByLink /> },
-      { path: "/view/:id", element: <FileView /> },
     ],
   },
   {
@@ -41,7 +39,7 @@ const router = createBrowserRouter([
     element: <PrivateLayout />,
     children: [
       { path: "/dashboard", element: <Dashboard /> },
-      { path: "/storage", element: <Storage /> },
+      { path: "/storages", element: <Storage /> },
       { path: "/my-links", element: <MyLinks /> },
     ],
   },

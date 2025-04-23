@@ -29,8 +29,8 @@ const Navbar = () => {
           />
           <NavButton
             icon={<RepositoryIcon />}
-            isActive={"/storage" === currentUrl}
-            onClick={() => navigate("/storage")}
+            isActive={"/storages" === currentUrl}
+            onClick={() => navigate("/storages")}
           />
           <NavButton
             icon={<LinkIcon />}

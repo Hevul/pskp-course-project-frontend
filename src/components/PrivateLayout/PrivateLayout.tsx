@@ -6,6 +6,7 @@ import { PopupProvider } from "../../contexts/PopupContext";
 import { ContextMenuProvider } from "../../contexts/ContextMenuContext";
 import { LinksProvider } from "../../contexts/LinksContext";
 import { UploadProvider } from "../../contexts/UploadContext";
+import { FileViewerProvider } from "../../contexts/FileViewerContext";
 
 const PrivateLayout = () => {
   return (
@@ -16,7 +17,9 @@ const PrivateLayout = () => {
             <LinksProvider>
               <UploadProvider>
                 <DialogProvider>
-                  <Outlet />
+                  <FileViewerProvider>
+                    <Outlet />
+                  </FileViewerProvider>
                 </DialogProvider>
               </UploadProvider>
             </LinksProvider>

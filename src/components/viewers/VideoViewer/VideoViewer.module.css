@@ -1,0 +1,161 @@
+.videoViewer {
+  display: flex;
+  flex-direction: column;
+  width: 70vw;
+  max-width: 1200px;
+  margin: 0 auto;
+  background: #000;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.playerWrapper {
+  position: relative;
+  padding-top: 56.25%;
+  background: #000;
+}
+
+.loading {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 1.2rem;
+  z-index: 1;
+}
+
+.reactPlayer {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  gap: 10px;
+}
+
+.controlButton {
+  border-radius: 8px;
+  width: 40px;
+  height: 40px;
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.controlButton:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.timeControls {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.timeDisplay {
+  font-size: 0.9rem;
+  min-width: 50px;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* Progress Track */
+.progressTrack {
+  height: 4px;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.2);
+  position: relative;
+  margin: 0 10px;
+  cursor: pointer;
+}
+
+.progressFill {
+  height: 100%;
+  background: rgba(255, 255, 255, 0.2);
+  position: absolute;
+  left: 0;
+  top: 0;
+  border-radius: 2px;
+}
+
+.progressThumb {
+  height: 10px;
+  width: 12px;
+  background: rgb(164, 164, 164);
+  border-radius: 30%;
+  cursor: pointer;
+  transition: transform 0.1s ease;
+}
+
+.progressThumb:hover {
+  transform: scale(1.2);
+}
+
+/* Volume Controls */
+.rightControls {
+  display: flex;
+  align-items: center;
+  gap: 36px;
+}
+
+.volumeControl {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.volumeTrack {
+  height: 4px;
+  width: 80px;
+  background: rgba(255, 255, 255, 0.2);
+  position: relative;
+  cursor: pointer;
+}
+
+.volumeFill {
+  height: 100%;
+  background: rgba(255, 255, 255, 0.2);
+  position: absolute;
+  left: 0;
+  top: 0;
+  border-radius: 2px;
+}
+
+.volumeThumb {
+  height: 10px;
+  width: 12px;
+  background: rgb(164, 164, 164);
+  border-radius: 30%;
+  outline: none;
+  cursor: pointer;
+  transition: transform 0.1s ease;
+}
+
+.volumeThumb:hover {
+  transform: scale(1.2);
+}
+
+.speedControl {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 5px;
+  cursor: pointer;
+}
