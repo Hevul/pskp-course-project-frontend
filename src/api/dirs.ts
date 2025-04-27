@@ -3,6 +3,13 @@ import config from "../config.json";
 
 const url = `${config.base}/${config.dir}`;
 
+export const download = (id: string): AxiosRequestConfig => ({
+  url: `${url}/download/${id}`,
+  method: "post",
+  withCredentials: true,
+  responseType: "blob",
+});
+
 export const create = (
   name: string,
   storageId: string,

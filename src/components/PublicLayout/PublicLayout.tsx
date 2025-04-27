@@ -1,12 +1,15 @@
 import { Outlet } from "react-router-dom";
 import { PopupProvider } from "../../contexts/PopupContext";
 import { DialogProvider } from "../../contexts/DialogContext";
+import { FileViewerProvider } from "../../contexts/FileViewerContext";
 
 const PublicLayout = () => {
   return (
     <PopupProvider>
       <DialogProvider>
-        <Outlet />
+        <FileViewerProvider>
+          <Outlet />
+        </FileViewerProvider>
       </DialogProvider>
     </PopupProvider>
   );

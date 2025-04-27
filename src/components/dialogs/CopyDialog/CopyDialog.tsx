@@ -19,6 +19,7 @@ import { copy as copyFile } from "../../../api/files";
 import InputValidationError from "../../InputValidationError/InputValidationError";
 import { usePopup } from "../../../contexts/PopupContext";
 import { useStorage } from "../../../contexts/StorageContext";
+import RenameDialog from "../RenameDialog/RenameDialog";
 
 interface Props {
   entity: Entity;
@@ -27,13 +28,14 @@ interface Props {
 
 const CopyDialogContent: FC<Props> = ({ entity, onSuccess }) => {
   const [copyError, setCopyError] = useState<string | null>(null);
+  const [currentEntity, setCurrentEntity] = useState<Entity>(entity);
 
   const { show } = usePopup();
   const { storage } = useStorage();
   const { open, close } = useDialog();
   const { entities, currentDir, refresh } = useEntities();
 
-  const { id, name, type } = entity;
+  const { id, name, type } = currentEntity;
   const isFile = type === "file";
   const sortedEntities = [...entities].sort((a, b) => {
     if (a.type === "dir" && b.type !== "dir") return -1;
@@ -58,15 +60,34 @@ const CopyDialogContent: FC<Props> = ({ entity, onSuccess }) => {
       }
     },
     onError(error) {
-      show(`Не удалось скопировать ${isFile ? "файл" : "папка"}!`, {
-        iconType: "error",
-      });
+      show(
+        `Не удалось скопировать ${isFile ? "файл" : "папка"}!  Переименуйте ${
+          isFile ? "исходный файл" : "исходную папку"
+        }.`,
+        {
+          iconType: "error",
+        }
+      );
 
       const errors = error?.response?.data?.errors;
 
       if (errors) {
         const errorObj = errors[0];
-        if (errorObj) setCopyError(errorObj.msg);
+        if (errorObj) {
+          setCopyError(errorObj.msg);
+
+          const handleRenameSuccess = (updatedEntity: Entity) => {
+            setCurrentEntity(updatedEntity);
+            setCopyError(null);
+          };
+
+          open(
+            <RenameDialog
+              entity={currentEntity}
+              onSuccess={handleRenameSuccess}
+            />
+          );
+        }
       }
     },
   });

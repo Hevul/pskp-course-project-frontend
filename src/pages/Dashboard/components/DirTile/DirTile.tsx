@@ -7,7 +7,11 @@ import { useEntities } from "../../../../contexts/EntitiesContext";
 import { Entity } from "../../../../models/Entity";
 import DeleteIcon from "../../../../components/icons/DeleteIcon";
 import EditIcon from "../../../../components/icons/EditIcon";
-import { getFullInfo, remove as removeDir } from "../../../../api/dirs";
+import {
+  download,
+  getFullInfo,
+  remove as removeDir,
+} from "../../../../api/dirs";
 import ContextMenuArea from "../../../../components/ContextMenuArea/ContextMenuArea";
 import RenameDialog from "../../../../components/dialogs/RenameDialog/RenameDialog";
 import { useDialog } from "../../../../contexts/DialogContext";
@@ -20,14 +24,18 @@ import CurvedIcon from "../../../../components/icons/CurvedIcon";
 import { usePopup } from "../../../../contexts/PopupContext";
 import InfoDialog from "../../../../components/dialogs/InfoDialog/InfoDialog";
 import { formatDate, formatSize } from "../../../../utils";
+import fileDownload from "js-file-download";
+import DownloadIcon from "../../../../components/icons/DownloadIcon";
+import { saveAs } from "file-saver";
+import axios from "axios";
 
 interface Props {
   dir: Dir;
-  selectedEntity: Entity | null;
-  setSelectedEntity: React.Dispatch<React.SetStateAction<Entity | null>>;
+  selectedEntities: Entity[];
+  onClick: (entity: Entity, event: React.MouseEvent) => void;
 }
 
-const DirTile: FC<Props> = ({ dir, selectedEntity, setSelectedEntity }) => {
+const DirTile: FC<Props> = ({ dir, selectedEntities, onClick }) => {
   const [isHovered, setIsHovered] = useState(false);
   const [needsWrap, setNeedsWrap] = useState(false);
   const textRef = useRef<HTMLHeadingElement>(null);
@@ -36,6 +44,9 @@ const DirTile: FC<Props> = ({ dir, selectedEntity, setSelectedEntity }) => {
   const { storage } = useStorage();
   const { open } = useDialog();
   const { show } = usePopup();
+
+  const { id, name } = dir;
+  const isSelected = selectedEntities.some((e) => e.id === id);
 
   const { sendRequest: sendDelete } = useAxios({
     onSuccess(response) {
@@ -78,8 +89,6 @@ const DirTile: FC<Props> = ({ dir, selectedEntity, setSelectedEntity }) => {
     },
   });
 
-  const { id, name } = dir;
-
   useEffect(() => {
     if (textRef.current) {
       const isOverflowing =
@@ -90,7 +99,6 @@ const DirTile: FC<Props> = ({ dir, selectedEntity, setSelectedEntity }) => {
 
   const handleDirEnter = () => {
     if (!storage) return;
-
     setCurrentDir({
       ...dir,
     });
@@ -101,7 +109,18 @@ const DirTile: FC<Props> = ({ dir, selectedEntity, setSelectedEntity }) => {
     refresh();
   };
 
-  const isSelected = selectedEntity?.id === id;
+  const handleClick = (e: React.MouseEvent) => {
+    if (e.detail === 1) {
+      onClick(dir, e);
+    } else if (e.detail === 2) {
+      handleDirEnter();
+    }
+  };
+
+  const handleContextMenu = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (!isSelected) onClick(dir, e);
+  };
 
   const menuItems = [
     {
@@ -137,8 +156,8 @@ const DirTile: FC<Props> = ({ dir, selectedEntity, setSelectedEntity }) => {
       onMouseOver={() => setIsHovered(true)}
       onMouseOut={() => setIsHovered(false)}
       className={`${styles.tile} tile`}
-      onClick={() => setSelectedEntity(dir)}
-      onDoubleClick={handleDirEnter}
+      onClick={handleClick}
+      onContextMenu={handleContextMenu}
       style={{
         backgroundColor: isSelected
           ? "#4676FB"
@@ -148,10 +167,7 @@ const DirTile: FC<Props> = ({ dir, selectedEntity, setSelectedEntity }) => {
       }}
     >
       <ContextMenuArea items={menuItems}>
-        <div
-          className={styles.tileContainer}
-          onContextMenu={() => setSelectedEntity(dir)}
-        >
+        <div className={styles.tileContainer}>
           <FolderIcon width="40" color={isSelected ? "white" : "#4676FB"} />
 
           <div className={styles.textContainer}>

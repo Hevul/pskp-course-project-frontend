@@ -19,6 +19,7 @@ import { move as moveFile } from "../../../api/files";
 import InputValidationError from "../../InputValidationError/InputValidationError";
 import { usePopup } from "../../../contexts/PopupContext";
 import { useStorage } from "../../../contexts/StorageContext";
+import RenameDialog from "../RenameDialog/RenameDialog";
 
 interface Props {
   entity: Entity;
@@ -27,13 +28,14 @@ interface Props {
 
 const MoveDialogContent: FC<Props> = ({ entity, onSuccess }) => {
   const [moveError, setMoveError] = useState<string | null>(null);
+  const [currentEntity, setCurrentEntity] = useState<Entity>(entity);
 
   const { show } = usePopup();
   const { storage } = useStorage();
   const { open, close } = useDialog();
   const { entities, currentDir, refresh } = useEntities();
 
-  const { id, name, type } = entity;
+  const { id, name, type } = currentEntity;
   const isFile = type === "file";
   const sortedEntities = [...entities].sort((a, b) => {
     if (a.type === "dir" && b.type !== "dir") return -1;
@@ -58,22 +60,43 @@ const MoveDialogContent: FC<Props> = ({ entity, onSuccess }) => {
       }
     },
     onError(error) {
-      show(`Не удалось переместить ${isFile ? "файл" : "папка"}!`, {
-        iconType: "error",
-      });
+      show(
+        `Не удалось переместить ${isFile ? "файл" : "папку"}! Переименуйте ${
+          isFile ? "исходный файл" : "исходную папку"
+        }.`,
+        {
+          iconType: "error",
+        }
+      );
 
       const errors = error?.response?.data?.errors;
 
       if (errors) {
         const errorObj = errors[0];
-        if (errorObj) setMoveError(errorObj.msg);
+        if (errorObj) {
+          setMoveError(errorObj.msg);
+
+          const handleRenameSuccess = (updatedEntity: Entity) => {
+            setCurrentEntity(updatedEntity);
+            setMoveError(null);
+          };
+
+          open(
+            <RenameDialog
+              entity={currentEntity}
+              onSuccess={handleRenameSuccess}
+            />
+          );
+        }
       }
     },
   });
 
   const handleMove = () =>
     sendRequest(
-      isFile ? moveFile(id, currentDir?.id) : moveDir(id, currentDir?.id)
+      isFile
+        ? moveFile(currentEntity.id, currentDir?.id)
+        : moveDir(currentEntity.id, currentDir?.id)
     );
 
   return (

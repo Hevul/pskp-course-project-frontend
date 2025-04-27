@@ -19,12 +19,13 @@ export const LinksProvider: React.FC<{ children: React.ReactNode }> = ({
   const { sendRequest, loading } = useAxios({
     onSuccess: (response) => {
       setLinks(
-        response.data.map((l: any) => ({
+        response.data.links.map((l: any) => ({
           id: l.id,
           link: l.link,
           status: l.isPublic ? "public" : "private",
           friends: l.friends,
           fileId: l.fileInfoId,
+          filename: l.filename,
         }))
       );
     },

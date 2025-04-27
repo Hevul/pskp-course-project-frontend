@@ -1,16 +1,32 @@
+import { useState, useMemo } from "react";
 import ProtectedRoute from "../../components/ProtectedRoute/ProtectedRoute";
 import Search from "../../components/Search/Search";
-import LinkRow from "./components/LinkRow";
 import styles from "./MyLinks.module.css";
 import { useLinks } from "../../contexts/LinksContext";
 import Loading from "../../components/Loading/Loading";
 import EmptyState from "../../components/EmptyState/EmptyState";
 import EmptyBoxIcon from "../../components/icons/EmptyBoxIcon";
 import Layout from "../Layout/Layout";
+import LinkTableTiled from "./components/LinkTableTiled/LinkTableTiled";
 
 const MyLinks = () => {
   const { links, loading } = useLinks();
-  const isEmpty = links.length === 0;
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const filteredLinks = useMemo(() => {
+    if (!searchQuery) return links;
+
+    return links.filter((link) =>
+      link.filename.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  }, [links, searchQuery]);
+
+  const handleSearch = (query: string) => {
+    setSearchQuery(query);
+  };
+
+  const isRefEmpty = links.length === 0;
+  const isFilteredEmpty = filteredLinks.length === 0;
 
   return (
     <ProtectedRoute>
@@ -18,25 +34,33 @@ const MyLinks = () => {
         <div className={styles.main}>
           <div className={styles.top}>
             <h2 className={styles.h2}>Мои ссылки</h2>
-            <Search width="500px" search={""} setSearch={() => {}} />
+            <Search
+              onSearch={handleSearch}
+              placeholder="Название файла"
+              width="500px"
+            />
           </div>
 
           {loading ? (
             <Loading size="large" />
-          ) : isEmpty ? (
+          ) : isRefEmpty ? (
             <div className={styles.emptyState}>
               <EmptyState
-                message="У вас пока нет ссылок на файлы"
-                subMessage="Поделитесь файлом, чтобы ссылка появилась здесь"
+                message={"У вас пока нет ссылок"}
+                subMessage={"Поделитесь файлом, чтобы ссылка появилась здесь"}
+                icon={<EmptyBoxIcon />}
+              />
+            </div>
+          ) : isFilteredEmpty ? (
+            <div className={styles.emptyState}>
+              <EmptyState
+                message={"Ничего не найдено"}
+                subMessage={"Попробуйте изменить поисковый запрос"}
                 icon={<EmptyBoxIcon />}
               />
             </div>
           ) : (
-            <div className={styles.links}>
-              {links.map((link, index) => (
-                <LinkRow key={link.id} id={index + 1} link={link} />
-              ))}
-            </div>
+            <LinkTableTiled links={filteredLinks} />
           )}
         </div>
       </Layout>

@@ -27,14 +27,15 @@ import { formatDate, formatSize } from "../../../../utils";
 import ShowIcon from "../../../../components/icons/ShowIcon";
 import FileViewer from "../../../../components/viewers/FileViewer";
 import { useFileViewer } from "../../../../contexts/FileViewerContext";
+import JSZip from "jszip";
 
 interface Props {
   file: File;
-  selectedEntity: Entity | null;
-  setSelectedEntity: React.Dispatch<React.SetStateAction<Entity | null>>;
+  selectedEntities: Entity[];
+  onClick: (entity: Entity, event: React.MouseEvent) => void;
 }
 
-const FileTile: FC<Props> = ({ file, selectedEntity, setSelectedEntity }) => {
+const FileTile: FC<Props> = ({ file, selectedEntities, onClick }) => {
   const [isHovered, setIsHovered] = useState(false);
   const [needsWrap, setNeedsWrap] = useState(false);
   const textRef = useRef<HTMLHeadingElement>(null);
@@ -44,8 +45,14 @@ const FileTile: FC<Props> = ({ file, selectedEntity, setSelectedEntity }) => {
   const { view } = useFileViewer();
   const { show } = usePopup();
 
+  const { id, name } = file;
+  const isSelected = selectedEntities.some((e) => e.id === id);
+  const ext = name.split(".").pop() || "";
+  const isMultipleSelection = selectedEntities.length > 1;
+
   const { sendRequest: sendDownload } = useAxios({
     onSuccess(response) {
+      fileDownload(response.data, name);
       show(`Файл ${name} скачан!`, {
         iconType: "success",
       });
@@ -59,9 +66,6 @@ const FileTile: FC<Props> = ({ file, selectedEntity, setSelectedEntity }) => {
     },
   });
 
-  const { id, name } = file;
-  const ext = name.split(".").pop() || "";
-
   useEffect(() => {
     if (textRef.current) {
       const isOverflowing =
@@ -71,10 +75,15 @@ const FileTile: FC<Props> = ({ file, selectedEntity, setSelectedEntity }) => {
   }, [name]);
 
   const handleOpen = () => {
-    view(<FileViewer file={file} />);
+    view(<FileViewer filename={file.name} fileId={file.id} />);
   };
 
-  const handleDownload = async () => {
+  // const handleDownload = () => {
+  //   show("Скачивание файла скоро начнётся!", { iconType: "info" });
+  //   sendDownload(download(id));
+  // };
+
+  const handleSingleDownload = async () => {
     show("Скачивание файла скоро начнётся!", { iconType: "info" });
     const response = await sendDownload(download(id));
 
@@ -83,12 +92,86 @@ const FileTile: FC<Props> = ({ file, selectedEntity, setSelectedEntity }) => {
     fileDownload(response.data, name);
   };
 
-  const handleDelete = async () => {
-    await sendDelete(removeFile(id));
-    refresh();
+  const handleMultipleDownload = async () => {
+    show("Подготовка архива с файлами...", { iconType: "info" });
+
+    const zip = new JSZip();
+    const folder = zip.folder("downloads");
+
+    try {
+      // Скачиваем все выбранные файлы
+      const downloadPromises = selectedEntities
+        .filter((e) => e.type === "file")
+        .map(async (entity) => {
+          const response = await download(entity.id);
+          if (response) {
+            folder?.file(entity.name, response.data);
+          }
+        });
+
+      await Promise.all(downloadPromises);
+
+      // Генерируем архив
+      const content = await zip.generateAsync({ type: "blob" });
+      fileDownload(
+        content,
+        `files_${new Date().toISOString().slice(0, 10)}.zip`
+      );
+
+      show(`Скачано ${selectedEntities.length} файлов!`, {
+        iconType: "success",
+      });
+    } catch (error) {
+      show("Ошибка при создании архива", { iconType: "error" });
+      console.error("Download error:", error);
+    }
   };
 
-  const isSelected = selectedEntity?.id === id;
+  const handleDownload = () => {
+    if (isMultipleSelection) {
+      handleMultipleDownload();
+    } else {
+      handleSingleDownload();
+    }
+  };
+
+  // const handleDelete = async () => {
+  //   await sendDelete(removeFile(id));
+  //   refresh();
+  // };
+
+  const handleDelete = async () => {
+    if (isMultipleSelection) {
+      // Удаление нескольких файлов
+      const deletePromises = selectedEntities
+        .filter((e) => e.type === "file")
+        .map(async (entity) => {
+          await removeFile(entity.id);
+        });
+
+      await Promise.all(deletePromises);
+      show(`Удалено ${selectedEntities.length} файлов!`, {
+        iconType: "success",
+      });
+      refresh();
+    } else {
+      await sendDelete(removeFile(id));
+      refresh();
+    }
+  };
+
+  const handleClick = (e: React.MouseEvent) => {
+    if (e.detail === 1) {
+      onClick(file, e);
+    } else if (e.detail === 2) {
+      handleOpen();
+    }
+  };
+
+  const handleContextMenu = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (!isSelected) onClick(file, e);
+  };
 
   const menuItems = [
     {
@@ -106,7 +189,7 @@ const FileTile: FC<Props> = ({ file, selectedEntity, setSelectedEntity }) => {
     {
       title: "Поделиться",
       icon: <AddUserIcon width="16" />,
-      action: () => open(<LinkDialog file={file} />),
+      action: () => open(<LinkDialog fileId={file.id} />),
       hasSeparator: true,
     },
     {
@@ -168,7 +251,7 @@ const FileTile: FC<Props> = ({ file, selectedEntity, setSelectedEntity }) => {
       onMouseOver={() => setIsHovered(true)}
       onMouseOut={() => setIsHovered(false)}
       className={`${styles.tile} tile`}
-      onClick={() => setSelectedEntity(file)}
+      onClick={handleClick}
       style={{
         backgroundColor: isSelected
           ? "#4676FB"
@@ -178,10 +261,7 @@ const FileTile: FC<Props> = ({ file, selectedEntity, setSelectedEntity }) => {
       }}
     >
       <ContextMenuArea items={menuItems}>
-        <div
-          className={styles.tileContainer}
-          onContextMenu={() => setSelectedEntity(file)}
-        >
+        <div className={styles.tileContainer} onContextMenu={handleContextMenu}>
           <ExtFileIcon
             ext={ext}
             width="40"

@@ -12,7 +12,7 @@ const StorageTableTiled = () => {
   const { entities } = useEntities();
   const { storage } = useStorage();
 
-  const [selectedEntity, setSelectedEntity] = useState<Entity | null>(null);
+  const [selectedEntities, setSelectedEntities] = useState<Entity[]>([]); // Изменим на массив выбранных элементов
   const containerRef = useRef<HTMLDivElement>(null);
 
   const sortedEntities = [...entities].sort((a, b) => {
@@ -30,7 +30,7 @@ const StorageTableTiled = () => {
         containerRef.current &&
         !containerRef.current.contains(event.target as Node)
       ) {
-        setSelectedEntity(null);
+        setSelectedEntities([]);
       }
     };
 
@@ -40,13 +40,28 @@ const StorageTableTiled = () => {
     };
   }, []);
 
+  const handleEntityClick = (entity: Entity, event: React.MouseEvent) => {
+    if (event.ctrlKey || event.metaKey) {
+      // Для Mac (Cmd)
+      // Множественный выбор
+      setSelectedEntities((prev) =>
+        prev.some((e) => e.id === entity.id)
+          ? prev.filter((e) => e.id !== entity.id)
+          : [...prev, entity]
+      );
+    } else {
+      // Одиночный выбор
+      setSelectedEntities([entity]);
+    }
+  };
+
   return (
     <div
       ref={containerRef}
       className={styles.table}
       onClick={(e) => {
         if (!(e.target as HTMLElement).closest(".tile")) {
-          setSelectedEntity(null);
+          setSelectedEntities([]);
         }
       }}
     >
@@ -68,15 +83,15 @@ const StorageTableTiled = () => {
             <FileTile
               key={e.id}
               file={e}
-              selectedEntity={selectedEntity}
-              setSelectedEntity={setSelectedEntity}
+              selectedEntities={selectedEntities}
+              onClick={handleEntityClick}
             />
           ) : (
             <DirTile
               key={e.id}
               dir={e}
-              selectedEntity={selectedEntity}
-              setSelectedEntity={setSelectedEntity}
+              selectedEntities={selectedEntities}
+              onClick={handleEntityClick}
             />
           )
         )

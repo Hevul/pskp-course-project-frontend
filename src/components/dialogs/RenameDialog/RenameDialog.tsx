@@ -14,9 +14,10 @@ import { usePopup } from "../../../contexts/PopupContext";
 
 interface Props {
   entity: Entity;
+  onSuccess?: (updatedEntity: Entity) => void;
 }
 
-const RenameDialog: FC<Props> = ({ entity }) => {
+const RenameDialog: FC<Props> = ({ entity, onSuccess }) => {
   const { id, name: oldName } = entity;
   const isFile = entity.type === "file";
 
@@ -37,6 +38,7 @@ const RenameDialog: FC<Props> = ({ entity }) => {
           { iconType: "success" }
         );
         close();
+        onSuccess?.({ ...entity, name });
         refresh();
       }
     },

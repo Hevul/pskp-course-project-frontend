@@ -23,7 +23,9 @@
     "date-fns": "^4.1.0",
     "detect-element-overflow": "^1.4.2",
     "docx-preview": "^0.3.5",
+    "file-saver": "^2.0.5",
     "js-file-download": "^0.4.12",
+    "jszip": "^3.10.1",
     "mammoth": "^1.9.0",
     "monaco-editor": "^0.52.2",
     "node-fetch": "^3.3.2",
@@ -72,6 +74,7 @@
     ]
   },
   "devDependencies": {
+    "@types/file-saver": "^2.0.7",
     "@types/react-syntax-highlighter": "^15.5.13"
   }
 }

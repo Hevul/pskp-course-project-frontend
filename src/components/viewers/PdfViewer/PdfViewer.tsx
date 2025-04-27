@@ -19,16 +19,17 @@ pdfjs.GlobalWorkerOptions.workerSrc = new URL(
 ).toString();
 
 interface PdfViewerProps {
-  file: File;
+  filename: string;
+  fileId: string;
 }
 
-const PdfViewer: React.FC<PdfViewerProps> = ({ file }) => {
+const PdfViewer: React.FC<PdfViewerProps> = ({ filename, fileId }) => {
   const [numPages, setNumPages] = useState<number | null>(null);
   const [theme, setTheme] = useState<"vs-dark" | "light">("vs-dark");
   const [pageNumber, setPageNumber] = useState(1);
   const [scale, setScale] = useState(1.0);
 
-  const fileUrl = `${config.base}/${config.file}/view/${file.id}`;
+  const fileUrl = `${config.base}/${config.file}/view/${fileId}`;
 
   const documentOptions = useMemo(
     () => ({
@@ -43,7 +44,7 @@ const PdfViewer: React.FC<PdfViewerProps> = ({ file }) => {
 
   const changePage = (offset: number) => setPageNumber((prev) => prev + offset);
   const toggleTheme = () => setTheme(theme === "vs-dark" ? "light" : "vs-dark");
-  const zoomIn = () => setScale((prev) => Math.min(prev + 0.25, 3));
+  const zoomIn = () => setScale((prev) => Math.min(prev + 0.25, 2));
   const zoomOut = () => setScale((prev) => Math.max(prev - 0.25, 0.5));
   const [inputPage, setInputPage] = useState("");
   const handlePageInputChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -81,7 +82,7 @@ const PdfViewer: React.FC<PdfViewerProps> = ({ file }) => {
           <button
             className={styles.iconButton}
             onClick={zoomIn}
-            disabled={scale >= 3}
+            disabled={scale >= 2}
           >
             <PlusIcon />
           </button>

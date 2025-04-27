@@ -4,5 +4,6 @@ export default interface Link {
   status: "private" | "public";
   friends: string[];
   fileId: string;
-  filename?: string;
+  filename: string;
+  path?: string;
 }

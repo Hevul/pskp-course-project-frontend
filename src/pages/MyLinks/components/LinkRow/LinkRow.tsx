@@ -1,19 +1,19 @@
 import { FC, useEffect, useState } from "react";
-import DeleteIcon from "../../../components/icons/DeleteIcon";
-import OptionsIcon from "../../../components/icons/OptionsIcon";
+import DeleteIcon from "../../../../components/icons/DeleteIcon";
+import OptionsIcon from "../../../../components/icons/OptionsIcon";
 import styles from "./LinkRow.module.css";
-import FileIcon from "../../../components/icons/FileIcon";
-import CopyIcon from "../../../components/icons/CopyIcon";
-import Link from "../../../models/Link";
-import { usePopup } from "../../../contexts/PopupContext";
-import useAxios from "../../../hooks/useAxios";
-import { useLinks } from "../../../contexts/LinksContext";
-import { getFullInfo, remove } from "../../../api/links";
-import { get } from "../../../api/files";
-import InfoDialog from "../../../components/dialogs/InfoDialog/InfoDialog";
-import { LinkFullInfo } from "../../../models/LinkFullInfo";
-import { useDialog } from "../../../contexts/DialogContext";
-import { formatDate, formatSize } from "../../../utils";
+import FileIcon from "../../../../components/icons/FileIcon";
+import CopyIcon from "../../../../components/icons/CopyIcon";
+import Link from "../../../../models/Link";
+import { usePopup } from "../../../../contexts/PopupContext";
+import useAxios from "../../../../hooks/useAxios";
+import { useLinks } from "../../../../contexts/LinksContext";
+import { getFullInfo, remove } from "../../../../api/links";
+import { get } from "../../../../api/files";
+import InfoDialog from "../../../../components/dialogs/InfoDialog/InfoDialog";
+import { LinkFullInfo } from "../../../../models/LinkFullInfo";
+import { useDialog } from "../../../../contexts/DialogContext";
+import { formatDate, formatSize } from "../../../../utils";
 
 interface Props {
   id: number;

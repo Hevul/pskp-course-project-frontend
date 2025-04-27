@@ -17,6 +17,9 @@ import IconButton from "../../components/IconButton/IconButton";
 import InfoDialog from "../../components/dialogs/InfoDialog/InfoDialog";
 import { LinkFullInfo } from "../../models/LinkFullInfo";
 import { formatDate, formatSize } from "../../utils";
+import FileViewer from "../../components/viewers/FileViewer";
+import { useFileViewer } from "../../contexts/FileViewerContext";
+import SecondaryButton from "../../components/SecondaryButton/SecondaryButton";
 
 const DownloadByLink = () => {
   const [isHovered, setIsHovered] = useState(false);
@@ -27,6 +30,7 @@ const DownloadByLink = () => {
   const { link: linkString } = useParams();
   const { show } = usePopup();
   const { open } = useDialog();
+  const { view } = useFileViewer();
 
   const { sendRequest: sendDownload } = useAxios({
     onSuccess(response) {
@@ -131,6 +135,11 @@ const DownloadByLink = () => {
     if (link) sendGetFullInfo(getFullInfo(link?.id));
   };
 
+  const handleOpen = () => {
+    if (link)
+      view(<FileViewer filename={link.filename} fileId={link.fileId} />);
+  };
+
   if (loading) {
     return (
       <div className={styles.main}>
@@ -188,6 +197,7 @@ const DownloadByLink = () => {
           <h1 className={styles.h1}>{link?.filename}</h1>
 
           <div className={styles.buttons}>
+            <SecondaryButton title="Открыть" onClick={handleOpen} />
             <Button title={"Скачать"} onClick={handleDownload} />
           </div>
         </div>

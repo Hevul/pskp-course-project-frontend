@@ -27,10 +27,10 @@ import { useLinks } from "../../../contexts/LinksContext";
 type Status = "public" | "private";
 
 interface Props {
-  file: File;
+  fileId: string;
 }
 
-const LinkDialog: FC<Props> = ({ file }) => {
+const LinkDialog: FC<Props> = ({ fileId }) => {
   const [status, setStatus] = useState<Status | null>(null);
   const [link, setLink] = useState<Link | null>(null);
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
@@ -48,6 +48,7 @@ const LinkDialog: FC<Props> = ({ file }) => {
         friends,
         fileInfoId: fileId,
         isPublic,
+        filename,
       } = response.data.link;
 
       const status = isPublic ? "public" : "private";
@@ -58,6 +59,7 @@ const LinkDialog: FC<Props> = ({ file }) => {
         status,
         friends,
         fileId,
+        filename,
       });
 
       setStatus(status);
@@ -73,6 +75,7 @@ const LinkDialog: FC<Props> = ({ file }) => {
         friends,
         fileInfoId: fileId,
         isPublic,
+        filename,
       } = response.data.link;
 
       const status = isPublic ? "public" : "private";
@@ -83,13 +86,14 @@ const LinkDialog: FC<Props> = ({ file }) => {
         status,
         friends,
         fileId,
+        filename,
       });
 
       setStatus(status);
     },
     onError(error) {
       if (error?.response.status === 404) {
-        sendCreate(create(file.id));
+        sendCreate(create(fileId));
       } else {
         console.log(error.message);
       }
@@ -121,7 +125,7 @@ const LinkDialog: FC<Props> = ({ file }) => {
   });
 
   useEffect(() => {
-    sendGet(getByFileInfoId(file.id));
+    sendGet(getByFileInfoId(fileId));
   }, []);
 
   const copyToClipboard = () => {
@@ -154,7 +158,7 @@ const LinkDialog: FC<Props> = ({ file }) => {
     if (!link) return;
     if (link.status === status) return;
     await sendSetPublicity(setPublicity(link.id, status === "public"));
-    sendGet(getByFileInfoId(file.id));
+    sendGet(getByFileInfoId(fileId));
   };
 
   return (

@@ -112,6 +112,7 @@ const EditFriendsList: FC<Props> = ({ refLink }) => {
         status: data.isPublic ? "public" : "private",
         friends: data.friends,
         fileId: data.fileInfoId,
+        filename: data.filename,
       });
 
       setErrorMsg(null);

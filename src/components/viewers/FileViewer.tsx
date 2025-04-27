@@ -1,5 +1,4 @@
-import File from "../../models/File";
-import { FC } from "react";
+import { FC, useEffect, useMemo } from "react";
 import AudioViewer from "./AudioViewer/AudioViewer";
 import VideoViewer from "./VideoViewer/VideoViewer";
 import ImageViewer from "./ImageViewer/ImageViewer";
@@ -11,68 +10,9 @@ import { usePopup } from "../../contexts/PopupContext";
 import { useFileViewer } from "../../contexts/FileViewerContext";
 
 interface Props {
-  file: File;
+  filename: string;
+  fileId: string;
 }
-
-const FileViewer: FC<Props> = ({ file }) => {
-  const { name, id } = file;
-
-  const fileExtension = name.split(".").pop()?.toLowerCase();
-  const fileUrl = `${config.base}/${config.file}/view/${id}`;
-
-  const { show } = usePopup();
-  const { close } = useFileViewer();
-
-  const renderFileContent = () => {
-    if (!fileExtension) {
-      close();
-      show("Не удалось открыть файл! Неизвестный тип файла.", {
-        iconType: "error",
-      });
-      return null;
-    }
-
-    switch (fileExtension) {
-      case "mp3":
-      case "wav":
-      case "ogg":
-      case "flac":
-      case "aac":
-        return <AudioViewer fileUrl={fileUrl} fileName={name} />;
-      case "mp4":
-      case "webm":
-      case "mov":
-      case "avi":
-      case "mkv":
-        return <VideoViewer fileUrl={fileUrl} fileName={name} />;
-      case "jpg":
-      case "jpeg":
-      case "png":
-      case "gif":
-      case "webp":
-      case "svg":
-        return <ImageViewer fileUrl={fileUrl} fileName={name} />;
-      case "pdf":
-        return <PdfViewer file={file} />;
-      case "docx":
-        return <DocxViewer fileUrl={fileUrl} fileName={name} />;
-      default:
-        if (TEXT_FILE_EXTENSIONS.includes(fileExtension))
-          return <TextViewer fileUrl={fileUrl} fileName={name} />;
-
-        close();
-        show(
-          `Не удалось открыть файл! Тип файла ${fileExtension} не поддерживается для просмотра.`,
-          {
-            iconType: "error",
-          }
-        );
-        return null;
-    }
-  };
-
-  return renderFileContent();
-};
 
 const TEXT_FILE_EXTENSIONS = [
   "txt",
@@ -149,5 +89,96 @@ const TEXT_FILE_EXTENSIONS = [
   "gitignore",
   "htaccess",
 ];
+
+const FileViewer: FC<Props> = ({ filename, fileId }) => {
+  const fileExtension = filename.split(".").pop()?.toLowerCase() ?? "";
+  const fileUrl = `${config.base}/${config.file}/view/${fileId}`;
+
+  const { show } = usePopup();
+  const { close } = useFileViewer();
+
+  const isSupported = useMemo(() => {
+    if (!fileExtension) return false;
+
+    const supportedFormats = [
+      "mp3",
+      "wav",
+      "ogg",
+      "flac",
+      "aac",
+      "mp4",
+      "webm",
+      "mov",
+      "avi",
+      "mkv",
+      "jpg",
+      "jpeg",
+      "png",
+      "gif",
+      "webp",
+      "svg",
+      "pdf",
+      "docx",
+      ...TEXT_FILE_EXTENSIONS,
+    ];
+
+    return supportedFormats.includes(fileExtension);
+  }, [fileExtension]);
+
+  useEffect(() => {
+    if (!fileExtension) {
+      show("Не удалось открыть файл! Неизвестный тип файла.", {
+        iconType: "error",
+      });
+      close();
+      return;
+    }
+
+    if (!isSupported) {
+      show(
+        `Не удалось открыть файл! Тип файла ${fileExtension} не поддерживается для просмотра.`,
+        { iconType: "error" }
+      );
+      close();
+    }
+  }, [fileExtension, isSupported, show, close]);
+
+  const renderFileContent = () => {
+    if (!fileExtension || !isSupported) return null;
+
+    switch (fileExtension) {
+      case "mp3":
+      case "wav":
+      case "ogg":
+      case "flac":
+      case "aac":
+        return <AudioViewer fileUrl={fileUrl} fileName={filename} />;
+      case "mp4":
+      case "webm":
+      case "mov":
+      case "avi":
+      case "mkv":
+        return <VideoViewer fileUrl={fileUrl} fileName={filename} />;
+      case "jpg":
+      case "jpeg":
+      case "png":
+      case "gif":
+      case "webp":
+      case "svg":
+        return <ImageViewer fileUrl={fileUrl} fileName={filename} />;
+      case "pdf":
+        return <PdfViewer fileId={fileId} filename={filename} />;
+      case "docx":
+        return <DocxViewer fileUrl={fileUrl} fileName={filename} />;
+      default:
+        if (TEXT_FILE_EXTENSIONS.includes(fileExtension)) {
+          return <TextViewer fileUrl={fileUrl} fileName={filename} />;
+        }
+        return null;
+    }
+  };
+
+  return renderFileContent();
+};
 
 export default FileViewer;

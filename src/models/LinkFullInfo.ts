@@ -4,4 +4,5 @@ export interface LinkFullInfo {
   owner: string;
   createAt: Date;
   downloadCount: number;
+  path?: string;
 }
