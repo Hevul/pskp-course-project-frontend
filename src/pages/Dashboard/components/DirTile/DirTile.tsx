@@ -4,14 +4,10 @@ import styles from "./DirTile.module.css";
 import FolderIcon from "../../../../components/icons/FolderIcon";
 import { useStorage } from "../../../../contexts/StorageContext";
 import { useEntities } from "../../../../contexts/EntitiesContext";
-import { Entity } from "../../../../models/Entity";
 import DeleteIcon from "../../../../components/icons/DeleteIcon";
 import EditIcon from "../../../../components/icons/EditIcon";
-import {
-  download,
-  getFullInfo,
-  remove as removeDir,
-} from "../../../../api/dirs";
+import { getFullInfo, remove as removeDir } from "../../../../api/dirs";
+import { remove as removeFile } from "../../../../api/files";
 import ContextMenuArea from "../../../../components/ContextMenuArea/ContextMenuArea";
 import RenameDialog from "../../../../components/dialogs/RenameDialog/RenameDialog";
 import { useDialog } from "../../../../contexts/DialogContext";
@@ -24,10 +20,6 @@ import CurvedIcon from "../../../../components/icons/CurvedIcon";
 import { usePopup } from "../../../../contexts/PopupContext";
 import InfoDialog from "../../../../components/dialogs/InfoDialog/InfoDialog";
 import { formatDate, formatSize } from "../../../../utils";
-import fileDownload from "js-file-download";
-import DownloadIcon from "../../../../components/icons/DownloadIcon";
-import { saveAs } from "file-saver";
-import axios from "axios";
 import { useSelectedEntities } from "../../../../contexts/SelectedEntitiesContext";
 import { MenuItem } from "../../../../contexts/ContextMenuContext";
 
@@ -44,17 +36,17 @@ const DirTile: FC<Props> = ({ dir }) => {
   const { storage } = useStorage();
   const { open } = useDialog();
   const { show } = usePopup();
-  const { selectedEntities, toggleEntitySelection } = useSelectedEntities();
+  const { selectedEntities, toggleEntitySelection, handleDeleteSelected } =
+    useSelectedEntities();
 
   const { id, name } = dir;
   const isSelected = selectedEntities.some((e) => e.id === id);
   const isMultipleSelection = selectedEntities.length > 1;
 
-  const { sendRequest: sendDelete } = useAxios({
+  const { sendRequest: sendRemove } = useAxios({
     onSuccess(response) {
-      show(`Папка ${name} удалена!`, {
-        iconType: "success",
-      });
+      show(`Папка ${dir.name} удалена`, { iconType: "success" });
+      refresh();
     },
   });
   const { sendRequest: sendGetFullInfo } = useAxios({
@@ -107,8 +99,11 @@ const DirTile: FC<Props> = ({ dir }) => {
   };
 
   const handleDelete = async () => {
-    await sendDelete(removeDir(id));
-    refresh();
+    if (selectedEntities.length < 2) {
+      sendRemove(removeFile(dir.id));
+    } else {
+      handleDeleteSelected();
+    }
   };
 
   const handleClick = (e: React.MouseEvent) => {
@@ -118,7 +113,7 @@ const DirTile: FC<Props> = ({ dir }) => {
 
   const handleContextMenu = (e: React.MouseEvent) => {
     e.preventDefault();
-    if (!isSelected) toggleEntitySelection(dir, e);
+    if (!isSelected || e.ctrlKey || e.metaKey) toggleEntitySelection(dir, e);
   };
 
   const menuItems: MenuItem[] = [
@@ -139,7 +134,9 @@ const DirTile: FC<Props> = ({ dir }) => {
       action: () => open(<MoveDialog entity={dir} onSuccess={refresh} />),
     },
     {
-      title: `Удалить папку`,
+      title: `Удалить ${
+        isMultipleSelection ? `(${selectedEntities.length})` : `папку`
+      }`,
       icon: <DeleteIcon width="18" />,
       action: handleDelete,
       hasSeparator: true,
@@ -158,7 +155,6 @@ const DirTile: FC<Props> = ({ dir }) => {
       onMouseOut={() => setIsHovered(false)}
       className={`${styles.tile} tile`}
       onClick={handleClick}
-      onContextMenu={handleContextMenu}
       style={{
         backgroundColor: isSelected
           ? "#4676FB"
@@ -168,7 +164,7 @@ const DirTile: FC<Props> = ({ dir }) => {
       }}
     >
       <ContextMenuArea items={menuItems}>
-        <div className={styles.tileContainer}>
+        <div className={styles.tileContainer} onContextMenu={handleContextMenu}>
           <FolderIcon width="40" color={isSelected ? "white" : "#4676FB"} />
 
           <div className={styles.textContainer}>

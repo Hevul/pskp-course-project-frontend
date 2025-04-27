@@ -2,11 +2,11 @@ import { FC, useEffect, useRef, useState } from "react";
 import File from "../../../../models/File";
 import styles from "./FileTile.module.css";
 import { useEntities } from "../../../../contexts/EntitiesContext";
-import { Entity } from "../../../../models/Entity";
 import DeleteIcon from "../../../../components/icons/DeleteIcon";
 import DownloadIcon from "../../../../components/icons/DownloadIcon";
 import EditIcon from "../../../../components/icons/EditIcon";
 import { download, remove as removeFile } from "../../../../api/files";
+import { remove as removeDir } from "../../../../api/dirs";
 import ContextMenuArea from "../../../../components/ContextMenuArea/ContextMenuArea";
 import RenameDialog from "../../../../components/dialogs/RenameDialog/RenameDialog";
 import { useDialog } from "../../../../contexts/DialogContext";
@@ -44,7 +44,12 @@ const FileTile: FC<Props> = ({ file }) => {
   const { open } = useDialog();
   const { view } = useFileViewer();
   const { show } = usePopup();
-  const { selectedEntities, toggleEntitySelection } = useSelectedEntities();
+  const {
+    selectedEntities,
+    toggleEntitySelection,
+    setSelectedEntities,
+    handleDeleteSelected,
+  } = useSelectedEntities();
 
   const { id, name } = file;
   const isSelected = selectedEntities.some((e) => e.id === id);
@@ -59,11 +64,10 @@ const FileTile: FC<Props> = ({ file }) => {
       });
     },
   });
-  const { sendRequest: sendDelete } = useAxios({
+  const { sendRequest: sendRemove } = useAxios({
     onSuccess(response) {
-      show(`Файл ${name} удалён!`, {
-        iconType: "success",
-      });
+      show(`Файл ${file.name} удален`, { iconType: "success" });
+      refresh();
     },
   });
 
@@ -78,11 +82,6 @@ const FileTile: FC<Props> = ({ file }) => {
   const handleOpen = () => {
     view(<FileViewer filename={file.name} fileId={file.id} />);
   };
-
-  // const handleDownload = () => {
-  //   show("Скачивание файла скоро начнётся!", { iconType: "info" });
-  //   sendDownload(download(id));
-  // };
 
   const handleSingleDownload = async () => {
     show("Скачивание файла скоро начнётся!", { iconType: "info" });
@@ -136,39 +135,25 @@ const FileTile: FC<Props> = ({ file }) => {
     }
   };
 
-  // const handleDelete = async () => {
-  //   await sendDelete(removeFile(id));
-  //   refresh();
-  // };
-
-  const handleDelete = async () => {
-    if (isMultipleSelection) {
-      // Удаление нескольких файлов
-      const deletePromises = selectedEntities
-        .filter((e) => e.type === "file")
-        .map(async (entity) => {
-          await removeFile(entity.id);
-        });
-
-      await Promise.all(deletePromises);
-      show(`Удалено ${selectedEntities.length} файлов!`, {
-        iconType: "success",
-      });
-      refresh();
-    } else {
-      await sendDelete(removeFile(id));
-      refresh();
-    }
-  };
-
   const handleClick = (e: React.MouseEvent) => {
     if (e.detail === 1) toggleEntitySelection(file, e);
     else if (e.detail === 2) handleOpen();
   };
 
   const handleContextMenu = (e: React.MouseEvent) => {
-    e.preventDefault();
-    if (!isSelected) toggleEntitySelection(file, e);
+    if (e.ctrlKey || e.metaKey) {
+      toggleEntitySelection(file, e);
+    } else if (!isSelected) {
+      setSelectedEntities([file]);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (selectedEntities.length < 2) {
+      sendRemove(removeFile(file.id));
+    } else {
+      handleDeleteSelected();
+    }
   };
 
   const menuItems: MenuItem[] = [
@@ -210,7 +195,9 @@ const FileTile: FC<Props> = ({ file }) => {
       action: () => open(<MoveDialog entity={file} onSuccess={refresh} />),
     },
     {
-      title: `Удалить файл`,
+      title: `Удалить ${
+        isMultipleSelection ? `(${selectedEntities.length})` : `файл`
+      }`,
       icon: <DeleteIcon width="18" />,
       action: handleDelete,
       hasSeparator: true,
