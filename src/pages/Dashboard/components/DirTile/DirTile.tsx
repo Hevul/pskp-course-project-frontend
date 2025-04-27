@@ -28,14 +28,14 @@ import fileDownload from "js-file-download";
 import DownloadIcon from "../../../../components/icons/DownloadIcon";
 import { saveAs } from "file-saver";
 import axios from "axios";
+import { useSelectedEntities } from "../../../../contexts/SelectedEntitiesContext";
+import { MenuItem } from "../../../../contexts/ContextMenuContext";
 
 interface Props {
   dir: Dir;
-  selectedEntities: Entity[];
-  onClick: (entity: Entity, event: React.MouseEvent) => void;
 }
 
-const DirTile: FC<Props> = ({ dir, selectedEntities, onClick }) => {
+const DirTile: FC<Props> = ({ dir }) => {
   const [isHovered, setIsHovered] = useState(false);
   const [needsWrap, setNeedsWrap] = useState(false);
   const textRef = useRef<HTMLHeadingElement>(null);
@@ -44,9 +44,11 @@ const DirTile: FC<Props> = ({ dir, selectedEntities, onClick }) => {
   const { storage } = useStorage();
   const { open } = useDialog();
   const { show } = usePopup();
+  const { selectedEntities, toggleEntitySelection } = useSelectedEntities();
 
   const { id, name } = dir;
   const isSelected = selectedEntities.some((e) => e.id === id);
+  const isMultipleSelection = selectedEntities.length > 1;
 
   const { sendRequest: sendDelete } = useAxios({
     onSuccess(response) {
@@ -110,23 +112,21 @@ const DirTile: FC<Props> = ({ dir, selectedEntities, onClick }) => {
   };
 
   const handleClick = (e: React.MouseEvent) => {
-    if (e.detail === 1) {
-      onClick(dir, e);
-    } else if (e.detail === 2) {
-      handleDirEnter();
-    }
+    if (e.detail === 1) toggleEntitySelection(dir, e);
+    else if (e.detail === 2) handleDirEnter();
   };
 
   const handleContextMenu = (e: React.MouseEvent) => {
     e.preventDefault();
-    if (!isSelected) onClick(dir, e);
+    if (!isSelected) toggleEntitySelection(dir, e);
   };
 
-  const menuItems = [
+  const menuItems: MenuItem[] = [
     {
       title: `Переименовать папку`,
       icon: <EditIcon width="18" />,
       action: () => open(<RenameDialog entity={dir} />),
+      disabled: isMultipleSelection,
     },
     {
       title: `Копировать папку`,
@@ -148,6 +148,7 @@ const DirTile: FC<Props> = ({ dir, selectedEntities, onClick }) => {
       title: `Информация о папке`,
       icon: <InfoSquareIcon width="18" />,
       action: () => sendGetFullInfo(getFullInfo(id)),
+      disabled: isMultipleSelection,
     },
   ];
 

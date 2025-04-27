@@ -28,14 +28,14 @@ import ShowIcon from "../../../../components/icons/ShowIcon";
 import FileViewer from "../../../../components/viewers/FileViewer";
 import { useFileViewer } from "../../../../contexts/FileViewerContext";
 import JSZip from "jszip";
+import { useSelectedEntities } from "../../../../contexts/SelectedEntitiesContext";
+import { MenuItem } from "../../../../contexts/ContextMenuContext";
 
 interface Props {
   file: File;
-  selectedEntities: Entity[];
-  onClick: (entity: Entity, event: React.MouseEvent) => void;
 }
 
-const FileTile: FC<Props> = ({ file, selectedEntities, onClick }) => {
+const FileTile: FC<Props> = ({ file }) => {
   const [isHovered, setIsHovered] = useState(false);
   const [needsWrap, setNeedsWrap] = useState(false);
   const textRef = useRef<HTMLHeadingElement>(null);
@@ -44,6 +44,7 @@ const FileTile: FC<Props> = ({ file, selectedEntities, onClick }) => {
   const { open } = useDialog();
   const { view } = useFileViewer();
   const { show } = usePopup();
+  const { selectedEntities, toggleEntitySelection } = useSelectedEntities();
 
   const { id, name } = file;
   const isSelected = selectedEntities.some((e) => e.id === id);
@@ -161,41 +162,42 @@ const FileTile: FC<Props> = ({ file, selectedEntities, onClick }) => {
   };
 
   const handleClick = (e: React.MouseEvent) => {
-    if (e.detail === 1) {
-      onClick(file, e);
-    } else if (e.detail === 2) {
-      handleOpen();
-    }
+    if (e.detail === 1) toggleEntitySelection(file, e);
+    else if (e.detail === 2) handleOpen();
   };
 
   const handleContextMenu = (e: React.MouseEvent) => {
     e.preventDefault();
-    if (!isSelected) onClick(file, e);
+    if (!isSelected) toggleEntitySelection(file, e);
   };
 
-  const menuItems = [
+  const menuItems: MenuItem[] = [
     {
       title: "Открыть файл",
       icon: <ShowIcon width="18" />,
       action: handleOpen,
       hasSeparator: true,
+      disabled: isMultipleSelection,
     },
     {
       title: "Скачать файл",
       icon: <DownloadIcon width="16" />,
       action: handleDownload,
       hasSeparator: true,
+      disabled: isMultipleSelection,
     },
     {
       title: "Поделиться",
       icon: <AddUserIcon width="16" />,
       action: () => open(<LinkDialog fileId={file.id} />),
       hasSeparator: true,
+      disabled: isMultipleSelection,
     },
     {
       title: `Переименовать файл`,
       icon: <EditIcon width="18" />,
       action: () => open(<RenameDialog entity={file} />),
+      disabled: isMultipleSelection,
     },
     {
       title: `Копировать файл`,
@@ -216,6 +218,7 @@ const FileTile: FC<Props> = ({ file, selectedEntities, onClick }) => {
     {
       title: `Информация о файле`,
       icon: <InfoSquareIcon width="18" />,
+      disabled: isMultipleSelection,
       action: () =>
         open(
           <InfoDialog

@@ -7,12 +7,16 @@ import EmptyBoxIcon from "../../../../components/icons/EmptyBoxIcon";
 import { useStorage } from "../../../../contexts/StorageContext";
 import FileTile from "../FileTile/FileTile";
 import DirTile from "../DirTile/DirTile";
+import {
+  SelectedEntitiesProvider,
+  useSelectedEntities,
+} from "../../../../contexts/SelectedEntitiesContext";
 
-const StorageTableTiled = () => {
+const StorageTableTiledContent = () => {
   const { entities } = useEntities();
   const { storage } = useStorage();
+  const { clearSelection } = useSelectedEntities();
 
-  const [selectedEntities, setSelectedEntities] = useState<Entity[]>([]); // Изменим на массив выбранных элементов
   const containerRef = useRef<HTMLDivElement>(null);
 
   const sortedEntities = [...entities].sort((a, b) => {
@@ -30,7 +34,7 @@ const StorageTableTiled = () => {
         containerRef.current &&
         !containerRef.current.contains(event.target as Node)
       ) {
-        setSelectedEntities([]);
+        clearSelection();
       }
     };
 
@@ -38,22 +42,7 @@ const StorageTableTiled = () => {
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, []);
-
-  const handleEntityClick = (entity: Entity, event: React.MouseEvent) => {
-    if (event.ctrlKey || event.metaKey) {
-      // Для Mac (Cmd)
-      // Множественный выбор
-      setSelectedEntities((prev) =>
-        prev.some((e) => e.id === entity.id)
-          ? prev.filter((e) => e.id !== entity.id)
-          : [...prev, entity]
-      );
-    } else {
-      // Одиночный выбор
-      setSelectedEntities([entity]);
-    }
-  };
+  }, [clearSelection]);
 
   return (
     <div
@@ -61,7 +50,7 @@ const StorageTableTiled = () => {
       className={styles.table}
       onClick={(e) => {
         if (!(e.target as HTMLElement).closest(".tile")) {
-          setSelectedEntities([]);
+          clearSelection();
         }
       }}
     >
@@ -80,23 +69,21 @@ const StorageTableTiled = () => {
       ) : (
         sortedEntities.map((e) =>
           e.type === "file" ? (
-            <FileTile
-              key={e.id}
-              file={e}
-              selectedEntities={selectedEntities}
-              onClick={handleEntityClick}
-            />
+            <FileTile key={e.id} file={e} />
           ) : (
-            <DirTile
-              key={e.id}
-              dir={e}
-              selectedEntities={selectedEntities}
-              onClick={handleEntityClick}
-            />
+            <DirTile key={e.id} dir={e} />
           )
         )
       )}
     </div>
+  );
+};
+
+const StorageTableTiled = () => {
+  return (
+    <SelectedEntitiesProvider>
+      <StorageTableTiledContent />
+    </SelectedEntitiesProvider>
   );
 };
 

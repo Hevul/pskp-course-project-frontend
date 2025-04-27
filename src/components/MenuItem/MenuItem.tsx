@@ -1,14 +1,16 @@
 import { FC, ReactNode, useState } from "react";
 import styles from "./MenuItem.module.css";
+import { MenuItem as MenuItemProps } from "../../contexts/ContextMenuContext";
 
-interface Props {
-  title: string;
-  action: () => void;
-  icon?: ReactNode;
-  hasSeparator?: boolean;
-}
+const MenuItem: FC<MenuItemProps> = ({
+  title,
+  action,
+  icon,
+  hasSeparator = false,
+  disabled = false,
+}) => {
+  if (disabled) return null;
 
-const MenuItem: FC<Props> = ({ title, action, icon, hasSeparator = false }) => {
   return (
     <li
       className={`${styles.menuItem} ${
