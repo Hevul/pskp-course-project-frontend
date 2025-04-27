@@ -101,6 +101,18 @@ export const download = (id: string): AxiosRequestConfig => ({
   method: "get",
   withCredentials: true,
   responseType: "blob",
+  timeout: 0,
+});
+
+export const downloadMultiple = (ids: string[]): AxiosRequestConfig => ({
+  url: `${url}/download-many`,
+  method: "post",
+  withCredentials: true,
+  responseType: "blob",
+  data: {
+    fileIds: ids,
+  },
+  timeout: 0,
 });
 
 export const rename = (id: string, name: string): AxiosRequestConfig => ({

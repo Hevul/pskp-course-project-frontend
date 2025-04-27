@@ -5,7 +5,11 @@ import { useEntities } from "../../../../contexts/EntitiesContext";
 import DeleteIcon from "../../../../components/icons/DeleteIcon";
 import DownloadIcon from "../../../../components/icons/DownloadIcon";
 import EditIcon from "../../../../components/icons/EditIcon";
-import { download, remove as removeFile } from "../../../../api/files";
+import {
+  download,
+  downloadMultiple,
+  remove as removeFile,
+} from "../../../../api/files";
 import { remove as removeDir } from "../../../../api/dirs";
 import ContextMenuArea from "../../../../components/ContextMenuArea/ContextMenuArea";
 import RenameDialog from "../../../../components/dialogs/RenameDialog/RenameDialog";
@@ -27,9 +31,9 @@ import { formatDate, formatSize } from "../../../../utils";
 import ShowIcon from "../../../../components/icons/ShowIcon";
 import FileViewer from "../../../../components/viewers/FileViewer";
 import { useFileViewer } from "../../../../contexts/FileViewerContext";
-import JSZip from "jszip";
 import { useSelectedEntities } from "../../../../contexts/SelectedEntitiesContext";
 import { MenuItem } from "../../../../contexts/ContextMenuContext";
+import config from "../../../../config.json";
 
 interface Props {
   file: File;
@@ -56,16 +60,8 @@ const FileTile: FC<Props> = ({ file }) => {
   const ext = name.split(".").pop() || "";
   const isMultipleSelection = selectedEntities.length > 1;
 
-  const { sendRequest: sendDownload } = useAxios({
-    onSuccess(response) {
-      fileDownload(response.data, name);
-      show(`Файл ${name} скачан!`, {
-        iconType: "success",
-      });
-    },
-  });
   const { sendRequest: sendRemove } = useAxios({
-    onSuccess(response) {
+    onSuccess() {
       show(`Файл ${file.name} удален`, { iconType: "success" });
       refresh();
     },
@@ -84,55 +80,52 @@ const FileTile: FC<Props> = ({ file }) => {
   };
 
   const handleSingleDownload = async () => {
-    show("Скачивание файла скоро начнётся!", { iconType: "info" });
-    const response = await sendDownload(download(id));
+    show("Скачивание файла...", { iconType: "info" });
 
-    if (!response) return;
+    const url = `${config.base}/${config.file}`;
 
-    fileDownload(response.data, name);
+    const link = document.createElement("a");
+    link.href = `${url}/download/${id}`;
+    link.style.display = "none";
+    document.body.appendChild(link);
+
+    link.click();
+
+    setTimeout(() => {
+      document.body.removeChild(link);
+    }, 100);
   };
 
   const handleMultipleDownload = async () => {
-    show("Подготовка архива с файлами...", { iconType: "info" });
+    show("Подготовка архива...", { iconType: "info" });
 
-    const zip = new JSZip();
-    const folder = zip.folder("downloads");
+    const fileIds = selectedEntities
+      .filter((e) => e.type === "file")
+      .map((e) => e.id);
 
-    try {
-      // Скачиваем все выбранные файлы
-      const downloadPromises = selectedEntities
-        .filter((e) => e.type === "file")
-        .map(async (entity) => {
-          const response = await download(entity.id);
-          if (response) {
-            folder?.file(entity.name, response.data);
-          }
-        });
+    const encodedIds = encodeURIComponent(JSON.stringify(fileIds));
 
-      await Promise.all(downloadPromises);
+    const downloadUrl = `${config.base}/${config.file}/download-many?fileIds=${encodedIds}`;
 
-      // Генерируем архив
-      const content = await zip.generateAsync({ type: "blob" });
-      fileDownload(
-        content,
-        `files_${new Date().toISOString().slice(0, 10)}.zip`
-      );
+    const link = document.createElement("a");
+    link.href = downloadUrl;
+    link.style.display = "none";
+    document.body.appendChild(link);
 
-      show(`Скачано ${selectedEntities.length} файлов!`, {
-        iconType: "success",
-      });
-    } catch (error) {
-      show("Ошибка при создании архива", { iconType: "error" });
-      console.error("Download error:", error);
-    }
+    link.click();
+
+    setTimeout(() => {
+      document.body.removeChild(link);
+    }, 100);
+
+    show(`Начато скачивание ${fileIds.length} файлов`, {
+      iconType: "info",
+    });
   };
 
   const handleDownload = () => {
-    if (isMultipleSelection) {
-      handleMultipleDownload();
-    } else {
-      handleSingleDownload();
-    }
+    if (isMultipleSelection) handleMultipleDownload();
+    else handleSingleDownload();
   };
 
   const handleClick = (e: React.MouseEvent) => {
@@ -141,6 +134,7 @@ const FileTile: FC<Props> = ({ file }) => {
   };
 
   const handleContextMenu = (e: React.MouseEvent) => {
+    e.preventDefault();
     if (e.ctrlKey || e.metaKey) {
       toggleEntitySelection(file, e);
     } else if (!isSelected) {
@@ -165,11 +159,14 @@ const FileTile: FC<Props> = ({ file }) => {
       disabled: isMultipleSelection,
     },
     {
-      title: "Скачать файл",
+      title: `Скачать ${
+        isMultipleSelection
+          ? `(${selectedEntities.filter((e) => e.type === "file").length})`
+          : `файл`
+      }`,
       icon: <DownloadIcon width="16" />,
       action: handleDownload,
       hasSeparator: true,
-      disabled: isMultipleSelection,
     },
     {
       title: "Поделиться",
