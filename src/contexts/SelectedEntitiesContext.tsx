@@ -5,6 +5,7 @@ import { usePopup } from "./PopupContext";
 import useAxios from "../hooks/useAxios";
 import { remove as removeDir } from "../api/dirs";
 import { remove as removeFile } from "../api/files";
+import config from "../config.json";
 
 interface SelectedEntitiesContextType {
   selectedEntities: Entity[];
@@ -12,6 +13,7 @@ interface SelectedEntitiesContextType {
   toggleEntitySelection: (entity: Entity, event: React.MouseEvent) => void;
   clearSelection: () => void;
   handleDeleteSelected: () => Promise<void>;
+  handleDownloadSelected: () => void;
   isDeleting: boolean;
 }
 
@@ -91,6 +93,50 @@ export const SelectedEntitiesProvider = ({
     }
   };
 
+  const handleDownloadSelected = async () => {
+    show("Подготовка архива...", { iconType: "info" });
+
+    try {
+      const fileIds = selectedEntities
+        .filter((e) => e.type === "file")
+        .map((e) => e.id);
+
+      const dirIds = selectedEntities
+        .filter((e) => e.type === "dir")
+        .map((e) => e.id);
+
+      const encodedFileIds = encodeURIComponent(JSON.stringify(fileIds));
+      const encodedDirIds = encodeURIComponent(JSON.stringify(dirIds));
+
+      const downloadUrl = `${config.base}/${config.entity}/download-many?fileIds=${encodedFileIds}&dirIds=${encodedDirIds}`;
+
+      const link = document.createElement("a");
+      link.href = downloadUrl;
+      link.style.display = "none";
+      document.body.appendChild(link);
+
+      link.click();
+
+      setTimeout(() => {
+        document.body.removeChild(link);
+        URL.revokeObjectURL(downloadUrl);
+      }, 100);
+
+      const totalItems = fileIds.length + dirIds.length;
+      show(
+        `Начато скачивание архива (${totalItems} элементов: ${fileIds.length} файлов и ${dirIds.length} папок)`,
+        {
+          iconType: "info",
+        }
+      );
+    } catch (error) {
+      console.error("Ошибка при подготовке скачивания:", error);
+      show("Не удалось начать скачивание", {
+        iconType: "error",
+      });
+    }
+  };
+
   return (
     <SelectedEntitiesContext.Provider
       value={{
@@ -100,6 +146,7 @@ export const SelectedEntitiesProvider = ({
         clearSelection,
         handleDeleteSelected,
         isDeleting,
+        handleDownloadSelected,
       }}
     >
       {children}

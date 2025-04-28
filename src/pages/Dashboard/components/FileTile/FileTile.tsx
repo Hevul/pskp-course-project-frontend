@@ -54,6 +54,7 @@ const FileTile: FC<Props> = ({ file }) => {
     toggleEntitySelection,
     setSelectedEntities,
     handleDeleteSelected,
+    handleDownloadSelected,
   } = useSelectedEntities();
 
   const { id, name } = file;
@@ -170,12 +171,21 @@ const FileTile: FC<Props> = ({ file }) => {
     {
       title: `Скачать ${
         isMultipleSelection
-          ? `(${selectedEntities.filter((e) => e.type === "file").length})`
+          ? `файлы (${
+              selectedEntities.filter((e) => e.type === "file").length
+            })`
           : `файл`
       }`,
       icon: <DownloadIcon width="16" />,
       action: handleDownload,
+      hasSeparator: !isMultipleSelection,
+    },
+    {
+      title: `Скачать всё (${selectedEntities.length})`,
+      icon: <DownloadIcon width="16" />,
+      action: handleDownloadSelected,
       hasSeparator: true,
+      disabled: !isMultipleSelection,
     },
     {
       title: "Поделиться",

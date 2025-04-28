@@ -6,5 +6,6 @@
   "link": "api/link",
   "auth": "api/auth",
   "dir": "api/dir",
+  "entity": "api/entity",
   "smallFileLimit": 500
 }

@@ -39,8 +39,12 @@ const DirTile: FC<Props> = ({ dir }) => {
   const { storage } = useStorage();
   const { open } = useDialog();
   const { show } = usePopup();
-  const { selectedEntities, toggleEntitySelection, handleDeleteSelected } =
-    useSelectedEntities();
+  const {
+    selectedEntities,
+    toggleEntitySelection,
+    handleDeleteSelected,
+    handleDownloadSelected,
+  } = useSelectedEntities();
 
   const { id, name } = dir;
   const isSelected = selectedEntities.some((e) => e.id === id);
@@ -124,7 +128,7 @@ const DirTile: FC<Props> = ({ dir }) => {
     if (!isSelected || e.ctrlKey || e.metaKey) toggleEntitySelection(dir, e);
   };
 
-  const handleDownload = () => {
+  const handleSingleDownload = () => {
     show("Подготовка архива...", { iconType: "info" });
 
     const link = document.createElement("a");
@@ -146,12 +150,57 @@ const DirTile: FC<Props> = ({ dir }) => {
     );
   };
 
+  const handleMultipleDownload = () => {
+    show("Подготовка архива...", { iconType: "info" });
+
+    const dirIds = selectedEntities
+      .filter((e) => e.type === "dir")
+      .map((e) => e.id);
+
+    const encodedIds = encodeURIComponent(JSON.stringify(dirIds));
+    const downloadUrl = `${config.base}/${config.dir}/download-many?dirIds=${encodedIds}`;
+
+    const link = document.createElement("a");
+    link.href = downloadUrl;
+    link.style.display = "none";
+    document.body.appendChild(link);
+
+    link.click();
+
+    setTimeout(() => {
+      document.body.removeChild(link);
+    }, 100);
+
+    show(
+      `Начато скачивание ${dirIds.length} папок. Не удалось вычислить размер архива.`,
+      {
+        iconType: "info",
+      }
+    );
+  };
+
+  const handleDownload = () => {
+    if (isMultipleSelection) handleMultipleDownload();
+    else handleSingleDownload();
+  };
+
   const menuItems: MenuItem[] = [
     {
-      title: `Скачать папку`,
+      title: `Скачать ${
+        isMultipleSelection
+          ? `папки (${selectedEntities.filter((e) => e.type === "dir").length})`
+          : `папку`
+      }`,
       icon: <DownloadIcon width="16" />,
       action: handleDownload,
+      hasSeparator: !isMultipleSelection,
+    },
+    {
+      title: `Скачать всё (${selectedEntities.length})`,
+      icon: <DownloadIcon width="16" />,
+      action: handleDownloadSelected,
       hasSeparator: true,
+      disabled: !isMultipleSelection,
     },
     {
       title: `Переименовать папку`,
