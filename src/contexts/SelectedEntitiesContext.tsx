@@ -12,6 +12,7 @@ interface SelectedEntitiesContextType {
   toggleEntitySelection: (entity: Entity, event: React.MouseEvent) => void;
   clearSelection: () => void;
   handleDeleteSelected: () => Promise<void>;
+  isDeleting: boolean;
 }
 
 const SelectedEntitiesContext =
@@ -23,6 +24,7 @@ export const SelectedEntitiesProvider = ({
   children: React.ReactNode;
 }) => {
   const [selectedEntities, setSelectedEntities] = useState<Entity[]>([]);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const { refresh } = useEntities();
   const { show } = usePopup();
@@ -45,6 +47,10 @@ export const SelectedEntitiesProvider = ({
   };
 
   const handleDeleteSelected = async () => {
+    if (isDeleting) return;
+
+    setIsDeleting(true);
+
     try {
       const deletePromises = selectedEntities.map(async (entity) => {
         if (entity.type === "file") {
@@ -80,6 +86,8 @@ export const SelectedEntitiesProvider = ({
       show(errorMessage, {
         iconType: "error",
       });
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -91,6 +99,7 @@ export const SelectedEntitiesProvider = ({
         toggleEntitySelection,
         clearSelection,
         handleDeleteSelected,
+        isDeleting,
       }}
     >
       {children}

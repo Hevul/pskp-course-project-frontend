@@ -7,6 +7,7 @@ import { ContextMenuProvider } from "../../contexts/ContextMenuContext";
 import { LinksProvider } from "../../contexts/LinksContext";
 import { UploadProvider } from "../../contexts/UploadContext";
 import { FileViewerProvider } from "../../contexts/FileViewerContext";
+import { SelectedEntitiesProvider } from "../../contexts/SelectedEntitiesContext";
 
 const PrivateLayout = () => {
   return (
@@ -16,11 +17,13 @@ const PrivateLayout = () => {
           <EntitiesProvider>
             <LinksProvider>
               <UploadProvider>
-                <DialogProvider>
-                  <FileViewerProvider>
-                    <Outlet />
-                  </FileViewerProvider>
-                </DialogProvider>
+                <SelectedEntitiesProvider>
+                  <DialogProvider>
+                    <FileViewerProvider>
+                      <Outlet />
+                    </FileViewerProvider>
+                  </DialogProvider>
+                </SelectedEntitiesProvider>
               </UploadProvider>
             </LinksProvider>
           </EntitiesProvider>

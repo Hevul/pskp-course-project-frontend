@@ -12,7 +12,7 @@ import {
   useSelectedEntities,
 } from "../../../../contexts/SelectedEntitiesContext";
 
-const StorageTableTiledContent = () => {
+const StorageTableTiled = () => {
   const { entities } = useEntities();
   const { storage } = useStorage();
   const { clearSelection } = useSelectedEntities();
@@ -76,14 +76,6 @@ const StorageTableTiledContent = () => {
         )
       )}
     </div>
-  );
-};
-
-const StorageTableTiled = () => {
-  return (
-    <SelectedEntitiesProvider>
-      <StorageTableTiledContent />
-    </SelectedEntitiesProvider>
   );
 };
 

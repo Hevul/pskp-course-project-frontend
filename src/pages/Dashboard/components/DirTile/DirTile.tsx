@@ -22,6 +22,9 @@ import InfoDialog from "../../../../components/dialogs/InfoDialog/InfoDialog";
 import { formatDate, formatSize } from "../../../../utils";
 import { useSelectedEntities } from "../../../../contexts/SelectedEntitiesContext";
 import { MenuItem } from "../../../../contexts/ContextMenuContext";
+import DownloadIcon from "../../../../components/icons/DownloadIcon";
+import config from "../../../../config.json";
+import ConfirmDeletionDialog from "../../../../components/dialogs/ConfirmDeletionDialog/ConfirmDeletionDialog";
 
 interface Props {
   dir: Dir;
@@ -102,7 +105,12 @@ const DirTile: FC<Props> = ({ dir }) => {
     if (selectedEntities.length < 2) {
       sendRemove(removeFile(dir.id));
     } else {
-      handleDeleteSelected();
+      open(
+        <ConfirmDeletionDialog
+          onConfirm={handleDeleteSelected}
+          entities={selectedEntities}
+        />
+      );
     }
   };
 
@@ -116,7 +124,35 @@ const DirTile: FC<Props> = ({ dir }) => {
     if (!isSelected || e.ctrlKey || e.metaKey) toggleEntitySelection(dir, e);
   };
 
+  const handleDownload = () => {
+    show("Подготовка архива...", { iconType: "info" });
+
+    const link = document.createElement("a");
+    link.href = `${config.base}/${config.dir}/download/${id}`;
+    link.style.display = "none";
+    document.body.appendChild(link);
+
+    link.click();
+
+    setTimeout(() => {
+      document.body.removeChild(link);
+    }, 100);
+
+    show(
+      `Начато скачивание папки ${name}. Не удалось вычислить размер архива.`,
+      {
+        iconType: "info",
+      }
+    );
+  };
+
   const menuItems: MenuItem[] = [
+    {
+      title: `Скачать папку`,
+      icon: <DownloadIcon width="16" />,
+      action: handleDownload,
+      hasSeparator: true,
+    },
     {
       title: `Переименовать папку`,
       icon: <EditIcon width="18" />,

@@ -34,6 +34,7 @@ import { useFileViewer } from "../../../../contexts/FileViewerContext";
 import { useSelectedEntities } from "../../../../contexts/SelectedEntitiesContext";
 import { MenuItem } from "../../../../contexts/ContextMenuContext";
 import config from "../../../../config.json";
+import ConfirmDeletionDialog from "../../../../components/dialogs/ConfirmDeletionDialog/ConfirmDeletionDialog";
 
 interface Props {
   file: File;
@@ -119,7 +120,7 @@ const FileTile: FC<Props> = ({ file }) => {
     }, 100);
 
     show(
-      `Начато скачивание ${fileIds.length} файлов. Загрузка займёт некоторое время.`,
+      `Начато скачивание ${fileIds.length} файлов. Не удалось вычислить размер архива.`,
       {
         iconType: "info",
       }
@@ -149,7 +150,12 @@ const FileTile: FC<Props> = ({ file }) => {
     if (selectedEntities.length < 2) {
       sendRemove(removeFile(file.id));
     } else {
-      handleDeleteSelected();
+      open(
+        <ConfirmDeletionDialog
+          onConfirm={handleDeleteSelected}
+          entities={selectedEntities}
+        />
+      );
     }
   };
 
