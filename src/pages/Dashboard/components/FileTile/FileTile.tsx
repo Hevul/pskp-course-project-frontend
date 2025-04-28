@@ -118,9 +118,12 @@ const FileTile: FC<Props> = ({ file }) => {
       document.body.removeChild(link);
     }, 100);
 
-    show(`Начато скачивание ${fileIds.length} файлов`, {
-      iconType: "info",
-    });
+    show(
+      `Начато скачивание ${fileIds.length} файлов. Загрузка займёт некоторое время.`,
+      {
+        iconType: "info",
+      }
+    );
   };
 
   const handleDownload = () => {
