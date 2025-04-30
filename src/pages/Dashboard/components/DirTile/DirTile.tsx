@@ -7,7 +7,6 @@ import { useEntities } from "../../../../contexts/EntitiesContext";
 import DeleteIcon from "../../../../components/icons/DeleteIcon";
 import EditIcon from "../../../../components/icons/EditIcon";
 import { getFullInfo, remove as removeDir } from "../../../../api/dirs";
-import { remove as removeFile } from "../../../../api/files";
 import ContextMenuArea from "../../../../components/ContextMenuArea/ContextMenuArea";
 import RenameDialog from "../../../../components/dialogs/RenameDialog/RenameDialog";
 import { useDialog } from "../../../../contexts/DialogContext";
@@ -107,7 +106,7 @@ const DirTile: FC<Props> = ({ dir }) => {
 
   const handleDelete = async () => {
     if (selectedEntities.length < 2) {
-      sendRemove(removeFile(dir.id));
+      sendRemove(removeDir(dir.id));
     } else {
       open(
         <ConfirmDeletionDialog
