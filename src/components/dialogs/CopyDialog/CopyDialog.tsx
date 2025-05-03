@@ -73,21 +73,7 @@ const CopyDialogContent: FC<Props> = ({ entity, onSuccess }) => {
 
       if (errors) {
         const errorObj = errors[0];
-        if (errorObj) {
-          setCopyError(errorObj.msg);
-
-          const handleRenameSuccess = (updatedEntity: Entity) => {
-            setCurrentEntity(updatedEntity);
-            setCopyError(null);
-          };
-
-          open(
-            <RenameDialog
-              entity={currentEntity}
-              onSuccess={handleRenameSuccess}
-            />
-          );
-        }
+        if (errorObj) setCopyError(errorObj.msg);
       }
     },
   });

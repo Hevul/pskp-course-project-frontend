@@ -215,7 +215,15 @@ const DirTile: FC<Props> = ({ dir }) => {
     {
       title: `Переместить папку`,
       icon: <CurvedIcon width="18" />,
-      action: () => open(<MoveDialog entity={dir} onSuccess={refresh} />),
+      action: () =>
+        open(
+          <MoveDialog
+            entity={dir}
+            onSuccess={() => {
+              setCurrentDir(null);
+            }}
+          />
+        ),
     },
     {
       title: `Удалить ${

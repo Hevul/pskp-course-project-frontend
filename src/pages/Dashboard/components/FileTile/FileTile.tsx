@@ -45,7 +45,7 @@ const FileTile: FC<Props> = ({ file }) => {
   const [needsWrap, setNeedsWrap] = useState(false);
   const textRef = useRef<HTMLHeadingElement>(null);
 
-  const { refresh } = useEntities();
+  const { refresh, setCurrentDir } = useEntities();
   const { open } = useDialog();
   const { view } = useFileViewer();
   const { show } = usePopup();
@@ -208,7 +208,16 @@ const FileTile: FC<Props> = ({ file }) => {
     {
       title: `Переместить файл`,
       icon: <CurvedIcon width="18" />,
-      action: () => open(<MoveDialog entity={file} onSuccess={refresh} />),
+      action: () =>
+        open(
+          <MoveDialog
+            entity={file}
+            onSuccess={() => {
+              setCurrentDir(null);
+              refresh();
+            }}
+          />
+        ),
     },
     {
       title: `Удалить ${

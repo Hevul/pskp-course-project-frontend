@@ -34,7 +34,7 @@ const MoveDialogContent: FC<Props> = ({ entity, onSuccess }) => {
   const { show } = usePopup();
   const { storage } = useStorage();
   const { open, close } = useDialog();
-  const { entities, currentDir, refresh } = useEntities();
+  const { entities, currentDir, refresh, setCurrentDir } = useEntities();
 
   const { id, name, type } = currentEntity;
   const isFile = type === "file";
@@ -74,6 +74,7 @@ const MoveDialogContent: FC<Props> = ({ entity, onSuccess }) => {
             destinationId={currentDir?.id}
             onSuccess={() => {
               close();
+              setCurrentDir(null);
               onSuccess?.();
             }}
           />
