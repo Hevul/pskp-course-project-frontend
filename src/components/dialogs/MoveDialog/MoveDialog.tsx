@@ -19,7 +19,8 @@ import { move as moveFile } from "../../../api/files";
 import InputValidationError from "../../InputValidationError/InputValidationError";
 import { usePopup } from "../../../contexts/PopupContext";
 import { useStorage } from "../../../contexts/StorageContext";
-import RenameDialog from "../RenameDialog/RenameDialog";
+import MoveFileConflictDialog from "../MoveFileConflictDialog/MoveFileConflictDialog";
+import MoveDirConflictDialog from "../MoveDirConflictDialog/MoveDirConflictDialog";
 
 interface Props {
   entity: Entity;
@@ -56,37 +57,55 @@ const MoveDialogContent: FC<Props> = ({ entity, onSuccess }) => {
         );
         close();
         onSuccess?.();
-        refresh();
       }
     },
     onError(error) {
-      show(
-        `Не удалось переместить ${isFile ? "файл" : "папку"}! Переименуйте ${
-          isFile ? "исходный файл" : "исходную папку"
-        }.`,
-        {
-          iconType: "error",
-        }
-      );
+      show(`Не удалось переместить ${isFile ? "файл" : "папку"}!`, {
+        iconType: "error",
+      });
 
-      const errors = error?.response?.data?.errors;
+      const conflictingId = error?.response?.data?.conflictingId;
 
-      if (errors) {
-        const errorObj = errors[0];
-        if (errorObj) {
-          setMoveError(errorObj.msg);
+      if (conflictingId && isFile) {
+        open(
+          <MoveFileConflictDialog
+            entity={entity}
+            conflictingId={conflictingId}
+            destinationId={currentDir?.id}
+            onSuccess={() => {
+              close();
+              onSuccess?.();
+            }}
+          />
+        );
 
-          const handleRenameSuccess = (updatedEntity: Entity) => {
-            setCurrentEntity(updatedEntity);
-            setMoveError(null);
-          };
+        setMoveError(
+          "Файл с таким же именем уже существует в выбранной папке!"
+        );
+      } else if (conflictingId && !isFile) {
+        open(
+          <MoveDirConflictDialog
+            entity={entity}
+            conflictingId={conflictingId}
+            destinationId={currentDir?.id}
+            onSuccess={() => {
+              close();
+              onSuccess?.();
+            }}
+          />
+        );
 
-          open(
-            <RenameDialog
-              entity={currentEntity}
-              onSuccess={handleRenameSuccess}
-            />
-          );
+        setMoveError(
+          "Папка с таким же именем уже существует в выбранной папке!"
+        );
+      } else {
+        const errors = error?.response?.data?.errors;
+
+        if (errors) {
+          const errorObj = errors[0];
+          if (errorObj) {
+            setMoveError(errorObj.msg);
+          }
         }
       }
     },
@@ -95,8 +114,8 @@ const MoveDialogContent: FC<Props> = ({ entity, onSuccess }) => {
   const handleMove = () =>
     sendRequest(
       isFile
-        ? moveFile(currentEntity.id, currentDir?.id)
-        : moveDir(currentEntity.id, currentDir?.id)
+        ? moveFile({ id: currentEntity.id, parentId: currentDir?.id })
+        : moveDir({ id: currentEntity.id, parentId: currentDir?.id })
     );
 
   return (

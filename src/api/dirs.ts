@@ -71,12 +71,19 @@ export const copy = (id: string, parentId?: string): AxiosRequestConfig => ({
   withCredentials: true,
 });
 
-export const move = (id: string, parentId?: string): AxiosRequestConfig => ({
+export const move = (options: {
+  id: string;
+  parentId?: string;
+  newName?: string;
+  overwrite?: boolean;
+}): AxiosRequestConfig => ({
   url: `${url}/move`,
   method: "put",
   data: {
-    id,
-    parentId,
+    id: options.id,
+    parentId: options.parentId,
+    newName: options.newName,
+    overwrite: options.overwrite,
   },
   withCredentials: true,
 });

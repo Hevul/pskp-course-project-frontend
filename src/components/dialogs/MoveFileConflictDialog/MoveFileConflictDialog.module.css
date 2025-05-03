@@ -1,0 +1,31 @@
+/* MoveConflictDialog */
+.buttons {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+/* FileInfo */
+.file {
+  display: flex;
+  flex-direction: row;
+  gap: 12px;
+  align-items: center;
+}
+
+.fileInfo {
+  display: flex;
+  flex-direction: column;
+}
+
+.h1 {
+  font-weight: var(--bold);
+  color: var(--primary-black);
+  font-size: 15px;
+}
+
+.p {
+  font-weight: var(--regular);
+  color: rgba(65, 64, 75, 0.72);
+  font-size: 14px;
+}
