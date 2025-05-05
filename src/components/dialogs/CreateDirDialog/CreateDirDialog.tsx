@@ -4,7 +4,7 @@ import styles from "./CreateDirDialog.module.css";
 import Button from "../../Button/Button";
 import { useDialog } from "../../../contexts/DialogContext";
 import useAxios from "../../../hooks/useAxios";
-import { create } from "../../../api/dirs";
+import { create } from "../../../api/dir";
 import { useStorage } from "../../../contexts/StorageContext";
 import DialogShell from "../DialogShell";
 import InputValidationError from "../../InputValidationError/InputValidationError";

@@ -1,5 +1,5 @@
 import fileDownload from "js-file-download";
-import { download, getByLink, getFullInfo } from "../../api/links";
+import { download, getByLink, getFullInfo } from "../../api/link";
 import Button from "../../components/Button/Button";
 import useAxios from "../../hooks/useAxios";
 import { useParams } from "react-router-dom";

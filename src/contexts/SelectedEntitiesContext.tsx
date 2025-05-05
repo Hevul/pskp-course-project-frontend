@@ -3,8 +3,8 @@ import { Entity } from "../models/Entity";
 import { useEntities } from "./EntitiesContext";
 import { usePopup } from "./PopupContext";
 import useAxios from "../hooks/useAxios";
-import { remove as removeDir } from "../api/dirs";
-import { remove as removeFile } from "../api/files";
+import { remove as removeDir } from "../api/dir";
+import { remove as removeFile } from "../api/file";
 import config from "../config.json";
 
 interface SelectedEntitiesContextType {

@@ -13,7 +13,7 @@ import InfoSquareIcon from "../../../components/icons/InfoSquareIcon";
 import InfoDialog from "../../../components/dialogs/InfoDialog/InfoDialog";
 import useAxios from "../../../hooks/useAxios";
 import { StorageFullInfo } from "../../../models/StorageFullInfo";
-import { getFullInfo } from "../../../api/storages";
+import { getFullInfo } from "../../../api/storage";
 import { formatDate, formatSize } from "../../../utils";
 
 interface Props {

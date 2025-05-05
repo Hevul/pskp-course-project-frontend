@@ -19,8 +19,6 @@ const ConfirmDeletionDialog: FC<Props> = ({ entities, onConfirm }) => {
   const { close } = useDialog();
   const { isDeleting } = useSelectedEntities();
 
-  console.log(isDeleting);
-
   return (
     <DialogShell title={`Вы правда хотите удалить выбранные объекты?`}>
       <div className={styles.objectsList}>

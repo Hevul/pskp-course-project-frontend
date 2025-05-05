@@ -1,6 +1,6 @@
 import axios from "axios";
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { getAll } from "../api/storages";
+import { getAll } from "../api/storage";
 import Storage from "../models/Storage";
 
 interface StorageContextType {

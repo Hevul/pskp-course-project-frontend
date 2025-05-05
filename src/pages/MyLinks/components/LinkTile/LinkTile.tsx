@@ -13,13 +13,13 @@ import { useDialog } from "../../../../contexts/DialogContext";
 import { LinkFullInfo } from "../../../../models/LinkFullInfo";
 import InfoDialog from "../../../../components/dialogs/InfoDialog/InfoDialog";
 import { formatDate, formatSize } from "../../../../utils";
-import { getFullInfo, remove } from "../../../../api/links";
+import { getFullInfo, remove } from "../../../../api/link";
 import DeleteIcon from "../../../../components/icons/DeleteIcon";
 import InfoSquareIcon from "../../../../components/icons/InfoSquareIcon";
 import CopyIcon from "../../../../components/icons/CopyIcon";
 import EditIcon from "../../../../components/icons/EditIcon";
 import LinkDialog from "../../../../components/dialogs/LinkDialog/LinkDialog";
-import { view } from "../../../../api/files";
+import { view } from "../../../../api/file";
 import FileViewer from "../../../../components/viewers/FileViewer";
 import { useFileViewer } from "../../../../contexts/FileViewerContext";
 

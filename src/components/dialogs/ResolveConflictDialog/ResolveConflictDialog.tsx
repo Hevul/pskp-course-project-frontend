@@ -4,7 +4,7 @@ import Button from "../../Button/Button";
 import DialogShell from "../DialogShell";
 import { FileUpload, useUploads } from "../../../contexts/UploadContext";
 import useAxios from "../../../hooks/useAxios";
-import { confirmOverwrite } from "../../../api/files";
+import { confirmOverwrite } from "../../../api/file";
 import { usePopup } from "../../../contexts/PopupContext";
 import SecondaryButton from "../../SecondaryButton/SecondaryButton";
 import { useDialog } from "../../../contexts/DialogContext";

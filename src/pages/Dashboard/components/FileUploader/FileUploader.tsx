@@ -5,7 +5,7 @@ import {
   useEffect,
   useState,
 } from "react";
-import { upload } from "../../../../api/files";
+import { upload } from "../../../../api/file";
 import useAxios from "../../../../hooks/useAxios";
 import { useStorage } from "../../../../contexts/StorageContext";
 import { useEntities } from "../../../../contexts/EntitiesContext";

@@ -1,6 +1,6 @@
 import styles from "../Login/Login.module.css";
 import { useEffect, useState } from "react";
-import { register } from "../../api/users";
+import { register } from "../../api/user";
 import useAxios from "../../hooks/useAxios";
 import BigInput from "../../components/BigInput/BigInput";
 import InputValidationError from "../../components/InputValidationError/InputValidationError";

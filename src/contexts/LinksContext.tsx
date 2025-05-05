@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import useAxios from "../hooks/useAxios";
-import { getAllByOwner } from "../api/links";
+import { getAllByOwner } from "../api/link";
 import Link from "../models/Link";
 
 interface LinksContextType {

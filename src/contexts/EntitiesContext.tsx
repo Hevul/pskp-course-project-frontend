@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import File from "../models/File";
-import { getFilesByStorageId } from "../api/files";
-import { getDirsByStorageId } from "../api/dirs";
+import { getFilesByStorageId } from "../api/file";
+import { getDirsByStorageId } from "../api/dir";
 import useAxios from "../hooks/useAxios";
 import { useStorage } from "./StorageContext";
 import Dir from "../models/Dir";

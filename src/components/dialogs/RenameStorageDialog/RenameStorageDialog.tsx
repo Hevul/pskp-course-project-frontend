@@ -5,7 +5,7 @@ import { useDialog } from "../../../contexts/DialogContext";
 import styles from "./RenameStorageDialog.module.css";
 import Button from "../../Button/Button";
 import useAxios from "../../../hooks/useAxios";
-import { rename } from "../../../api/storages";
+import { rename } from "../../../api/storage";
 import InputValidationError from "../../InputValidationError/InputValidationError";
 import { usePopup } from "../../../contexts/PopupContext";
 import Storage from "../../../models/Storage";

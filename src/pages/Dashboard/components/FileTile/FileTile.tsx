@@ -9,8 +9,8 @@ import {
   download,
   downloadMultiple,
   remove as removeFile,
-} from "../../../../api/files";
-import { remove as removeDir } from "../../../../api/dirs";
+} from "../../../../api/file";
+import { remove as removeDir } from "../../../../api/dir";
 import ContextMenuArea from "../../../../components/ContextMenuArea/ContextMenuArea";
 import RenameDialog from "../../../../components/dialogs/RenameDialog/RenameDialog";
 import { useDialog } from "../../../../contexts/DialogContext";
@@ -35,6 +35,7 @@ import { useSelectedEntities } from "../../../../contexts/SelectedEntitiesContex
 import { MenuItem } from "../../../../contexts/ContextMenuContext";
 import config from "../../../../config.json";
 import ConfirmDeletionDialog from "../../../../components/dialogs/ConfirmDeletionDialog/ConfirmDeletionDialog";
+import MoveMultipleDialog from "../../../../components/dialogs/MoveMultipleDialog/MoveMultipleDialog";
 
 interface Props {
   file: File;
@@ -213,11 +214,26 @@ const FileTile: FC<Props> = ({ file }) => {
           <MoveDialog
             entity={file}
             onSuccess={() => {
+              refresh();
+            }}
+          />
+        ),
+      disabled: isMultipleSelection,
+    },
+    {
+      title: `Переместить всё (${selectedEntities.length})`,
+      icon: <CurvedIcon width="18" />,
+      action: () =>
+        open(
+          <MoveMultipleDialog
+            selectedEntities={selectedEntities}
+            onSuccess={() => {
               setCurrentDir(null);
               refresh();
             }}
           />
         ),
+      disabled: !isMultipleSelection,
     },
     {
       title: `Удалить ${

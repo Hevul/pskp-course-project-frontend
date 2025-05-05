@@ -6,7 +6,7 @@ import { useStorage } from "../../../../contexts/StorageContext";
 import { useEntities } from "../../../../contexts/EntitiesContext";
 import DeleteIcon from "../../../../components/icons/DeleteIcon";
 import EditIcon from "../../../../components/icons/EditIcon";
-import { getFullInfo, remove as removeDir } from "../../../../api/dirs";
+import { getFullInfo, remove as removeDir } from "../../../../api/dir";
 import ContextMenuArea from "../../../../components/ContextMenuArea/ContextMenuArea";
 import RenameDialog from "../../../../components/dialogs/RenameDialog/RenameDialog";
 import { useDialog } from "../../../../contexts/DialogContext";
@@ -24,6 +24,7 @@ import { MenuItem } from "../../../../contexts/ContextMenuContext";
 import DownloadIcon from "../../../../components/icons/DownloadIcon";
 import config from "../../../../config.json";
 import ConfirmDeletionDialog from "../../../../components/dialogs/ConfirmDeletionDialog/ConfirmDeletionDialog";
+import MoveMultipleDialog from "../../../../components/dialogs/MoveMultipleDialog/MoveMultipleDialog";
 
 interface Props {
   dir: Dir;
@@ -221,9 +222,26 @@ const DirTile: FC<Props> = ({ dir }) => {
             entity={dir}
             onSuccess={() => {
               setCurrentDir(null);
+              refresh();
             }}
           />
         ),
+      disabled: isMultipleSelection,
+    },
+    {
+      title: `Переместить всё (${selectedEntities.length})`,
+      icon: <CurvedIcon width="18" />,
+      action: () =>
+        open(
+          <MoveMultipleDialog
+            selectedEntities={selectedEntities}
+            onSuccess={() => {
+              setCurrentDir(null);
+              refresh();
+            }}
+          />
+        ),
+      disabled: !isMultipleSelection,
     },
     {
       title: `Удалить ${

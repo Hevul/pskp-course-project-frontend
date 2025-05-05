@@ -7,7 +7,7 @@ import SecondaryButton from "../../SecondaryButton/SecondaryButton";
 import { useDialog } from "../../../contexts/DialogContext";
 import Button from "../../Button/Button";
 import useAxios from "../../../hooks/useAxios";
-import { getFullInfo, move } from "../../../api/dirs";
+import { getFullInfo, move } from "../../../api/dir";
 import Input from "../../Input/Input";
 import { usePopup } from "../../../contexts/PopupContext";
 import InputValidationError from "../../InputValidationError/InputValidationError";
@@ -99,7 +99,7 @@ const MoveFileConflictDialog: FC<Props> = ({
     sendMove(move({ id: id, parentId: destinationId, overwrite: true }));
 
   return (
-    <DialogShell title={`Ошибка перемещения папка ${name}`}>
+    <DialogShell title={`Ошибка перемещения папки ${name}`}>
       <TextField
         text={`Не удалось переместить папку, так как в выбранной папке уже есть папка с именем ${entity.name}.
          Вы может переименовать перемещаемую папку, отменить перемещение, заменить оригинальную папку.`}
@@ -120,7 +120,7 @@ const MoveFileConflictDialog: FC<Props> = ({
       </div>
 
       <div className={styles.buttons}>
-        <SecondaryButton title="Отменить" onClick={close} />
+        <SecondaryButton title="Пропустить" onClick={close} />
 
         {newName ? (
           <Button title="Переименовать" onClick={handleRename} />

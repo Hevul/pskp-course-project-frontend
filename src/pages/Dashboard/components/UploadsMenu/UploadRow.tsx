@@ -5,7 +5,7 @@ import { UploadStatus, useUploads } from "../../../../contexts/UploadContext";
 import CloseCircleIcon from "../../../../components/icons/CloseCircleIcon";
 import SecondaryButton from "../../../../components/SecondaryButton/SecondaryButton";
 import useAxios from "../../../../hooks/useAxios";
-import { confirmOverwrite } from "../../../../api/files";
+import { confirmOverwrite } from "../../../../api/file";
 import { formatSize } from "../../../../utils";
 import { useDialog } from "../../../../contexts/DialogContext";
 import ResolveConflictDialog from "../../../../components/dialogs/ResolveConflictDialog/ResolveConflictDialog";

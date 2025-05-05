@@ -11,7 +11,7 @@ import {
   getByFileInfoId,
   remove,
   setPublicity,
-} from "../../../api/links";
+} from "../../../api/link";
 import File from "../../../models/File";
 import { useDialog } from "../../../contexts/DialogContext";
 import Link from "../../../models/Link";

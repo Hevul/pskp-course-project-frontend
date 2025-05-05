@@ -7,7 +7,7 @@ import SecondaryButton from "../../SecondaryButton/SecondaryButton";
 import { useDialog } from "../../../contexts/DialogContext";
 import Button from "../../Button/Button";
 import useAxios from "../../../hooks/useAxios";
-import { get, move } from "../../../api/files";
+import { get, move } from "../../../api/file";
 import File from "../../../models/File";
 import InfoTile from "./InfoTile.module";
 import Input from "../../Input/Input";
@@ -62,6 +62,9 @@ const MoveFileConflictDialog: FC<Props> = ({
         const errorObj = errors[0];
         if (errorObj?.msg) setMoveError(errorObj.msg);
       }
+
+      if (error?.response?.data?.conflictingId)
+        setMoveError("Файл с таким именем уже есть!");
     },
   });
 
@@ -94,7 +97,7 @@ const MoveFileConflictDialog: FC<Props> = ({
       </div>
 
       <div className={styles.buttons}>
-        <SecondaryButton title="Отменить" onClick={close} />
+        <SecondaryButton title="Пропустить" onClick={close} />
         {newName ? (
           <Button title="Переименовать" onClick={handleRename} />
         ) : (

@@ -4,7 +4,7 @@ import DialogShell from "../DialogShell";
 import styles from "./DeleteStorageDialog.module.css";
 import Button from "../../Button/Button";
 import useAxios from "../../../hooks/useAxios";
-import { remove } from "../../../api/storages";
+import { remove } from "../../../api/storage";
 import { useDialog } from "../../../contexts/DialogContext";
 import { usePopup } from "../../../contexts/PopupContext";
 

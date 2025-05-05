@@ -4,7 +4,7 @@ import styles from "./CreateStorageDialog.module.css";
 import Button from "../../Button/Button";
 import { useDialog } from "../../../contexts/DialogContext";
 import useAxios from "../../../hooks/useAxios";
-import { create } from "../../../api/storages";
+import { create } from "../../../api/storage";
 import DialogShell from "../DialogShell";
 import InputValidationError from "../../InputValidationError/InputValidationError";
 import { usePopup } from "../../../contexts/PopupContext";
