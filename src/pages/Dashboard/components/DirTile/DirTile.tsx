@@ -25,6 +25,7 @@ import DownloadIcon from "../../../../components/icons/DownloadIcon";
 import config from "../../../../config.json";
 import ConfirmDeletionDialog from "../../../../components/dialogs/ConfirmDeletionDialog/ConfirmDeletionDialog";
 import MoveMultipleDialog from "../../../../components/dialogs/MoveMultipleDialog/MoveMultipleDialog";
+import CopyMultipleDialog from "../../../../components/dialogs/CopyMultipleDialog/CopyMultipleDialog";
 
 interface Props {
   dir: Dir;
@@ -212,6 +213,19 @@ const DirTile: FC<Props> = ({ dir }) => {
       title: `Копировать папку`,
       icon: <CopyIcon width="18" />,
       action: () => open(<CopyDialog entity={dir} onSuccess={refresh} />),
+      disabled: isMultipleSelection,
+    },
+    {
+      title: `Копировать всё (${selectedEntities.length})`,
+      icon: <CopyIcon width="18" />,
+      action: () =>
+        open(
+          <CopyMultipleDialog
+            selectedEntities={selectedEntities}
+            onSuccess={() => refresh()}
+          />
+        ),
+      disabled: !isMultipleSelection,
     },
     {
       title: `Переместить папку`,

@@ -36,6 +36,7 @@ import { MenuItem } from "../../../../contexts/ContextMenuContext";
 import config from "../../../../config.json";
 import ConfirmDeletionDialog from "../../../../components/dialogs/ConfirmDeletionDialog/ConfirmDeletionDialog";
 import MoveMultipleDialog from "../../../../components/dialogs/MoveMultipleDialog/MoveMultipleDialog";
+import CopyMultipleDialog from "../../../../components/dialogs/CopyMultipleDialog/CopyMultipleDialog";
 
 interface Props {
   file: File;
@@ -205,6 +206,19 @@ const FileTile: FC<Props> = ({ file }) => {
       title: `Копировать файл`,
       icon: <CopyIcon width="18" />,
       action: () => open(<CopyDialog entity={file} onSuccess={refresh} />),
+      disabled: isMultipleSelection,
+    },
+    {
+      title: `Копировать всё (${selectedEntities.length})`,
+      icon: <CopyIcon width="18" />,
+      action: () =>
+        open(
+          <CopyMultipleDialog
+            selectedEntities={selectedEntities}
+            onSuccess={() => refresh()}
+          />
+        ),
+      disabled: !isMultipleSelection,
     },
     {
       title: `Переместить файл`,

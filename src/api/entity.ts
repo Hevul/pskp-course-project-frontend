@@ -19,3 +19,18 @@ export const moveMultiple = (options: {
   },
   withCredentials: true,
 });
+
+export const copyMultiple = (options: {
+  fileIds: string[];
+  dirIds: string[];
+  destinationId?: string;
+}): AxiosRequestConfig => ({
+  url: `${url}/copy-multiple`,
+  method: "post",
+  data: {
+    fileIds: options.fileIds,
+    dirIds: options.dirIds,
+    destinationId: options.destinationId,
+  },
+  withCredentials: true,
+});

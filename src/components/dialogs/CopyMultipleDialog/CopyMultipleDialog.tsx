@@ -1,7 +1,7 @@
-import { FC, useEffect, useState } from "react";
+import { FC, useState } from "react";
 import { Entity } from "../../../models/Entity";
 import DialogShell from "../DialogShell";
-import styles from "./CopyDialog.module.css";
+import styles from "./CopyMultipleDialog.module.css";
 import Button from "../../Button/Button";
 import {
   EntitiesProvider,
@@ -14,51 +14,51 @@ import CreateDirDialog from "../CreateDirDialog/CreateDirDialog";
 import PlusIcon from "../../icons/PlusIcon";
 import SecondaryButton from "../../SecondaryButton/SecondaryButton";
 import useAxios from "../../../hooks/useAxios";
-import { copy as copyDir } from "../../../api/dir";
-import { copy as copyFile } from "../../../api/file";
 import InputValidationError from "../../InputValidationError/InputValidationError";
 import { usePopup } from "../../../contexts/PopupContext";
 import { useStorage } from "../../../contexts/StorageContext";
-import RenameDialog from "../RenameDialog/RenameDialog";
+import { copyMultiple } from "../../../api/entity";
+import MoveFileConflictDialog from "../MoveFileConflictDialog/MoveFileConflictDialog";
+import MoveDirConflictDialog from "../MoveDirConflictDialog/MoveDirConflictDialog";
 
 interface Props {
-  entity: Entity;
+  selectedEntities: Entity[];
   onSuccess?: () => void;
 }
 
-const CopyDialogContent: FC<Props> = ({ entity, onSuccess }) => {
+const CopyMultipleDialogContent: FC<Props> = ({
+  selectedEntities,
+  onSuccess,
+}) => {
   const [copyError, setCopyError] = useState<string | null>(null);
-  const [currentEntity, setCurrentEntity] = useState<Entity>(entity);
 
   const { show } = usePopup();
   const { storage } = useStorage();
   const { open, close } = useDialog();
   const { entities, currentDir, refresh } = useEntities();
 
-  const { id, name, type } = currentEntity;
-  const isFile = type === "file";
   const sortedEntities = [...entities].sort((a, b) => {
     if (a.type === "dir" && b.type !== "dir") return -1;
     if (a.type !== "dir" && b.type === "dir") return 1;
-    return 0;
+
+    return a.name.localeCompare(b.name, undefined, { sensitivity: "base" });
   });
 
   const { sendRequest, loading } = useAxios({
     onSuccess(response) {
       show(
-        `${isFile ? "Файл" : "Папка"} ${name} скопирован${
-          isFile ? "" : "а"
-        } в ${currentDir ? currentDir.name : storage?.name}!`,
+        `Объекты скопированы в ${
+          currentDir ? currentDir.name : storage?.name
+        }!`,
         {
           iconType: "success",
         }
       );
       close();
       onSuccess?.();
-      refresh();
     },
     onError(error) {
-      show(`Не удалось скопировать ${isFile ? "файл" : "папка"}!`, {
+      show(`Не удалось скопировать объекты!`, {
         iconType: "error",
       });
 
@@ -67,19 +67,25 @@ const CopyDialogContent: FC<Props> = ({ entity, onSuccess }) => {
       if (errors) {
         const errorObj = errors[0];
         if (errorObj) setCopyError(errorObj.msg);
-      }
+      } else setCopyError("Не удалось скопировать некоторые объекты!");
     },
   });
 
   const handleCopy = () =>
     sendRequest(
-      isFile ? copyFile(id, currentDir?.id) : copyDir(id, currentDir?.id)
+      copyMultiple({
+        fileIds: selectedEntities
+          .filter((e) => e.type === "file")
+          .map((e) => e.id),
+        dirIds: selectedEntities
+          .filter((e) => e.type === "dir")
+          .map((e) => e.id),
+        destinationId: currentDir?.id,
+      })
     );
 
   return (
-    <DialogShell
-      title={`Куда копировать ${isFile ? "файл" : "папку"} '${name}'?`}
-    >
+    <DialogShell title={`Куда копировать выбранные объекты?`}>
       <Path />
 
       <InputValidationError error={copyError} />
@@ -99,18 +105,18 @@ const CopyDialogContent: FC<Props> = ({ entity, onSuccess }) => {
           }
           icon={<PlusIcon />}
         />
-        <Button title="Копировать" loading={loading} onClick={handleCopy} />
+        <Button title="Копировать" onClick={handleCopy} loading={loading} />
       </div>
     </DialogShell>
   );
 };
 
-const CopyDialog: FC<Props> = (props) => {
+const CopyMultipleDialog: FC<Props> = (props) => {
   return (
     <EntitiesProvider>
-      <CopyDialogContent {...props} />
+      <CopyMultipleDialogContent {...props} />
     </EntitiesProvider>
   );
 };
 
-export default CopyDialog;
+export default CopyMultipleDialog;
