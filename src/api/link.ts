@@ -54,7 +54,7 @@ export const addFriend = (
   friendName: string
 ): AxiosRequestConfig => ({
   url: `${url}/add-friend`,
-  method: "patch",
+  method: "put",
   data: {
     id,
     friendName,
@@ -67,7 +67,7 @@ export const removeFriend = (
   friendId: string
 ): AxiosRequestConfig => ({
   url: `${url}/remove-friend`,
-  method: "patch",
+  method: "put",
   data: {
     id,
     friendId,
@@ -77,7 +77,7 @@ export const removeFriend = (
 
 export const removeAllFriends = (id: string): AxiosRequestConfig => ({
   url: `${url}/remove-all-friends/${id}`,
-  method: "patch",
+  method: "put",
   withCredentials: true,
 });
 
@@ -95,7 +95,7 @@ export const setPublicity = (
   publicity: boolean
 ): AxiosRequestConfig => ({
   url: `${url}/set-publicity`,
-  method: "patch",
+  method: "put",
   data: {
     id,
     publicity,

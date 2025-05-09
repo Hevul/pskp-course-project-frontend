@@ -42,7 +42,7 @@ export const remove = (id: string): AxiosRequestConfig => ({
 
 export const rename = (id: string, name: string): AxiosRequestConfig => ({
   url: `${url}/rename`,
-  method: "patch",
+  method: "put",
   data: {
     id,
     name,

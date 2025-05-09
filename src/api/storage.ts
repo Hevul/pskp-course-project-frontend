@@ -25,7 +25,7 @@ export const getFullInfo = (id: string) => ({
 
 export const rename = (id: string, name: string) => ({
   url: `${url}/rename`,
-  method: "patch",
+  method: "put",
   data: {
     id,
     name,
