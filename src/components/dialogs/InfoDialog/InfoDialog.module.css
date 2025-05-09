@@ -20,4 +20,8 @@
   font-weight: var(--regular);
   color: rgba(65, 64, 75, 0.72);
   font-size: 15px;
+  white-space: pre-line; /* Сохраняет \n и переносит по словам */
+  word-wrap: break-word; /* Перенос длинных слов */
+  overflow-wrap: break-word; /* Современная альтернатива */
+  word-break: normal; /* Не разрывает слова без необходимости */
 }

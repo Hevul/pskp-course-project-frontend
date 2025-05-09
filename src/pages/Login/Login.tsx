@@ -12,24 +12,27 @@ const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
-  const { response, sendRequest, error } = useAxios();
-
   let loginError: string | null = null;
   let passwordError: string | null = null;
 
-  if (error) {
-    const errors = error?.response?.data?.errors;
+  const { sendRequest } = useAxios({
+    onSuccess(response) {
+      navigate("/dashboard");
+    },
+    onError(error) {
+      const errors = error?.response?.data?.errors;
 
-    const loginErrorObj = errors.find((err: any) => err.path === "login");
-    if (loginErrorObj) loginError = loginErrorObj.msg;
+      if (errors) {
+        const loginErrorObj = errors.find((err: any) => err.path === "login");
+        if (loginErrorObj) loginError = loginErrorObj.msg;
 
-    const passwordErrorObj = errors.find((err: any) => err.path === "password");
-    if (passwordErrorObj) passwordError = passwordErrorObj.msg;
-  }
-
-  useEffect(() => {
-    if (response?.status === 200) navigate("/dashboard");
-  }, [response, navigate]);
+        const passwordErrorObj = errors.find(
+          (err: any) => err.path === "password"
+        );
+        if (passwordErrorObj) passwordError = passwordErrorObj.msg;
+      }
+    },
+  });
 
   return (
     <div className={styles.page}>

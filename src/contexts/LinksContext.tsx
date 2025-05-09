@@ -26,6 +26,8 @@ export const LinksProvider: React.FC<{ children: React.ReactNode }> = ({
           friends: l.friends,
           fileId: l.fileInfoId,
           filename: l.filename,
+          name: l._name,
+          description: l._description,
         }))
       );
     },

@@ -6,4 +6,6 @@ export default interface Link {
   fileId: string;
   filename: string;
   path?: string;
+  name?: string;
+  description?: string;
 }

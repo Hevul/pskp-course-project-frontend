@@ -5,4 +5,6 @@ export interface LinkFullInfo {
   createAt: Date;
   downloadCount: number;
   path?: string;
+  name?: string;
+  description?: string;
 }

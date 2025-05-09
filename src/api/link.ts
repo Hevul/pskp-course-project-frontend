@@ -102,3 +102,18 @@ export const setPublicity = (
   },
   withCredentials: true,
 });
+
+export const updateNameAndDescription = (
+  id: string,
+  name: string,
+  description: string
+): AxiosRequestConfig => ({
+  url: `${url}/update-name-and-description`,
+  method: "put",
+  data: {
+    id,
+    name,
+    description,
+  },
+  withCredentials: true,
+});

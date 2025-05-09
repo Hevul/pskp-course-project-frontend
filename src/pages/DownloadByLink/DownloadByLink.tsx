@@ -17,7 +17,6 @@ import IconButton from "../../components/IconButton/IconButton";
 import InfoDialog from "../../components/dialogs/InfoDialog/InfoDialog";
 import { LinkFullInfo } from "../../models/LinkFullInfo";
 import { formatDate, formatSize } from "../../utils";
-import { useFileViewer } from "../../contexts/FileViewerContext";
 
 const DownloadByLink = () => {
   const [isHovered, setIsHovered] = useState(false);
@@ -28,7 +27,6 @@ const DownloadByLink = () => {
   const { link: linkString } = useParams();
   const { show } = usePopup();
   const { open } = useDialog();
-  const { view } = useFileViewer();
 
   const { sendRequest: sendDownload } = useAxios({
     onSuccess(response) {
@@ -51,7 +49,9 @@ const DownloadByLink = () => {
         <InfoDialog
           title={"Информация о ссылке"}
           fields={[
-            { label: "Название:", value: fullInfo.filename },
+            ...(fullInfo.name
+              ? [{ label: "Название:", value: fullInfo.name }]
+              : []),
             { label: "Размер:", value: formatSize(fullInfo.size) },
             { label: "Владелец:", value: fullInfo.owner },
             { label: "Дата создания:", value: formatDate(fullInfo.createAt) },
@@ -59,6 +59,9 @@ const DownloadByLink = () => {
               label: "Количество скачиваний:",
               value: `${fullInfo.downloadCount}`,
             },
+            ...(fullInfo.description
+              ? [{ label: "Описание:", value: fullInfo.description }]
+              : []),
           ]}
         />
       );

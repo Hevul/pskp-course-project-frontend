@@ -19,7 +19,6 @@ import InfoSquareIcon from "../../../../components/icons/InfoSquareIcon";
 import CopyIcon from "../../../../components/icons/CopyIcon";
 import EditIcon from "../../../../components/icons/EditIcon";
 import LinkDialog from "../../../../components/dialogs/LinkDialog/LinkDialog";
-import { view } from "../../../../api/file";
 import FileViewer from "../../../../components/viewers/FileViewer";
 import { useFileViewer } from "../../../../contexts/FileViewerContext";
 
@@ -57,7 +56,10 @@ const LinkTile: FC<Props> = ({ link, selectedLink, setSelectedLink }) => {
         <InfoDialog
           title={"Информация о ссылке"}
           fields={[
-            { label: "Название:", value: fullInfo.filename },
+            ...(fullInfo.name
+              ? [{ label: "Название:", value: fullInfo.name }]
+              : []),
+            { label: "Имя файла:", value: fullInfo.filename },
             { label: "Размер:", value: formatSize(fullInfo.size) },
             { label: "Владелец:", value: fullInfo.owner },
             { label: "Дата создания:", value: formatDate(fullInfo.createAt) },
@@ -69,6 +71,9 @@ const LinkTile: FC<Props> = ({ link, selectedLink, setSelectedLink }) => {
               label: "Путь до файла:",
               value: `${fullInfo.path}`,
             },
+            ...(fullInfo.description
+              ? [{ label: "Описание:", value: fullInfo.description }]
+              : []),
           ]}
         />
       );

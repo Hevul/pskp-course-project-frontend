@@ -23,6 +23,8 @@ import Tile from "./Tile";
 import config from "../../../config.json";
 import { usePopup } from "../../../contexts/PopupContext";
 import { useLinks } from "../../../contexts/LinksContext";
+import EditIcon from "../../icons/EditIcon";
+import EditLinkDialog from "../EditLinkDialog/EditLinkDialog";
 
 type Status = "public" | "private";
 
@@ -200,6 +202,14 @@ const LinkDialog: FC<Props> = ({ fileId }) => {
             onClick={copyToClipboard}
             loading={isButtonDisabled}
           />
+
+          <IconButton
+            onClick={() => {
+              if (link) open(<EditLinkDialog refLink={link} />);
+            }}
+            icon={<EditIcon width="23" color="#b5c8fd" />}
+          />
+
           <div
             style={{
               visibility: link?.status === "private" ? "visible" : "collapse",

@@ -1,35 +1,41 @@
 import styles from "../Login/Login.module.css";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { register } from "../../api/user";
 import useAxios from "../../hooks/useAxios";
 import BigInput from "../../components/BigInput/BigInput";
 import InputValidationError from "../../components/InputValidationError/InputValidationError";
 import { useNavigate } from "react-router-dom";
+import { usePopup } from "../../contexts/PopupContext";
 
 const Register = () => {
-  const navigate = useNavigate();
+  let loginError: string | null = null;
+  let passwordError: string | null = null;
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
-  const { response, sendRequest, error } = useAxios();
+  const navigate = useNavigate();
+  const { show } = usePopup();
 
-  let loginError: string | null = null;
-  let passwordError: string | null = null;
+  const { sendRequest } = useAxios({
+    onSuccess(response) {
+      show("Аккаунт успешно создан!", { iconType: "success" });
+      navigate("/login");
+    },
+    onError(error) {
+      const errors = error?.response?.data?.errors;
 
-  if (error) {
-    const errors = error?.response?.data?.errors;
+      if (errors) {
+        const loginErrorObj = errors.find((err: any) => err.path === "login");
+        if (loginErrorObj) loginError = loginErrorObj.msg;
 
-    const loginErrorObj = errors.find((err: any) => err.path === "login");
-    if (loginErrorObj) loginError = loginErrorObj.msg;
-
-    const passwordErrorObj = errors.find((err: any) => err.path === "password");
-    if (passwordErrorObj) passwordError = passwordErrorObj.msg;
-  }
-
-  useEffect(() => {
-    if (response?.status === 201) navigate("/login");
-  }, [response, navigate]);
+        const passwordErrorObj = errors.find(
+          (err: any) => err.path === "password"
+        );
+        if (passwordErrorObj) passwordError = passwordErrorObj.msg;
+      }
+    },
+  });
 
   return (
     <div className={styles.page}>
