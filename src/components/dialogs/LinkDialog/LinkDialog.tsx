@@ -131,7 +131,7 @@ const LinkDialog: FC<Props> = ({ fileId }) => {
   const copyToClipboard = () => {
     if (!link?.link || isButtonDisabled) return;
 
-    const text = `${config.base}/link/${link.link}`;
+    const text = `http://localhost:3000/link/${link.link}`;
 
     navigator.clipboard.writeText(text).catch((err) => {
       console.error("Не удалось скопировать ссылку:", err);

@@ -259,7 +259,7 @@ const DirTile: FC<Props> = ({ dir }) => {
     },
     {
       title: `Удалить ${
-        isMultipleSelection ? `(${selectedEntities.length})` : `папку`
+        isMultipleSelection ? ` всё (${selectedEntities.length})` : `папку`
       }`,
       icon: <DeleteIcon width="18" />,
       action: handleDelete,

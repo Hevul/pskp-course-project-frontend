@@ -28,11 +28,11 @@ const MoveFileConflictDialog: FC<Props> = ({
   onSuccess,
 }) => {
   const [moveError, setMoveError] = useState<string | null>(null);
-  const [movedFile, setMovedFile] = useState<null | File>(null);
+  const [originalFile, setOriginalFile] = useState<null | File>(null);
   const [newName, setNewName] = useState("");
 
   const { id, name } = entity;
-  const originalFile = entity as File;
+  const movedFile = entity as File;
 
   const { close } = useDialog();
   const { show } = usePopup();
@@ -46,7 +46,7 @@ const MoveFileConflictDialog: FC<Props> = ({
         uploadAt: data.uploadAt,
         type: "file",
       };
-      setMovedFile(file);
+      setOriginalFile(file);
     },
   });
   const { sendRequest: sendMove } = useAxios({
@@ -84,8 +84,10 @@ const MoveFileConflictDialog: FC<Props> = ({
          Вы может переименовать перемещаемый файл, отменить перемещение, заменить оригинальный файл.`}
       />
 
-      <InfoTile file={originalFile} title={"Оригинальный файл"} />
-      {movedFile && <InfoTile file={movedFile} title={"Перемещаемый файл"} />}
+      {originalFile && (
+        <InfoTile file={originalFile} title={"Оригинальный файл"} />
+      )}
+      <InfoTile file={movedFile} title={"Перемещаемый файл"} />
 
       <div>
         <Input

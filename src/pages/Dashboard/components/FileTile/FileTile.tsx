@@ -251,7 +251,7 @@ const FileTile: FC<Props> = ({ file }) => {
     },
     {
       title: `Удалить ${
-        isMultipleSelection ? `(${selectedEntities.length})` : `файл`
+        isMultipleSelection ? ` всё (${selectedEntities.length})` : `файл`
       }`,
       icon: <DeleteIcon width="18" />,
       action: handleDelete,
