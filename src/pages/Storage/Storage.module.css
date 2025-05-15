@@ -43,3 +43,15 @@
   flex: 0 0 calc(25% - 20px);
   margin-bottom: 20px;
 }
+
+.clickableText {
+  color: var(--primary-blue);
+  cursor: pointer;
+  text-decoration: underline;
+  font-weight: 500;
+}
+
+.clickableText:hover {
+  color: var(--primary-blue-dark);
+  text-decoration: none;
+}

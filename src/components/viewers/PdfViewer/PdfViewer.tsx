@@ -29,7 +29,7 @@ const PdfViewer: React.FC<PdfViewerProps> = ({ filename, fileId }) => {
   const [pageNumber, setPageNumber] = useState(1);
   const [scale, setScale] = useState(1.0);
 
-  const fileUrl = `${config.base}/${config.file}/view/${fileId}`;
+  const fileUrl = `${config.server}/${config.routes.file}/view/${fileId}`;
 
   const documentOptions = useMemo(
     () => ({

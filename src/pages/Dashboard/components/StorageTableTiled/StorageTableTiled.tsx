@@ -1,22 +1,25 @@
-import { SetStateAction, useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { useEntities } from "../../../../contexts/EntitiesContext";
-import { Entity } from "../../../../models/Entity";
 import styles from "./StorageTableTiled.module.css";
 import EmptyState from "../../../../components/EmptyState/EmptyState";
 import EmptyBoxIcon from "../../../../components/icons/EmptyBoxIcon";
 import { useStorage } from "../../../../contexts/StorageContext";
 import FileTile from "../FileTile/FileTile";
 import DirTile from "../DirTile/DirTile";
-import {
-  SelectedEntitiesProvider,
-  useSelectedEntities,
-} from "../../../../contexts/SelectedEntitiesContext";
+import { useSelectedEntities } from "../../../../contexts/SelectedEntitiesContext";
+import { useDialog } from "../../../../contexts/DialogContext";
+import CreateStorageDialog from "../../../../components/dialogs/CreateStorageDialog/CreateStorageDialog";
+import FileUploader, { FileUploaderRef } from "../FileUploader/FileUploader";
+import CreateDirDialog from "../../../../components/dialogs/CreateDirDialog/CreateDirDialog";
 
 const StorageTableTiled = () => {
   const { entities } = useEntities();
-  const { storage } = useStorage();
+  const { storage, refresh } = useStorage();
   const { clearSelection } = useSelectedEntities();
+  const { open } = useDialog();
+  const { currentDir, refresh: refreshEntities } = useEntities();
 
+  const fileUploaderRef = useRef<FileUploaderRef>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
   const sortedEntities = [...entities].sort((a, b) => {
@@ -44,6 +47,14 @@ const StorageTableTiled = () => {
     };
   }, [clearSelection]);
 
+  const handleCreateStorage = () => {
+    open(<CreateStorageDialog onSuccess={() => refresh()} />);
+  };
+
+  useEffect(() => {
+    refreshEntities();
+  }, []);
+
   return (
     <div
       ref={containerRef}
@@ -59,9 +70,40 @@ const StorageTableTiled = () => {
           <EmptyState
             message="Нет доступных файлов или папок"
             subMessage={
-              storage
-                ? "Создайте новую папку или загрузить файлы"
-                : "Выберить хранилище или создайте новое"
+              storage ? (
+                <>
+                  <span
+                    className={styles.clickableText}
+                    onClick={() =>
+                      open(
+                        <CreateDirDialog
+                          currentDir={currentDir}
+                          onSuccess={refreshEntities}
+                        />
+                      )
+                    }
+                  >
+                    Создайте новую папку
+                  </span>
+                  <span> или </span>
+                  <span
+                    className={styles.clickableText}
+                    onClick={() => fileUploaderRef.current?.triggerFileDialog()}
+                  >
+                    загрузить файлы
+                  </span>
+                </>
+              ) : (
+                <>
+                  <span>Выберите хранилище или </span>
+                  <span
+                    className={styles.clickableText}
+                    onClick={handleCreateStorage}
+                  >
+                    создайте новое
+                  </span>
+                </>
+              )
             }
             icon={<EmptyBoxIcon />}
           />
@@ -75,6 +117,8 @@ const StorageTableTiled = () => {
           )
         )
       )}
+
+      <FileUploader ref={fileUploaderRef} />
     </div>
   );
 };

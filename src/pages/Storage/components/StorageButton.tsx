@@ -72,7 +72,15 @@ const StorageButton: FC<Props> = ({ storage }) => {
         icon: <DeleteIcon width="18" />,
         hasSeparator: true,
         action: () =>
-          open(<DeleteStorageDialog storage={storage} onSuccess={refresh} />),
+          open(
+            <DeleteStorageDialog
+              storage={storage}
+              onSuccess={() => {
+                refresh();
+                selectStorage(null);
+              }}
+            />
+          ),
       },
       {
         title: `Информация о хранилище`,

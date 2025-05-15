@@ -108,7 +108,7 @@ export const SelectedEntitiesProvider = ({
       const encodedFileIds = encodeURIComponent(JSON.stringify(fileIds));
       const encodedDirIds = encodeURIComponent(JSON.stringify(dirIds));
 
-      const downloadUrl = `${config.base}/${config.entity}/download-many?fileIds=${encodedFileIds}&dirIds=${encodedDirIds}`;
+      const downloadUrl = `${config.server}/${config.routes.entity}/download-many?fileIds=${encodedFileIds}&dirIds=${encodedDirIds}`;
 
       const link = document.createElement("a");
       link.href = downloadUrl;

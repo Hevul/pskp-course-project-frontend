@@ -1,7 +1,7 @@
 import { AxiosRequestConfig } from "axios";
 import config from "../config.json";
 
-const url = `${config.base}/${config.dir}`;
+const url = `${config.server}/${config.routes.dir}`;
 
 export const download = (id: string): AxiosRequestConfig => ({
   url: `${url}/download/${id}`,

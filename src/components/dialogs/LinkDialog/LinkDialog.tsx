@@ -133,7 +133,7 @@ const LinkDialog: FC<Props> = ({ fileId }) => {
   const copyToClipboard = () => {
     if (!link?.link || isButtonDisabled) return;
 
-    const text = `http://localhost:3000/link/${link.link}`;
+    const text = `${config.client}/link/${link.link}`;
 
     navigator.clipboard.writeText(text).catch((err) => {
       console.error("Не удалось скопировать ссылку:", err);
@@ -182,8 +182,8 @@ const LinkDialog: FC<Props> = ({ fileId }) => {
         />
         <Tile
           tileStatus="private"
-          header="Список избранных"
-          description="Скачивать файл смогут только те, кто добавлен в список избранных"
+          header="Список доверенных"
+          description="Скачивать файл смогут только те, кто добавлен в список доверенных"
           icon={
             <ShieldIcon
               width="38"

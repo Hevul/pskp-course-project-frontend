@@ -47,7 +47,13 @@ const StorageButton: FC<Props> = ({ name, id, className }) => {
       action: () => {
         if (storage)
           open(
-            <DeleteStorageDialog storage={{ id, name }} onSuccess={refresh} />
+            <DeleteStorageDialog
+              storage={{ id, name }}
+              onSuccess={() => {
+                refresh();
+                selectStorage(null);
+              }}
+            />
           );
       },
     },

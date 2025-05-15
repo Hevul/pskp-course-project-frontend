@@ -5,6 +5,8 @@ import axios, {
   AxiosError,
   CancelTokenSource,
 } from "axios";
+import { useNavigate } from "react-router-dom";
+import { usePopup } from "../contexts/PopupContext";
 
 interface UseAxiosOptions {
   config?: AxiosRequestConfig;
@@ -24,6 +26,8 @@ const useAxios = ({
   const [loading, setLoading] = useState(false);
   const [cancelTokenSource, setCancelTokenSource] =
     useState<CancelTokenSource | null>(null);
+  const navigate = useNavigate();
+  const { show } = usePopup();
 
   const axiosInstance = axios.create();
 
@@ -55,6 +59,14 @@ const useAxios = ({
     } catch (err) {
       if (!axios.isCancel(err)) {
         const axiosError = err as AxiosError;
+        const status = axiosError?.status;
+
+        if (status === 401) {
+          show("Необходимо войти в аккаунт!", { iconType: "error" });
+          navigate("/login");
+        }
+        if (status && status >= 500) navigate("/server-side-trouble");
+
         setError(err);
         onError?.(axiosError);
       }

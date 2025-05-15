@@ -3,7 +3,7 @@ import styles from "./EmptyState.module.css";
 
 interface Props {
   message: string;
-  subMessage?: string;
+  subMessage?: string | ReactNode;
   icon?: ReactNode;
 }
 
@@ -12,7 +12,11 @@ const EmptyState: FC<Props> = ({ message, subMessage, icon }) => {
     <div className={styles.container}>
       <div className={styles.icon}>{icon}</div>
       <h3 className={styles.message}>{message}</h3>
-      {subMessage && <p className={styles.subMessage}>{subMessage}</p>}
+      {subMessage && (
+        <p className={styles.subMessage}>
+          {typeof subMessage === "string" ? subMessage : subMessage}
+        </p>
+      )}
     </div>
   );
 };

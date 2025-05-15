@@ -1,6 +1,6 @@
 import config from "../config.json";
 
-const url = `${config.base}/${config.user}`;
+const url = `${config.server}/${config.routes.user}`;
 
 export const get = () => ({
   url: `${url}/get`,

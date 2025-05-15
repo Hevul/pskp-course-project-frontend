@@ -19,7 +19,13 @@ const notFoundTrouble = (
   />
 );
 
-const serverSideTrouble = <Trouble code={500} />;
+const serverSideTrouble = (
+  <Trouble
+    code={500}
+    header="Что-то пошло не так"
+    description="К сожалению, мы не смогли обработать этот запрос."
+  />
+);
 
 const router = createBrowserRouter([
   {

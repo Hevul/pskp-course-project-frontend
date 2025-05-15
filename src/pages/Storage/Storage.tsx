@@ -15,6 +15,10 @@ const Storage = () => {
 
   const isEmpty = storages.length === 0;
 
+  const handleCreateStorage = () => {
+    open(<CreateStorageDialog onSuccess={refresh} />);
+  };
+
   return (
     <ProtectedRoute>
       <Layout>
@@ -23,7 +27,7 @@ const Storage = () => {
             <h2 className={styles.h2}>Мои хранилища</h2>
             <Button
               title={"Создать новое хранилище"}
-              onClick={() => open(<CreateStorageDialog onSuccess={refresh} />)}
+              onClick={handleCreateStorage}
             />
           </div>
 
@@ -31,7 +35,17 @@ const Storage = () => {
             <div className={styles.emptyDiv}>
               <EmptyState
                 message="Нет доступных хранилищ"
-                subMessage="Создайте первое хранилище, чтобы оно появилось здесь"
+                subMessage={
+                  <>
+                    <span
+                      className={styles.clickableText}
+                      onClick={handleCreateStorage}
+                    >
+                      Создайте
+                    </span>
+                    <span> первое хранилище, чтобы оно появилось здесь</span>
+                  </>
+                }
                 icon={<EmptyBoxIcon />}
               />
             </div>

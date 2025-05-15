@@ -82,7 +82,9 @@ const DownloadByLink = () => {
         fileInfoId: fileId,
         isPublic,
         filename,
+        _name,
       } = response.data.link;
+      const name = _name;
 
       const status = isPublic ? "public" : "private";
 
@@ -93,6 +95,7 @@ const DownloadByLink = () => {
         friends,
         fileId,
         filename,
+        name,
       });
 
       setDenied(false);
@@ -190,7 +193,7 @@ const DownloadByLink = () => {
 
           <FileIcon color="#4676FB" width="160" strokeWidth="0.5" />
 
-          <h1 className={styles.h1}>{link?.filename}</h1>
+          <h1 className={styles.h1}>{link?.name ?? link?.filename}</h1>
 
           <div className={styles.buttons}>
             <Button title={"Скачать"} onClick={handleDownload} />

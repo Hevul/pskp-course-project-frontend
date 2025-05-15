@@ -15,21 +15,18 @@ const StorageContext = createContext<StorageContextType | null>(null);
 export const StorageProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const loadStorageFromLocalStorage = (): Storage | null => {
-    const storedStorage = localStorage.getItem("storage");
+  useEffect(() => {
+    localStorage.removeItem("storage");
+  }, []);
 
-    if (storedStorage) return JSON.parse(storedStorage) as Storage;
-
-    return null;
-  };
-
-  const [storage, setStorage] = useState<Storage | null>(
-    loadStorageFromLocalStorage()
-  );
+  const [storage, setStorage] = useState<Storage | null>(null);
 
   useEffect(() => {
-    if (storage) localStorage.setItem("storage", JSON.stringify(storage));
-    else localStorage.removeItem("storage");
+    if (storage) {
+      localStorage.setItem("storage", JSON.stringify(storage));
+    } else {
+      localStorage.removeItem("storage");
+    }
   }, [storage]);
 
   const selectStorage = (s: Storage | null) => {
@@ -39,24 +36,20 @@ export const StorageProvider: React.FC<{ children: React.ReactNode }> = ({
   const [storages, setStorages] = useState<Storage[]>([]);
 
   const fetchStorages = async () => {
-    const fetch = async () => {
-      try {
-        const response = await axios(getAll());
+    try {
+      const response = await axios(getAll());
 
-        if (!response) return;
+      if (!response) return;
 
-        const storages: Storage[] = response.data.map((s: any) => ({
-          id: s.id,
-          name: s._name,
-        }));
+      const storages: Storage[] = response.data.map((s: any) => ({
+        id: s.id,
+        name: s._name,
+      }));
 
-        setStorages(storages);
-      } catch {
-        setStorages([]);
-      }
-    };
-
-    fetch();
+      setStorages(storages);
+    } catch {
+      setStorages([]);
+    }
   };
 
   useEffect(() => {

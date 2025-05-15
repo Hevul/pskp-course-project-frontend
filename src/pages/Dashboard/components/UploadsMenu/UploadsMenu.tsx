@@ -41,43 +41,22 @@ const UploadsMenu = () => {
         hasUploads ? styles.visible : styles.hidden
       }`}
     >
-      <div className={styles.globalLoadingEmpty}>
-        <div
-          className={styles.closeButton}
-          onClick={toggleMenu}
-          onMouseEnter={() => setIsHovered(true)}
-          onMouseLeave={() => setIsHovered(false)}
-        >
-          {isOpen ? (
-            <ChevronDownIcon
-              color={
-                isCompleted
-                  ? "white"
-                  : isHovered
-                  ? "rgba(70, 118, 251, 0.7)"
-                  : "rgba(70, 118, 251, 0.4)"
-              }
-              width="34"
-            />
-          ) : (
-            <ChevronUpIcon
-              color={
-                isCompleted
-                  ? "white"
-                  : isHovered
-                  ? "rgba(70, 118, 251, 0.7)"
-                  : "rgba(70, 118, 251, 0.4)"
-              }
-              width="34"
-            />
-          )}
+      {hasUploads && (
+        <div className={styles.globalLoadingEmpty}>
+          <div
+            className={styles.closeButton}
+            onClick={toggleMenu}
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+          >
+            {isOpen ? (
+              <ChevronDownIcon color={"white"} width="34" />
+            ) : (
+              <ChevronUpIcon color={"white"} width="34" />
+            )}
+          </div>
         </div>
-      </div>
-
-      <div
-        className={styles.globalLoadingFilled}
-        style={{ width: `${totalProgress}%` }}
-      />
+      )}
 
       <div className={styles.rows}>
         {uploads.map((upload) => (

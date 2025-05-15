@@ -9,6 +9,7 @@ import { rename } from "../../../api/storage";
 import InputValidationError from "../../InputValidationError/InputValidationError";
 import { usePopup } from "../../../contexts/PopupContext";
 import Storage from "../../../models/Storage";
+import { useStorage } from "../../../contexts/StorageContext";
 
 interface Props {
   storage: Storage;
@@ -23,6 +24,7 @@ const RenameStorageDialog: FC<Props> = ({ storage, onSuccess }) => {
 
   const { close } = useDialog();
   const { show } = usePopup();
+  const { selectStorage } = useStorage();
 
   const { sendRequest, loading } = useAxios({
     onSuccess(response) {
@@ -32,6 +34,7 @@ const RenameStorageDialog: FC<Props> = ({ storage, onSuccess }) => {
         });
         close();
         onSuccess?.();
+        selectStorage({ id, name });
       }
     },
     onError(error) {

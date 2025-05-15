@@ -1,6 +1,6 @@
 import config from "../config.json";
 
-const url = `${config.base}/${config.storage}`;
+const url = `${config.server}/${config.routes.storage}`;
 
 export const create = (name: string) => ({
   url: `${url}/create`,

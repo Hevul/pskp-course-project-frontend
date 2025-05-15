@@ -1,11 +1,15 @@
 {
-  "base": "http://localhost:3001",
-  "user": "api/user",
-  "file": "api/file",
-  "storage": "api/storage",
-  "link": "api/link",
-  "auth": "api/auth",
-  "dir": "api/dir",
-  "entity": "api/entity",
-  "smallFileLimit": 500
+  "server": "http://localhost:3001",
+  "client": "http://localhost:3000",
+  "routes": {
+    "user": "api/user",
+    "file": "api/file",
+    "storage": "api/storage",
+    "link": "api/link",
+    "auth": "api/auth",
+    "dir": "api/dir",
+    "entity": "api/entity"
+  },
+  "maxFileCountPerRequest": 16,
+  "maxTotalUploadSize": 100
 }

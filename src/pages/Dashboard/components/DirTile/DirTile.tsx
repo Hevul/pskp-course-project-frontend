@@ -133,7 +133,7 @@ const DirTile: FC<Props> = ({ dir }) => {
     show("Подготовка архива...", { iconType: "info" });
 
     const link = document.createElement("a");
-    link.href = `${config.base}/${config.dir}/download/${id}`;
+    link.href = `${config.server}/${config.routes.dir}/download/${id}`;
     link.style.display = "none";
     document.body.appendChild(link);
 
@@ -151,49 +151,11 @@ const DirTile: FC<Props> = ({ dir }) => {
     );
   };
 
-  const handleMultipleDownload = () => {
-    show("Подготовка архива...", { iconType: "info" });
-
-    const dirIds = selectedEntities
-      .filter((e) => e.type === "dir")
-      .map((e) => e.id);
-
-    const encodedIds = encodeURIComponent(JSON.stringify(dirIds));
-    const downloadUrl = `${config.base}/${config.dir}/download-many?dirIds=${encodedIds}`;
-
-    const link = document.createElement("a");
-    link.href = downloadUrl;
-    link.style.display = "none";
-    document.body.appendChild(link);
-
-    link.click();
-
-    setTimeout(() => {
-      document.body.removeChild(link);
-    }, 100);
-
-    show(
-      `Начато скачивание ${dirIds.length} папок. Не удалось вычислить размер архива.`,
-      {
-        iconType: "info",
-      }
-    );
-  };
-
-  const handleDownload = () => {
-    if (isMultipleSelection) handleMultipleDownload();
-    else handleSingleDownload();
-  };
-
   const menuItems: MenuItem[] = [
     {
-      title: `Скачать ${
-        isMultipleSelection
-          ? `папки (${selectedEntities.filter((e) => e.type === "dir").length})`
-          : `папку`
-      }`,
+      title: `Скачать папку`,
       icon: <DownloadIcon width="16" />,
-      action: handleDownload,
+      action: handleSingleDownload,
       hasSeparator: !isMultipleSelection,
     },
     {
@@ -235,7 +197,6 @@ const DirTile: FC<Props> = ({ dir }) => {
           <MoveDialog
             entity={dir}
             onSuccess={() => {
-              setCurrentDir(null);
               refresh();
             }}
           />

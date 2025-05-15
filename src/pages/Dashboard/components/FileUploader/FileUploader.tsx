@@ -13,6 +13,7 @@ import { FileUpload, useUploads } from "../../../../contexts/UploadContext";
 import config from "../../../../config.json";
 import axios from "axios";
 import { usePopup } from "../../../../contexts/PopupContext";
+import { formatSize } from "../../../../utils";
 
 export interface FileUploaderRef {
   triggerFileDialog: () => void;
@@ -66,6 +67,28 @@ const FileUploader = forwardRef<FileUploaderRef, FileUploaderProps>(
     const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
       const files = Array.from(e.target.files || []);
       if (files.length === 0) return;
+
+      if (files.length > 16) {
+        show(
+          `Нельзя загрузить более ${config.maxFileCountPerRequest} файлов за раз.`,
+          { iconType: "error" }
+        );
+        return;
+      }
+
+      const totalSize = files.reduce((sum, file) => sum + file.size, 0);
+      const maxTotalSize = config.maxTotalUploadSize * 1024 * 1024;
+
+      if (totalSize > maxTotalSize) {
+        show(
+          `Общий размер файлов (${formatSize(
+            totalSize
+          )}) превышает максимально допустимый (${formatSize(maxTotalSize)})`,
+          { iconType: "error" }
+        );
+        return;
+      }
+
       if (!storage) {
         show("Необходимо выбрать хранилище!", { iconType: "error" });
         return;

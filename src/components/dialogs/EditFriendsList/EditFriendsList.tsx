@@ -134,7 +134,7 @@ const EditFriendsList: FC<Props> = ({ refLink }) => {
     sendRemoveAllFriends(removeAllFriends(link.id));
 
   return (
-    <DialogShell title="Список избранных">
+    <DialogShell title="Список доверенных">
       <div className={styles.searchAndAddButton}>
         <div style={{ width: "100%" }}>
           <Input

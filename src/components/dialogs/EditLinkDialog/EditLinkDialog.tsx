@@ -9,6 +9,8 @@ import useAxios from "../../../hooks/useAxios";
 import { get, updateNameAndDescription } from "../../../api/link";
 import { usePopup } from "../../../contexts/PopupContext";
 import InputValidationError from "../../InputValidationError/InputValidationError";
+import { useDialog } from "../../../contexts/DialogContext";
+import { useLinks } from "../../../contexts/LinksContext";
 
 interface Props {
   refLink: Link;
@@ -16,39 +18,44 @@ interface Props {
 
 const EditLinkDialog: FC<Props> = ({ refLink }) => {
   const [link, setLink] = useState<Link>(refLink);
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
+  const [name, setName] = useState(refLink.name || "");
+  const [description, setDescription] = useState(refLink.description || "");
+  const [nameError, setNameError] = useState<string | null>(null);
+  const [descriptionError, setDescriptionError] = useState<string | null>(null);
 
   const { show } = usePopup();
-
-  let nameError: string | null = null;
-  let descriptionError: string | null = null;
+  const { close } = useDialog();
+  const { refresh } = useLinks();
 
   const { sendRequest: sendUpdate } = useAxios({
     onSuccess(response) {
       show("Название и описание ссылки успешно обновлены!", {
         iconType: "success",
       });
+      setLink((prev) => ({ ...prev, name, description }));
+      close();
+      refresh();
     },
     onError(error) {
       const errors = error?.response?.data?.errors;
 
       if (errors) {
         const nameErrorObj = errors.find((err: any) => err.path === "name");
-        nameError = nameErrorObj;
+        setNameError(nameErrorObj?.msg || null);
 
         const descriptionErrorObj = errors.find(
           (err: any) => err.path === "description"
         );
-        descriptionError = descriptionErrorObj;
+        setDescriptionError(descriptionErrorObj?.msg || null);
       }
     },
   });
+
   const { sendRequest: sendGet } = useAxios({
     onSuccess(response) {
       const {
         id,
-        link,
+        link: linkUrl,
         friends,
         fileInfoId: fileId,
         isPublic,
@@ -57,42 +64,49 @@ const EditLinkDialog: FC<Props> = ({ refLink }) => {
         filename,
       } = response.data.link;
 
-      const name = _name;
-      const description = _description;
+      const updatedName = _name || "";
+      const updatedDescription = _description || "";
       const status = isPublic ? "public" : "private";
 
       setLink({
         id,
-        link,
+        link: linkUrl,
         status,
         friends,
         fileId,
         filename,
-        name,
-        description,
+        name: updatedName,
+        description: updatedDescription,
       });
 
-      setName(name);
-      setDescription(description);
+      setName(updatedName);
+      setDescription(updatedDescription);
+      setNameError(null);
+      setDescriptionError(null);
     },
   });
 
-  const handleUpdate = () =>
+  const handleUpdate = () => {
+    if (!name.trim()) {
+      setNameError("Название не может быть пустым");
+      return;
+    }
     sendUpdate(updateNameAndDescription(link.id, name, description));
+  };
 
   useEffect(() => {
     sendGet(get(link.id));
-  }, []);
+  }, [link.id]);
 
   return (
     <DialogShell title="Редактирование ссылки">
       <div>
         <Input
           label="Укажите название:"
-          placeholder={"Название ссылки"}
+          placeholder="Название ссылки"
           value={name}
           setValue={setName}
-          hasError={nameError !== null}
+          hasError={!!nameError}
         />
         <InputValidationError error={nameError} />
       </div>
@@ -104,13 +118,13 @@ const EditLinkDialog: FC<Props> = ({ refLink }) => {
           value={description}
           setValue={setDescription}
           maxLength={1024}
-          hasError={descriptionError !== null}
+          hasError={!!descriptionError}
         />
         <InputValidationError error={descriptionError} />
       </div>
 
       <div className={styles.buttons}>
-        <Button title={"Сохранить"} onClick={handleUpdate} />
+        <Button title="Сохранить" onClick={handleUpdate} />
       </div>
     </DialogShell>
   );

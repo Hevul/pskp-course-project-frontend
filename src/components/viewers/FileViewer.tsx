@@ -92,7 +92,7 @@ const TEXT_FILE_EXTENSIONS = [
 
 const FileViewer: FC<Props> = ({ filename, fileId }) => {
   const fileExtension = filename.split(".").pop()?.toLowerCase() ?? "";
-  const fileUrl = `${config.base}/${config.file}/view/${fileId}`;
+  const fileUrl = `${config.server}/${config.routes.file}/view/${fileId}`;
 
   const { show } = usePopup();
   const { close } = useFileViewer();

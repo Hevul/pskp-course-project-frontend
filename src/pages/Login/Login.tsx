@@ -11,11 +11,10 @@ const Login = () => {
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [loginError, setLoginError] = useState<string | null>(null);
+  const [passwordError, setPasswordError] = useState<string | null>(null);
 
-  let loginError: string | null = null;
-  let passwordError: string | null = null;
-
-  const { sendRequest } = useAxios({
+  const { sendRequest, loading } = useAxios({
     onSuccess(response) {
       navigate("/dashboard");
     },
@@ -24,12 +23,14 @@ const Login = () => {
 
       if (errors) {
         const loginErrorObj = errors.find((err: any) => err.path === "login");
-        if (loginErrorObj) loginError = loginErrorObj.msg;
+        if (loginErrorObj) setLoginError(loginErrorObj.msg);
+        else setLoginError(null);
 
         const passwordErrorObj = errors.find(
           (err: any) => err.path === "password"
         );
-        if (passwordErrorObj) passwordError = passwordErrorObj.msg;
+        if (passwordErrorObj) setPasswordError(passwordErrorObj.msg);
+        else setPasswordError(null);
       }
     },
   });
@@ -57,12 +58,14 @@ const Login = () => {
               value={password}
               setValue={setPassword}
               error={passwordError}
+              type="password"
             />
             <InputValidationError error={passwordError} />
           </div>
           <button
             className={styles.button}
             onClick={() => sendRequest(login(username, password))}
+            disabled={loading}
           >
             Войти
           </button>

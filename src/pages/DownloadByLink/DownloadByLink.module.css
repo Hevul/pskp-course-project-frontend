@@ -27,6 +27,8 @@
   color: #41404b;
   font-weight: var(--semi-bold);
   margin-top: 14px;
+  max-width: 30vw;
+  text-align: center;
 }
 
 .buttons {

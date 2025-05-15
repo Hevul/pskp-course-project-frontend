@@ -2,7 +2,6 @@ import { FC, useEffect, useRef, useState } from "react";
 import styles from "./LinkTile.module.css";
 import ContextMenuArea from "../../../../components/ContextMenuArea/ContextMenuArea";
 import ExtFileIcon from "../../../../components/icons/fileExts/ExtFileIcon";
-import ShowIcon from "../../../../components/icons/ShowIcon";
 import Link from "../../../../models/Link";
 import ShieldIcon from "../../../../components/icons/ShieldIcon";
 import PeopleIcon from "../../../../components/icons/PeopleIcon";
@@ -19,8 +18,7 @@ import InfoSquareIcon from "../../../../components/icons/InfoSquareIcon";
 import CopyIcon from "../../../../components/icons/CopyIcon";
 import EditIcon from "../../../../components/icons/EditIcon";
 import LinkDialog from "../../../../components/dialogs/LinkDialog/LinkDialog";
-import FileViewer from "../../../../components/viewers/FileViewer";
-import { useFileViewer } from "../../../../contexts/FileViewerContext";
+import config from "../../../../config.json";
 
 interface Props {
   link: Link;
@@ -29,7 +27,7 @@ interface Props {
 }
 
 const LinkTile: FC<Props> = ({ link, selectedLink, setSelectedLink }) => {
-  const { id, filename, status } = link;
+  const { id, filename, status, name } = link;
 
   const ext = filename?.split(".").pop() || "";
   const isSelected = selectedLink?.id === id;
@@ -41,7 +39,6 @@ const LinkTile: FC<Props> = ({ link, selectedLink, setSelectedLink }) => {
   const { refresh } = useLinks();
   const { show } = usePopup();
   const { open } = useDialog();
-  const { view } = useFileViewer();
 
   const { sendRequest: sendDelete } = useAxios({
     onSuccess(response) {
@@ -81,7 +78,7 @@ const LinkTile: FC<Props> = ({ link, selectedLink, setSelectedLink }) => {
   });
 
   const copyToClipboard = () => {
-    const text = `http://localhost:3000/link/${link.link}`;
+    const text = `${config.client}/link/${link.link}`;
 
     navigator.clipboard.writeText(text).catch((err) => {
       console.error("Не удалось скопировать ссылку:", err);
@@ -100,16 +97,8 @@ const LinkTile: FC<Props> = ({ link, selectedLink, setSelectedLink }) => {
   const handleFullInfo = () => sendGetFullInfo(getFullInfo(link.id));
   const handleRemove = () => sendDelete(remove(link.id));
   const handleEdit = () => open(<LinkDialog fileId={link.fileId} />);
-  const handleOpen = () =>
-    view(<FileViewer filename={link.filename ?? ""} fileId={link.fileId} />);
 
   const menuItems = [
-    {
-      title: "Открыть файл",
-      icon: <ShowIcon width="18" />,
-      action: handleOpen,
-      hasSeparator: true,
-    },
     {
       title: "Редактировать ссылку",
       icon: <EditIcon width="18" />,
@@ -171,10 +160,10 @@ const LinkTile: FC<Props> = ({ link, selectedLink, setSelectedLink }) => {
             <h1
               ref={textRef}
               className={`${styles.h1} ${needsWrap ? styles.allowWrap : ""}`}
-              title={filename}
+              title={name ?? filename}
               style={{ color: isSelected ? "white" : "#4676FB" }}
             >
-              {filename}
+              {name ?? filename}
             </h1>
           </div>
 

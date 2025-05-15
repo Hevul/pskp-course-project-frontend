@@ -86,7 +86,7 @@ const FileTile: FC<Props> = ({ file }) => {
   const handleSingleDownload = async () => {
     show("Скачивание файла...", { iconType: "info" });
 
-    const url = `${config.base}/${config.file}`;
+    const url = `${config.server}/${config.routes.file}`;
 
     const link = document.createElement("a");
     link.href = `${url}/download/${id}`;
@@ -100,44 +100,8 @@ const FileTile: FC<Props> = ({ file }) => {
     }, 100);
   };
 
-  const handleMultipleDownload = async () => {
-    show("Подготовка архива...", { iconType: "info" });
-
-    const fileIds = selectedEntities
-      .filter((e) => e.type === "file")
-      .map((e) => e.id);
-
-    const encodedIds = encodeURIComponent(JSON.stringify(fileIds));
-
-    const downloadUrl = `${config.base}/${config.file}/download-many?fileIds=${encodedIds}`;
-
-    const link = document.createElement("a");
-    link.href = downloadUrl;
-    link.style.display = "none";
-    document.body.appendChild(link);
-
-    link.click();
-
-    setTimeout(() => {
-      document.body.removeChild(link);
-    }, 100);
-
-    show(
-      `Начато скачивание ${fileIds.length} файлов. Не удалось вычислить размер архива.`,
-      {
-        iconType: "info",
-      }
-    );
-  };
-
-  const handleDownload = () => {
-    if (isMultipleSelection) handleMultipleDownload();
-    else handleSingleDownload();
-  };
-
   const handleClick = (e: React.MouseEvent) => {
     if (e.detail === 1) toggleEntitySelection(file, e);
-    else if (e.detail === 2) handleOpen();
   };
 
   const handleContextMenu = (e: React.MouseEvent) => {
@@ -164,22 +128,9 @@ const FileTile: FC<Props> = ({ file }) => {
 
   const menuItems: MenuItem[] = [
     {
-      title: "Открыть файл",
-      icon: <ShowIcon width="18" />,
-      action: handleOpen,
-      hasSeparator: true,
-      disabled: isMultipleSelection,
-    },
-    {
-      title: `Скачать ${
-        isMultipleSelection
-          ? `файлы (${
-              selectedEntities.filter((e) => e.type === "file").length
-            })`
-          : `файл`
-      }`,
+      title: `Скачать файл`,
       icon: <DownloadIcon width="16" />,
-      action: handleDownload,
+      action: handleSingleDownload,
       hasSeparator: !isMultipleSelection,
     },
     {

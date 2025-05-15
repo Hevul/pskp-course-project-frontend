@@ -1,6 +1,6 @@
 import config from "../config.json";
 
-const url = `${config.base}/${config.auth}`;
+const url = `${config.server}/${config.routes.auth}`;
 
 export const login = (username: string, password: string) => ({
   url: `${url}/login`,

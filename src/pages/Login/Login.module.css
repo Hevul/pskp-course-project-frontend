@@ -1,42 +1,48 @@
 .page {
   background-color: var(--secondary-blue);
   width: 100vw;
-  height: 100vh;
+  min-height: 100vh;
   display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  box-sizing: border-box;
 }
 
 .form {
   background-color: white;
   border-radius: 30px;
-  margin-top: 114px;
-  margin-left: 111px;
   box-shadow: var(--primary-shadow);
-  height: fit-content;
+  width: 100%;
+  max-width: 495px;
+  min-width: 400px;
+  padding: 36px;
+  box-sizing: border-box;
 }
 
 .content {
   display: flex;
   flex-direction: column;
-  width: 423px;
-  margin: 36px;
+  width: 100%;
 }
 
 .h1,
 .h2,
 .p {
   color: var(--primary-black);
+  margin: 0;
 }
 
 .h1 {
-  font-size: 31px;
+  font-size: clamp(24px, 2.5vw, 31px);
   font-weight: 500;
-  margin-bottom: 61px;
+  margin-bottom: 40px;
 }
 
 .h2 {
-  font-size: 25px;
+  font-size: clamp(20px, 2vw, 25px);
   font-weight: 300;
-  margin-bottom: 61px;
+  margin-bottom: 20px;
 }
 
 button,
@@ -45,31 +51,84 @@ a {
 }
 
 .button {
+  --button-color: #4676fb;
+  --hover-color: #4676fbcc;
+  --active-color: #4676fb99;
+
   background-color: var(--primary-blue);
   border-radius: 8px;
   color: white;
   font-size: 16px;
   font-weight: 600;
   height: 57px;
+  width: 100%;
   text-align: center;
   cursor: pointer;
   box-shadow: var(--primary-shadow);
+  transition: background-color 0.2s;
+}
+
+.button:hover:not(:disabled) {
+  background-color: var(--hover-color);
+  box-shadow: 0 4px 12px rgba(70, 118, 251, 0.4);
+}
+
+.button:active:not(:disabled) {
+  background-color: var(--active-color);
+  box-shadow: 0 2px 6px rgba(70, 118, 251, 0.4);
+}
+
+.button:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+  transform: none !important;
 }
 
 .register {
-  margin-top: 58px;
+  margin-top: 40px;
   display: flex;
   justify-content: center;
   gap: 10px;
+  flex-wrap: wrap;
 }
 
 .register p {
   font-weight: 300;
   color: #7d7d7d;
+  margin: 0;
 }
 
 .a {
   font-weight: 600;
   color: var(--primary-blue);
   cursor: pointer;
+  transition: color 0.2s;
+}
+
+.a:hover {
+  color: var(--primary-blue-dark);
+  text-decoration: underline;
+}
+
+img {
+  max-height: 80vh;
+  margin-left: 60px;
+  object-fit: contain;
+}
+
+@media (max-width: 1200px) {
+  .page {
+    flex-direction: column;
+    padding: 40px 20px;
+  }
+
+  .form {
+    margin: 0 0 40px 0;
+    max-width: 100%;
+  }
+
+  img {
+    margin-left: 0;
+    max-height: 40vh;
+  }
 }

@@ -1,7 +1,7 @@
 import { AxiosRequestConfig } from "axios";
 import config from "../config.json";
 
-const url = `${config.base}/${config.entity}`;
+const url = `${config.server}/${config.routes.entity}`;
 
 export const moveMultiple = (options: {
   fileIds: string[];

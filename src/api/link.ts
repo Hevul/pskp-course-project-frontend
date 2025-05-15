@@ -1,7 +1,7 @@
 import { AxiosRequestConfig } from "axios";
 import config from "../config.json";
 
-const url = `${config.base}/${config.link}`;
+const url = `${config.server}/${config.routes.link}`;
 
 export const get = (id: string): AxiosRequestConfig => ({
   url: `${url}/get/${id}`,

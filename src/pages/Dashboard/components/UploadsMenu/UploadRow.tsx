@@ -4,11 +4,10 @@ import style from "./UploadsMenu.module.css";
 import { UploadStatus, useUploads } from "../../../../contexts/UploadContext";
 import CloseCircleIcon from "../../../../components/icons/CloseCircleIcon";
 import SecondaryButton from "../../../../components/SecondaryButton/SecondaryButton";
-import useAxios from "../../../../hooks/useAxios";
-import { confirmOverwrite } from "../../../../api/file";
 import { formatSize } from "../../../../utils";
 import { useDialog } from "../../../../contexts/DialogContext";
 import ResolveConflictDialog from "../../../../components/dialogs/ResolveConflictDialog/ResolveConflictDialog";
+import Loading from "../../../../components/Loading/Loading";
 
 interface Props {
   id: string;
@@ -44,6 +43,14 @@ const UploadRow: FC<Props> = ({
     const upload = getUpload(id);
     if (upload) open(<ResolveConflictDialog upload={upload} />);
   };
+
+  const showCloseButton =
+    isCompleted ||
+    isCanceled ||
+    isConflicted ||
+    (isUploading && progress < 100);
+
+  const showProgressBar = isUploading && progress < 100;
 
   return (
     <div
@@ -102,7 +109,7 @@ const UploadRow: FC<Props> = ({
         </div>
       </div>
 
-      {!isCompleted && !isCanceled && !isConflicted && (
+      {showProgressBar ? (
         <div className={style.fileLoadingEmpty}>
           <div
             className={style.fileLoadingFilled}
@@ -111,7 +118,9 @@ const UploadRow: FC<Props> = ({
             }}
           />
         </div>
-      )}
+      ) : isUploading && progress === 100 ? (
+        <Loading size="small" />
+      ) : null}
 
       {isConflicted && (
         <div className={style.conflictButton}>
@@ -119,12 +128,14 @@ const UploadRow: FC<Props> = ({
         </div>
       )}
 
-      <div
-        className={style.iconButton}
-        onClick={status === "uploading" ? handleCancel : handleRemove}
-      >
-        <CloseCircleIcon color="#ADC0F8" />
-      </div>
+      {showCloseButton && (
+        <div
+          className={style.iconButton}
+          onClick={isUploading ? handleCancel : handleRemove}
+        >
+          <CloseCircleIcon color="#ADC0F8" />
+        </div>
+      )}
     </div>
   );
 };

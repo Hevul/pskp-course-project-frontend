@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import ProtectedRoute from "../../components/ProtectedRoute/ProtectedRoute";
 import Search from "../../components/Search/Search";
 import styles from "./MyLinks.module.css";
@@ -10,7 +10,7 @@ import Layout from "../Layout/Layout";
 import LinkTableTiled from "./components/LinkTableTiled/LinkTableTiled";
 
 const MyLinks = () => {
-  const { links, loading } = useLinks();
+  const { links, loading, refresh } = useLinks();
   const [searchQuery, setSearchQuery] = useState("");
 
   const filteredLinks = useMemo(() => {
@@ -28,17 +28,16 @@ const MyLinks = () => {
   const isRefEmpty = links.length === 0;
   const isFilteredEmpty = filteredLinks.length === 0;
 
+  useEffect(() => {
+    refresh(); // Чтобы обновлялось при заходе на страницу
+  }, []);
+
   return (
     <ProtectedRoute>
       <Layout>
         <div className={styles.main}>
           <div className={styles.top}>
             <h2 className={styles.h2}>Мои ссылки</h2>
-            <Search
-              onSearch={handleSearch}
-              placeholder="Название файла"
-              width="500px"
-            />
           </div>
 
           {loading ? (
