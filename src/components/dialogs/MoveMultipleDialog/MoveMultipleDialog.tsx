@@ -58,56 +58,72 @@ const MoveMultipleDialogContent: FC<Props> = ({
       onSuccess?.();
     },
     onError(error) {
-      show(`Не удалось переместить некоторые объекты! Разрешите конфликты!`, {
+      show(`Не удалось переместить объекты!`, {
         iconType: "error",
       });
-      setMoveError("Не удалось переместить некоторые объекты!");
+
+      const errors = error?.response?.data?.errors;
+
+      if (errors) {
+        const errorObj = errors[0];
+        if (errorObj) {
+          setMoveError(errorObj.msg);
+        }
+      }
 
       refresh();
 
       const conflicts: {
-        conflictingFiles: { movedId: string; originalId: string }[];
-        conflictingDirs: { movedId: string; originalId: string }[];
-      } = error.response.data;
+        conflictingFiles?: { movedId: string; originalId: string }[];
+        conflictingDirs?: { movedId: string; originalId: string }[];
+      } = error?.response?.data;
 
       if (conflicts) {
-        const totalConflicts =
-          conflicts.conflictingFiles.length + conflicts.conflictingDirs.length;
-        setConflictsCount(totalConflicts);
-        setResolvedCount(0);
+        const filesCount = conflicts.conflictingFiles?.length || 0;
+        const dirsCount = conflicts.conflictingDirs?.length || 0;
+        const totalConflicts = filesCount + dirsCount;
 
-        const handleConflictResolved = () => {
-          setResolvedCount((prev) => {
-            const newCount = prev + 1;
-            if (newCount >= totalConflicts) {
-              close();
-              onSuccess?.();
-            }
-            return newCount;
+        if (totalConflicts > 0) {
+          setConflictsCount(totalConflicts);
+          setResolvedCount(0);
+
+          const handleConflictResolved = () => {
+            setResolvedCount((prev) => {
+              const newCount = prev + 1;
+              if (newCount >= totalConflicts) {
+                close();
+                onSuccess?.();
+              }
+              return newCount;
+            });
+          };
+
+          conflicts.conflictingFiles?.forEach((conflict) => {
+            open(
+              <MoveFileConflictDialog
+                entity={
+                  selectedEntities.find((f) => f.id === conflict.movedId)!
+                }
+                conflictingId={conflict.originalId}
+                destinationId={currentDir?.id}
+                onSuccess={handleConflictResolved}
+              />
+            );
           });
-        };
 
-        conflicts.conflictingFiles.forEach((conflict) => {
-          open(
-            <MoveFileConflictDialog
-              entity={selectedEntities.find((f) => f.id === conflict.movedId)!}
-              conflictingId={conflict.originalId}
-              destinationId={currentDir?.id}
-              onSuccess={handleConflictResolved}
-            />
-          );
-        });
-
-        conflicts.conflictingDirs.forEach((conflict) => {
-          open(
-            <MoveDirConflictDialog
-              entity={selectedEntities.find((f) => f.id === conflict.movedId)!}
-              conflictingId={conflict.originalId}
-              destinationId={currentDir?.id}
-              onSuccess={handleConflictResolved}
-            />
-          );
-        });
+          conflicts.conflictingDirs?.forEach((conflict) => {
+            open(
+              <MoveDirConflictDialog
+                entity={
+                  selectedEntities.find((f) => f.id === conflict.movedId)!
+                }
+                conflictingId={conflict.originalId}
+                destinationId={currentDir?.id}
+                onSuccess={handleConflictResolved}
+              />
+            );
+          });
+        }
       }
     },
   });

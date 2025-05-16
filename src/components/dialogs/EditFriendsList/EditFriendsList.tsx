@@ -69,7 +69,7 @@ interface Props {
 }
 
 const EditFriendsList: FC<Props> = ({ refLink }) => {
-  const [link, setLink] = useState<Link>(refLink);
+  const [link, setLink] = useState<Link | null>(null);
   const [name, setName] = useState("");
   const [friends, setFriends] = useState<User[]>([]);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -102,7 +102,7 @@ const EditFriendsList: FC<Props> = ({ refLink }) => {
       if (errors) setErrorMsg(errors[0].msg);
     },
   });
-  const { sendRequest: sendGetLink } = useAxios({
+  const { sendRequest: sendGetLink, loading: loadingLink } = useAxios({
     onSuccess(response) {
       const data = response.data.link;
 
@@ -125,13 +125,17 @@ const EditFriendsList: FC<Props> = ({ refLink }) => {
   });
 
   useEffect(() => {
-    sendGetFriends(getByIds(link.friends));
+    if (link) sendGetFriends(getByIds(link.friends));
   }, [link]);
 
-  const handleAdd = () => sendAdd(addFriend(link.id, name));
-  const refreshLink = () => sendGetLink(get(link.id));
+  useEffect(() => {
+    sendGetLink(get(refLink.id));
+  }, []);
+
+  const handleAdd = () => sendAdd(addFriend(refLink.id, name));
+  const refreshLink = () => sendGetLink(get(refLink.id));
   const handleRemoveAllFriends = () =>
-    sendRemoveAllFriends(removeAllFriends(link.id));
+    sendRemoveAllFriends(removeAllFriends(refLink.id));
 
   return (
     <DialogShell title="Список доверенных">
@@ -150,14 +154,14 @@ const EditFriendsList: FC<Props> = ({ refLink }) => {
       </div>
 
       <div className={styles.list}>
-        {loadingFriends ? (
+        {loadingFriends || loadingLink ? (
           <Loading size="large" />
         ) : (
           friends.map((f) => (
             <Row
               key={f.id}
               friend={f}
-              linkId={link.id}
+              linkId={refLink.id}
               refreshLink={refreshLink}
             />
           ))

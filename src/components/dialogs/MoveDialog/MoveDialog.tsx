@@ -21,13 +21,19 @@ import { usePopup } from "../../../contexts/PopupContext";
 import { useStorage } from "../../../contexts/StorageContext";
 import MoveFileConflictDialog from "../MoveFileConflictDialog/MoveFileConflictDialog";
 import MoveDirConflictDialog from "../MoveDirConflictDialog/MoveDirConflictDialog";
+import Dir from "../../../models/Dir";
 
 interface Props {
   entity: Entity;
   onSuccess?: () => void;
+  setCurrentDirOut?: (dir: Dir | null) => void;
 }
 
-const MoveDialogContent: FC<Props> = ({ entity, onSuccess }) => {
+const MoveDialogContent: FC<Props> = ({
+  entity,
+  onSuccess,
+  setCurrentDirOut,
+}) => {
   const [moveError, setMoveError] = useState<string | null>(null);
   const [currentEntity, setCurrentEntity] = useState<Entity>(entity);
 
@@ -74,7 +80,6 @@ const MoveDialogContent: FC<Props> = ({ entity, onSuccess }) => {
             destinationId={currentDir?.id}
             onSuccess={() => {
               close();
-              setCurrentDir(null);
               onSuccess?.();
             }}
           />
@@ -112,12 +117,13 @@ const MoveDialogContent: FC<Props> = ({ entity, onSuccess }) => {
     },
   });
 
-  const handleMove = () =>
+  const handleMove = () => {
     sendRequest(
       isFile
         ? moveFile({ id: currentEntity.id, parentId: currentDir?.id })
         : moveDir({ id: currentEntity.id, parentId: currentDir?.id })
     );
+  };
 
   return (
     <DialogShell

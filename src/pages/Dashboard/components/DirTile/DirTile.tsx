@@ -199,6 +199,7 @@ const DirTile: FC<Props> = ({ dir }) => {
             onSuccess={() => {
               refresh();
             }}
+            setCurrentDirOut={setCurrentDir}
           />
         ),
       disabled: isMultipleSelection,
