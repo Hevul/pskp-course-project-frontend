@@ -135,19 +135,31 @@ const LinkDialog: FC<Props> = ({ fileId }) => {
 
     const text = `${config.client}/link/${link.link}`;
 
-    navigator.clipboard.writeText(text).catch((err) => {
+    if (!navigator.clipboard) {
+    const textArea = document.createElement("textarea");
+    textArea.value = text;
+    document.body.appendChild(textArea);
+    textArea.select();
+    try {
+      document.execCommand('copy');
+      show("Ссылка скопирована в буфер обмена!", { iconType: "success" });
+    } catch (err) {
       console.error("Не удалось скопировать ссылку:", err);
-      const textArea = document.createElement("textarea");
-      textArea.value = text;
-      document.body.appendChild(textArea);
-      textArea.select();
-      document.execCommand("copy");
+      show("Не удалось скопировать ссылку", { iconType: "error" });
+    } finally {
       document.body.removeChild(textArea);
-    });
+    }
+    return;
+  }
 
+  navigator.clipboard.writeText(text).then(() => {
     show("Ссылка скопирована в буфер обмена!", { iconType: "success" });
+  }).catch((err) => {
+    console.error("Не удалось скопировать ссылку:", err);
+    show("Не удалось скопировать ссылку", { iconType: "error" });
+  });
 
-    setIsButtonDisabled(true);
+  setIsButtonDisabled(true);
     setTimeout(() => setIsButtonDisabled(false), 1000);
   };
 
