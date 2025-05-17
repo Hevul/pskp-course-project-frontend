@@ -79,6 +79,8 @@ const MoveMultipleDialogContent: FC<Props> = ({
       } = error?.response?.data;
 
       if (conflicts) {
+        //close();
+
         const filesCount = conflicts.conflictingFiles?.length || 0;
         const dirsCount = conflicts.conflictingDirs?.length || 0;
         const totalConflicts = filesCount + dirsCount;

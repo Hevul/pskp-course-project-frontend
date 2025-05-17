@@ -51,9 +51,9 @@ const StorageTableTiled = () => {
     open(<CreateStorageDialog onSuccess={() => refresh()} />);
   };
 
-  useEffect(() => {
-    refreshEntities();
-  }, []);
+  // useEffect(() => {
+  //   refreshEntities();
+  // }, []);
 
   return (
     <div

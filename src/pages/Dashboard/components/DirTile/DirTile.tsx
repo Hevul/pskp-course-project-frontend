@@ -212,7 +212,6 @@ const DirTile: FC<Props> = ({ dir }) => {
           <MoveMultipleDialog
             selectedEntities={selectedEntities}
             onSuccess={() => {
-              setCurrentDir(null);
               refresh();
             }}
           />

@@ -44,26 +44,26 @@ const MoveDialogContent: FC<Props> = ({
 
   const { id, name, type } = currentEntity;
   const isFile = type === "file";
+
   const sortedEntities = [...entities].sort((a, b) => {
     if (a.type === "dir" && b.type !== "dir") return -1;
     if (a.type !== "dir" && b.type === "dir") return 1;
-    return 0;
+
+    return a.name.localeCompare(b.name, undefined, { sensitivity: "base" });
   });
 
   const { sendRequest, loading } = useAxios({
     onSuccess(response) {
-      if (response.status === 200) {
-        show(
-          `${isFile ? "Файл" : "Папка"} ${name} перемещён${
-            isFile ? "" : "а"
-          } в ${currentDir ? currentDir.name : storage?.name}!`,
-          {
-            iconType: "success",
-          }
-        );
-        close();
-        onSuccess?.();
-      }
+      show(
+        `${isFile ? "Файл" : "Папка"} ${name} перемещён${isFile ? "" : "а"} в ${
+          currentDir ? currentDir.name : storage?.name
+        }!`,
+        {
+          iconType: "success",
+        }
+      );
+      close();
+      onSuccess?.();
     },
     onError(error) {
       show(`Не удалось переместить ${isFile ? "файл" : "папку"}!`, {
@@ -98,6 +98,7 @@ const MoveDialogContent: FC<Props> = ({
               close();
               onSuccess?.();
             }}
+            setCurrentDirOut={setCurrentDirOut}
           />
         );
 

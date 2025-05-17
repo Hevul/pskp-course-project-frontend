@@ -193,7 +193,6 @@ const FileTile: FC<Props> = ({ file }) => {
           <MoveMultipleDialog
             selectedEntities={selectedEntities}
             onSuccess={() => {
-              setCurrentDir(null);
               refresh();
             }}
           />
