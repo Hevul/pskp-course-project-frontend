@@ -18,8 +18,7 @@ import InputValidationError from "../../InputValidationError/InputValidationErro
 import { usePopup } from "../../../contexts/PopupContext";
 import { useStorage } from "../../../contexts/StorageContext";
 import { copyMultiple } from "../../../api/entity";
-import MoveFileConflictDialog from "../MoveFileConflictDialog/MoveFileConflictDialog";
-import MoveDirConflictDialog from "../MoveDirConflictDialog/MoveDirConflictDialog";
+import CopyErrorInfoDialog from "../CopyErrorInfoDialog/CopyErrorInfoDialog";
 
 interface Props {
   selectedEntities: Entity[];
@@ -62,12 +61,21 @@ const CopyMultipleDialogContent: FC<Props> = ({
         iconType: "error",
       });
 
-      const errors = error?.response?.data?.errors;
+      setCopyError(`Не удалось скопировать объекты!`);
 
-      if (errors) {
-        const errorObj = errors[0];
-        if (errorObj) setCopyError(errorObj.msg);
-      } else setCopyError("Не удалось скопировать некоторые объекты!");
+      const errorData = error?.response?.data;
+
+      if (errorData && !errorData.success) {
+        const errors = Object.keys(errorData)
+          .filter((key) => !["success", "message"].includes(key))
+          .map((key) => ({
+            name: errorData[key].name,
+            type: errorData[key].type,
+            reason: errorData[key].error,
+          }));
+
+        open(<CopyErrorInfoDialog errors={errors} />);
+      }
     },
   });
 
