@@ -20,6 +20,7 @@ import { useStorage } from "../../../contexts/StorageContext";
 import { moveMultiple } from "../../../api/entity";
 import MoveFileConflictDialog from "../MoveFileConflictDialog/MoveFileConflictDialog";
 import MoveDirConflictDialog from "../MoveDirConflictDialog/MoveDirConflictDialog";
+import CopyMoveErrorDetailsDialog from "../CopyMoveErrorDetailsDialog/CopyMoveErrorDetailsDialog";
 
 interface Props {
   selectedEntities: Entity[];
@@ -58,31 +59,37 @@ const MoveMultipleDialogContent: FC<Props> = ({
       onSuccess?.();
     },
     onError(error) {
-      show(`Не удалось переместить объекты!`, {
+      show(`Не удалось переместить все или некоторые объекты!`, {
         iconType: "error",
       });
 
-      const errors = error?.response?.data?.errors;
+      setMoveError("Не удалось переместить все или некоторые объекты!");
 
-      if (errors) {
-        const errorObj = errors[0];
-        if (errorObj) {
-          setMoveError(errorObj.msg);
-        }
+      const errorData = error?.response?.data;
+
+      if (errorData?.errors) {
+        const dialogErrors = errorData.errors.map((err: any) => ({
+          name: err.name,
+          type: err.type,
+          reason: err.error || err.message,
+        }));
+
+        open(<CopyMoveErrorDetailsDialog errors={dialogErrors} />);
+
+        return;
       }
 
       refresh();
+      onSuccess?.(); // Бог меня судить будет
 
       const conflicts: {
         conflictingFiles?: { movedId: string; originalId: string }[];
         conflictingDirs?: { movedId: string; originalId: string }[];
-      } = error?.response?.data;
+      } = errorData;
 
       if (conflicts) {
-        //close();
-
-        const filesCount = conflicts.conflictingFiles?.length || 0;
-        const dirsCount = conflicts.conflictingDirs?.length || 0;
+        const filesCount = errorData.conflictingFiles?.length || 0;
+        const dirsCount = errorData.conflictingDirs?.length || 0;
         const totalConflicts = filesCount + dirsCount;
 
         if (totalConflicts > 0) {

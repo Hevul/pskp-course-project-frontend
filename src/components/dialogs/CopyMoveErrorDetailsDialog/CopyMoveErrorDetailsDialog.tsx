@@ -1,15 +1,16 @@
 import { FC } from "react";
 import DialogShell from "../DialogShell";
-import styles from "./CopyErrorInfoDialog.module.css";
+import styles from "./CopyMoveErrorDetailsDialog.module.css";
 import { useDialog } from "../../../contexts/DialogContext";
 import Button from "../../Button/Button";
 
 interface Props {
   errors: { name: string; type: string; reason: string }[];
   closeOut?: () => void;
+  type?: "copy" | "move";
 }
 
-const CopyErrorInfoDialog: FC<Props> = ({ errors, closeOut }) => {
+const CopyMoveErrorDetailsDialog: FC<Props> = ({ errors, closeOut, type }) => {
   const fileErrors = errors.filter((e) => e.type === "file");
   const dirErrors = errors.filter((e) => e.type === "dir");
 
@@ -22,12 +23,16 @@ const CopyErrorInfoDialog: FC<Props> = ({ errors, closeOut }) => {
 
   return (
     <DialogShell
-      title={`Ошибки при копировании ${errors.length} объектов`}
+      title={`Ошибки при ${type == "copy" ? "копировании" : "перемещении"}  ${
+        errors.length
+      } объектов`}
       width="50vw"
     >
       <div className={styles.container}>
         {errors.length === 0 ? (
-          <div className={styles.noErrors}>Все файлы скопированы успешно</div>
+          <div className={styles.noErrors}>{`Все объекты ${
+            type == "copy" ? "скопированы" : "перемещены"
+          }`}</div>
         ) : (
           <>
             <div className={styles.errorList}>
@@ -74,4 +79,4 @@ const CopyErrorInfoDialog: FC<Props> = ({ errors, closeOut }) => {
   );
 };
 
-export default CopyErrorInfoDialog;
+export default CopyMoveErrorDetailsDialog;

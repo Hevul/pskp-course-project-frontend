@@ -45,6 +45,7 @@ const DirTile: FC<Props> = ({ dir }) => {
     toggleEntitySelection,
     handleDeleteSelected,
     handleDownloadSelected,
+    clearSelection,
   } = useSelectedEntities();
 
   const { id, name } = dir;
@@ -121,7 +122,10 @@ const DirTile: FC<Props> = ({ dir }) => {
 
   const handleClick = (e: React.MouseEvent) => {
     if (e.detail === 1) toggleEntitySelection(dir, e);
-    else if (e.detail === 2) handleDirEnter();
+    else if (e.detail === 2) {
+      handleDirEnter();
+      clearSelection();
+    }
   };
 
   const handleContextMenu = (e: React.MouseEvent) => {

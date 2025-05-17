@@ -18,7 +18,7 @@ import InputValidationError from "../../InputValidationError/InputValidationErro
 import { usePopup } from "../../../contexts/PopupContext";
 import { useStorage } from "../../../contexts/StorageContext";
 import { copyMultiple } from "../../../api/entity";
-import CopyErrorInfoDialog from "../CopyErrorInfoDialog/CopyErrorInfoDialog";
+import CopyMoveErrorDetailsDialog from "../CopyMoveErrorDetailsDialog/CopyMoveErrorDetailsDialog";
 
 interface Props {
   selectedEntities: Entity[];
@@ -74,7 +74,7 @@ const CopyMultipleDialogContent: FC<Props> = ({
             reason: errorData[key].error,
           }));
 
-        open(<CopyErrorInfoDialog errors={errors} />);
+        open(<CopyMoveErrorDetailsDialog errors={errors} />);
       }
     },
   });
