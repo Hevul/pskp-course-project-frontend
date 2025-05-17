@@ -9,6 +9,7 @@ import { usePopup } from "../../../contexts/PopupContext";
 import SecondaryButton from "../../SecondaryButton/SecondaryButton";
 import { useDialog } from "../../../contexts/DialogContext";
 import { useEntities } from "../../../contexts/EntitiesContext";
+import TextField from "../../TextField/TextField";
 
 interface Props {
   upload: FileUpload;
@@ -61,6 +62,13 @@ const ResolveConflictDialog: FC<Props> = ({ upload }) => {
 
   return (
     <DialogShell title={`Разрешение конфликта для файла '${filename}'`}>
+      <TextField
+        text={`Файл '${filename}' уже существует в данной папке. При перезаписи текущее содержимое файла будет полностью заменено новой версией.`}
+      />
+      <TextField
+        weight="bold"
+        text={`Выберите "Перезаписать файл" для перезаписи или "Отменить загрузку", чтобы сохранить существующую версию.`}
+      />
       <div className={styles.buttons}>
         <SecondaryButton title={"Отменить загрузку"} onClick={handleRemove} />
         <Button
