@@ -24,8 +24,8 @@ const serverSideTrouble = (
     code={500}
     header="Что-то пошло не так"
     description="К сожалению, мы не смогли обработать этот запрос."
-    buttonText="Перейти на главную"
-    backUrl="/"
+    buttonText="Перейти к авторизации"
+    backUrl="/login"
   />
 );
 

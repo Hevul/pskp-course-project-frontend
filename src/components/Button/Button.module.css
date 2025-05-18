@@ -21,6 +21,10 @@
   position: relative;
   overflow: hidden;
   transition: all 0.3s ease;
+
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
 }
 
 .button:hover:not(:disabled) {

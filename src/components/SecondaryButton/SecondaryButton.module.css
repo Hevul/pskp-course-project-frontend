@@ -8,6 +8,9 @@
   display: flex;
   align-items: center;
   gap: 10px;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
 }
 
 .button:hover {

@@ -15,6 +15,7 @@ import useAxios from "../../../hooks/useAxios";
 import { StorageFullInfo } from "../../../models/StorageFullInfo";
 import { getFullInfo } from "../../../api/storage";
 import { formatDate, formatSize } from "../../../utils";
+import { useEntities } from "../../../contexts/EntitiesContext";
 
 interface Props {
   storage: Storage;
@@ -23,6 +24,7 @@ interface Props {
 const StorageButton: FC<Props> = ({ storage }) => {
   const { selectStorage, storage: currentStorage, refresh } = useStorage();
   const { showContextMenu } = useContextMenu();
+  const { setCurrentDir } = useEntities();
   const { open } = useDialog();
 
   const { sendRequest } = useAxios({
@@ -56,7 +58,10 @@ const StorageButton: FC<Props> = ({ storage }) => {
 
   const isSelected = storage.id === currentStorage?.id;
 
-  const handleStorageClick = () => selectStorage(storage);
+  const handleStorageClick = () => {
+    selectStorage(storage);
+    setCurrentDir(null);
+  }
   const handleOptionsClick = (e: React.MouseEvent) => {
     e.stopPropagation();
 
