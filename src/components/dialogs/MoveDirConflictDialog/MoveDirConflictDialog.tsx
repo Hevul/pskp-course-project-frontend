@@ -13,12 +13,14 @@ import { usePopup } from "../../../contexts/PopupContext";
 import InputValidationError from "../../InputValidationError/InputValidationError";
 import InfoTile from "./InfoTile.module";
 import { DirFullInfo } from "../../../models/DirFullInfo";
+import Dir from "../../../models/Dir";
 
 interface Props {
   entity: Entity;
   conflictingId: string;
   destinationId?: string;
   onSuccess?: () => void;
+  setCurrentDirOut?: (dir: Dir | null) => void;
 }
 
 const MoveFileConflictDialog: FC<Props> = ({
@@ -26,6 +28,7 @@ const MoveFileConflictDialog: FC<Props> = ({
   conflictingId,
   destinationId,
   onSuccess,
+  setCurrentDirOut,
 }) => {
   const [moveError, setMoveError] = useState<string | null>(null);
   const [movedDir, setMovedDir] = useState<null | DirFullInfo>(null);
@@ -68,6 +71,13 @@ const MoveFileConflictDialog: FC<Props> = ({
   const { sendRequest: sendMove } = useAxios({
     onSuccess(response) {
       show(`Папка успешно перемещёна`, { iconType: "success" });
+
+      if (movedDir && originalDir) {
+        if (isDirectChild(movedDir.path, originalDir.path)) {
+          setCurrentDirOut?.(null);
+        }
+      }
+
       close();
       onSuccess?.();
     },
@@ -131,5 +141,24 @@ const MoveFileConflictDialog: FC<Props> = ({
     </DialogShell>
   );
 };
+
+function isDirectChild(movedDirPath: string, originalDirPath: string): boolean {
+  const normalizedMovedPath = movedDirPath.replace(/\/+$/, "");
+  const normalizedOriginalPath = originalDirPath.replace(/\/+$/, "");
+
+  if (!normalizedMovedPath.startsWith(normalizedOriginalPath)) {
+    return false;
+  }
+
+  const remainingPath = normalizedMovedPath.slice(
+    normalizedOriginalPath.length
+  );
+
+  const pathSegments = remainingPath
+    .split("/")
+    .filter((segment) => segment.length > 0);
+
+  return pathSegments.length === 1;
+}
 
 export default MoveFileConflictDialog;

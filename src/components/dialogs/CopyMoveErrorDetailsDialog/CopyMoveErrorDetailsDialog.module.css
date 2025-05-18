@@ -1,0 +1,37 @@
+.container {
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+.errorGroup {
+  margin-bottom: 24px;
+}
+
+.groupTitle {
+  font-size: 15px;
+  color: var(--primary-black);
+  font-weight: var(--bold);
+}
+
+.errorItem {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.errorName {
+  font-size: 15px;
+  font-weight: var(--regular);
+  color: var(--primary-black);
+}
+
+.errorReason {
+  color: rgb(255, 48, 48);
+  text-align: right;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+}

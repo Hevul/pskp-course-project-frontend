@@ -37,10 +37,12 @@ const CopyDialogContent: FC<Props> = ({ entity, onSuccess }) => {
 
   const { id, name, type } = currentEntity;
   const isFile = type === "file";
+
   const sortedEntities = [...entities].sort((a, b) => {
     if (a.type === "dir" && b.type !== "dir") return -1;
     if (a.type !== "dir" && b.type === "dir") return 1;
-    return 0;
+
+    return a.name.localeCompare(b.name, undefined, { sensitivity: "base" });
   });
 
   const { sendRequest, loading } = useAxios({

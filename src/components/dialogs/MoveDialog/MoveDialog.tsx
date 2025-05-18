@@ -21,13 +21,19 @@ import { usePopup } from "../../../contexts/PopupContext";
 import { useStorage } from "../../../contexts/StorageContext";
 import MoveFileConflictDialog from "../MoveFileConflictDialog/MoveFileConflictDialog";
 import MoveDirConflictDialog from "../MoveDirConflictDialog/MoveDirConflictDialog";
+import Dir from "../../../models/Dir";
 
 interface Props {
   entity: Entity;
   onSuccess?: () => void;
+  setCurrentDirOut?: (dir: Dir | null) => void;
 }
 
-const MoveDialogContent: FC<Props> = ({ entity, onSuccess }) => {
+const MoveDialogContent: FC<Props> = ({
+  entity,
+  onSuccess,
+  setCurrentDirOut,
+}) => {
   const [moveError, setMoveError] = useState<string | null>(null);
   const [currentEntity, setCurrentEntity] = useState<Entity>(entity);
 
@@ -38,26 +44,26 @@ const MoveDialogContent: FC<Props> = ({ entity, onSuccess }) => {
 
   const { id, name, type } = currentEntity;
   const isFile = type === "file";
+
   const sortedEntities = [...entities].sort((a, b) => {
     if (a.type === "dir" && b.type !== "dir") return -1;
     if (a.type !== "dir" && b.type === "dir") return 1;
-    return 0;
+
+    return a.name.localeCompare(b.name, undefined, { sensitivity: "base" });
   });
 
   const { sendRequest, loading } = useAxios({
     onSuccess(response) {
-      if (response.status === 200) {
-        show(
-          `${isFile ? "Файл" : "Папка"} ${name} перемещён${
-            isFile ? "" : "а"
-          } в ${currentDir ? currentDir.name : storage?.name}!`,
-          {
-            iconType: "success",
-          }
-        );
-        close();
-        onSuccess?.();
-      }
+      show(
+        `${isFile ? "Файл" : "Папка"} ${name} перемещён${isFile ? "" : "а"} в ${
+          currentDir ? currentDir.name : storage?.name
+        }!`,
+        {
+          iconType: "success",
+        }
+      );
+      close();
+      onSuccess?.();
     },
     onError(error) {
       show(`Не удалось переместить ${isFile ? "файл" : "папку"}!`, {
@@ -74,7 +80,6 @@ const MoveDialogContent: FC<Props> = ({ entity, onSuccess }) => {
             destinationId={currentDir?.id}
             onSuccess={() => {
               close();
-              setCurrentDir(null);
               onSuccess?.();
             }}
           />
@@ -93,6 +98,7 @@ const MoveDialogContent: FC<Props> = ({ entity, onSuccess }) => {
               close();
               onSuccess?.();
             }}
+            setCurrentDirOut={setCurrentDirOut}
           />
         );
 
@@ -112,12 +118,13 @@ const MoveDialogContent: FC<Props> = ({ entity, onSuccess }) => {
     },
   });
 
-  const handleMove = () =>
+  const handleMove = () => {
     sendRequest(
       isFile
         ? moveFile({ id: currentEntity.id, parentId: currentDir?.id })
         : moveDir({ id: currentEntity.id, parentId: currentDir?.id })
     );
+  };
 
   return (
     <DialogShell
