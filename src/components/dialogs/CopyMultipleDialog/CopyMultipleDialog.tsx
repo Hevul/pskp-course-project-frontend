@@ -74,7 +74,7 @@ const CopyMultipleDialogContent: FC<Props> = ({
             reason: errorData[key].error,
           }));
 
-        open(<CopyMoveErrorDetailsDialog errors={errors} />);
+        open(<CopyMoveErrorDetailsDialog errors={errors} type="copy" />);
       }
     },
   });

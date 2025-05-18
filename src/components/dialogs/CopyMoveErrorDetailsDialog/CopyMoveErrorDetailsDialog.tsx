@@ -10,7 +10,7 @@ interface Props {
   type?: "copy" | "move";
 }
 
-const CopyMoveErrorDetailsDialog: FC<Props> = ({ errors, closeOut, type }) => {
+const CopyMoveErrorDetailsDialog: FC<Props> = ({ errors, closeOut, type = "copy" }) => {
   const fileErrors = errors.filter((e) => e.type === "file");
   const dirErrors = errors.filter((e) => e.type === "dir");
 
